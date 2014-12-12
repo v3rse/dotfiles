@@ -75,10 +75,10 @@ source ~/.bash_profile
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 
-#THIS MUST BE AT THE END OF THE FILE FOR GVM TO WORK!!!
-[[ -s "/home/v3rse/.gvm/bin/gvm-init.sh" ]] && source "/home/v3rse/.gvm/bin/gvm-init.sh"
+#Implementation Dependent
+#Ruby stuff
+#export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+#export PATH="$HOME/.bin:$PATH"
+#export PATH="$HOME/.rbenv/bin:$PATH"
+#eval "$(rbenv init - --no-rehash)"
 
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
-export PATH="$HOME/.bin:$PATH"
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init - --no-rehash)"
