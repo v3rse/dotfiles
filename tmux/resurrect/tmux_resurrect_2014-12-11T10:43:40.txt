@@ -1,0 +1,5 @@
+pane	0	0	:vim	1	:*	0	:/home/v3rse/TheChocolateFactory/VendingMachine/iwallet-node	1	vim	:vim app.js
+pane	0	0	:vim	1	:*	1	:/home/v3rse	0	zsh	:
+pane	0	0	:vim	1	:*	2	:/home/v3rse	0	zsh	:
+window	0	0	1	:*	78d8,191x50,0,0[191x38,0,0,0,191x11,0,39{94x11,0,39,1,96x11,95,39,2}]
+state	0	0

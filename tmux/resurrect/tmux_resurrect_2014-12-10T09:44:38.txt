@@ -1,0 +1,5 @@
+pane	0	0	:../iwallet-node	1	:*	0	:/home/v3rse/TheChocolateFactory/VendingMachine/iwallet-node	1	zsh	:
+pane	0	0	:../iwallet-node	1	:*	1	:/home/v3rse	0	zsh	:
+pane	0	0	:../iwallet-node	1	:*	2	:/home/v3rse	0	zsh	:
+window	0	0	1	:*	10d4,191x51,0,0[191x39,0,0,0,191x11,0,40{94x11,0,40,1,96x11,95,40,3}]
+state	0	0
