@@ -6,7 +6,7 @@
 
 set nocompatible              " be iMproved, required
 "set colors for terminal
-set t_Co=256
+"set t_Co=256
 execute pathogen#infect()
 
 "detects filetype and indents based on it
@@ -91,4 +91,6 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 
 "3.Syntastic
 "4.Istanbul
+"5.Go Development
+let g:go_disable_autoinstall = 0
 "}}}
