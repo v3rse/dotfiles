@@ -25,4 +25,29 @@ alias md='mkdir -p'
 alias vim='nvim'
 
 # PROMPT
-PROMPT="v3rsePrompt=>"
+# -Colors
+reset_color=$(tput sgr0)
+red=$(tput setaf 1)
+yellow=$(tput setaf 2)
+green=$(tput setaf 3)
+cyan=$(tput setaf 6)
+
+
+# -Prompt modes (vim mode)
+insert_mode_prompt="$red>$green>$yellow>$reset_color"
+normal_mode_prompt="$red<$green<$yellow<$reset_color"
+
+# -Functions
+# Get current directory
+function get_pwd() {
+  echo "${PWD/$HOME/~}"
+}
+
+# TODO: Get git info
+# TODO: Change prompt base on mode
+
+# -Template
+# Enable command substitutions, parameter expansions and arithmetic expansions
+setopt promptsubst
+# Wrap escape sequences to prevent displacement of prompt
+PROMPT="%{$cyan%}\$(get_pwd) %{$reset_color%}%{$insert_mode_prompt%} "
