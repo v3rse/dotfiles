@@ -1,0 +1,130 @@
+const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
+const TopicController = require('../../core').getController('Topic');
+
+exports.register = (server, options, next) => {
+  server.route({
+    method: 'GET',
+    path: '/api/topics',
+    config: {
+      description: 'Get topics',
+      notes: 'Returns all topics',
+      tags: ['api', 'topics'],
+      handler: TopicController.get,
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-topic-read'],
+      },
+    },
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/api/topics/{id}',
+    config: {
+      description: 'Get topic by id',
+      notes: 'Returns a topic by id',
+      tags: ['api', 'topics'],
+      handler: TopicController.get,
+      validate: {
+        params: {
+          id: Joi.objectId().required(),
+        },
+      },
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-topic-read'],
+      },
+    },
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/api/topics/levels/{subjectId}',
+    config: {
+      description: 'Get topic by subject id',
+      notes: 'Returns a topic by subject id',
+      tags: ['api', 'topics'],
+      handler: TopicController.getTopicBySubject,
+      validate: {
+        params: {
+          subjectId: Joi.objectId().required(),
+        },
+      },
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-topic-read'],
+      },
+    },
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/api/topics',
+    config: {
+      description: 'Create topic',
+      notes: 'Create a topic',
+      tags: ['api', 'topics'],
+      handler: TopicController.post,
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          description: Joi.string().required(),
+          subject: Joi.objectId().required(),
+        },
+      },
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-topic-create'],
+      },
+    },
+  });
+
+  server.route({
+    method: 'PATCH',
+    path: '/api/topics/{id}',
+    config: {
+      description: 'Update topic',
+      notes: 'Updates topic document given the id',
+      tags: ['api', 'topics'],
+      handler: TopicController.patch,
+      validate: {
+        payload: {
+          name: Joi.string(),
+          description: Joi.string(),
+          subject: Joi.objectId(),
+        },
+      },
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-topic-update'],
+      },
+    },
+  });
+
+  server.route({
+    method: 'DELETE',
+    path: '/api/topics/{id}',
+    config: {
+      description: 'Delete topic',
+      notes: 'Delete topic document given the id',
+      tags: ['api', 'topics'],
+      handler: TopicController.disable,
+      validate: {
+        params: {
+          id: Joi.objectId().required(),
+        },
+      },
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-topic-delete'],
+      },
+    },
+  });
+
+  return next();
+};
+
+exports.register.attributes = {
+  name: 'topics',
+};

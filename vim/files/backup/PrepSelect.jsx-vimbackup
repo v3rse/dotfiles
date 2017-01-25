@@ -1,0 +1,65 @@
+const React = require('react');
+import {Link} from 'react-router';
+
+
+var PrepSelect = React.createClass({
+    getInitialState(){
+        return {
+            title: '',
+            selected: {}
+        }
+    },
+    componentDidMount(){
+    },
+    handleDrop(e){
+        var el;
+        var t = e.target;
+        var c = ($(t).attr('class'))
+        if( c == "prep-selected"){
+            el = $(t).parent()
+        }
+        else{
+            el = $(t).parent().parent()
+        }
+        var p = el.find('.prep-sel-options')
+        p.toggleClass('prep-sel-active');
+
+    },
+    handleChange(e){
+        var t = e.target;
+        var id = t.id
+        var text = t.text;
+        var sel = {value: id, text: text}
+        this.setState({title: text})
+        $(t).parent().parent().toggleClass('prep-sel-active');
+        this.props.selectChange(sel,this.props.type)
+    },
+    render(){
+        var listItems;
+        var li = this.props.listItems;
+        var listItems;
+        if(li == undefined) li = [];
+        if(li.length > 0){
+            listItems = this.props.listItems.map(function(item, index){
+                return <li key={index}><a onClick={this.handleChange} id={item.val}>{item.name}</a></li>
+            }.bind(this))
+        }else{
+          listItems = [(<li key=0><a>Loading..</a></li>)];
+        }
+        return (
+            <div className="prep-select">
+                <span className="prep-selected" onClick={this.handleDrop}>
+                    {this.state.title != "" ? this.state.title : this.props.title} 
+                    <i className="prep-arrow-down lnr lnr-chevron-down"></i>
+                    <div className="clearfix"></div>
+                </span>
+                <ul className="prep-sel-options">
+                    {listItems}
+                </ul>
+            </div>
+        )
+    }
+})
+
+
+module.exports = PrepSelect;

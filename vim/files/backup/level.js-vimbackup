@@ -1,0 +1,23 @@
+const server = require('./server');
+const axios = require('axios');
+
+
+const level = {
+  //TODO restrict to User created
+  getLevels(token,callback) {
+    axios.create({
+      baseURL: server.api,
+      timeout: 10000,
+      headers: {'Authorization': `Bearer ${token}`}
+    }).get('/levels')
+      .then((res) => {
+        callback(null,res.data);
+      })
+      .catch((e) => {
+        callback(e);
+      });
+  },
+ };
+
+
+module.exports = level;

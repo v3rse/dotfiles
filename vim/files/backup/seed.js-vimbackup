@@ -1,0 +1,312 @@
+/* eslint-disable no-console */
+/* eslint-disable no-underscore-dangle */
+console.log('SEED');
+const faker = require('faker');
+const chroma = require('@v3rse/chroma');
+const mongoose = require('mongoose');
+const Activity = require('./models/Activity');
+const Question = require('./models/Question');
+const Note = require('./models/Note');
+const Hint = require('./models/Hint');
+const Level = require('./models/Level');
+const Subject = require('./models/Subject');
+const Topic = require('./models/Topic');
+const Skill = require('./models/Skill');
+
+const dbUrl = process.env.MONGODB || 'mongodb://localhost:27017/prepgh';
+mongoose.Promise = global.Promise;
+
+mongoose.connect(dbUrl, {}, (mongooseErr) => {
+  if (mongooseErr) {
+    throw mongooseErr;
+  }
+});
+const levels = [
+  {
+    name: 'YR 1',
+    description: 'Year One',
+    category: 'BASIC SCHOOL',
+  },
+  {
+    name: 'YR 2',
+    description: 'Year Two',
+    category: 'BASIC SCHOOL',
+  },
+  {
+    name: 'YR 3',
+    category: 'BASIC SCHOOL',
+    description: 'Year Three',
+  },
+  {
+    name: 'YR 4',
+    category: 'BASIC SCHOOL',
+    description: 'Year Four',
+  },
+  {
+    name: 'YR 5',
+    category: 'BASIC SCHOOL',
+    description: 'Year Five',
+  },
+  {
+    name: 'YR 6',
+    category: 'BASIC SCHOOL',
+    description: 'Year Six',
+  },
+  {
+    name: 'JHS 1',
+    category: 'JUNIOR HIGH',
+    description: 'Junior High School Year One',
+  },
+  {
+    name: 'JHS 2',
+    category: 'JUNIOR HIGH',
+    description: 'Junior High School Year Two',
+  },
+  {
+    name: 'JHS 3',
+    category: 'JUNIOR HIGH',
+    description: 'Junior High School Year Three',
+  },
+  {
+    name: 'SHS 1',
+    category: 'SENIOR HIGH',
+    description: 'Senior High School Year 1',
+  },
+  {
+    name: 'SHS 2',
+    category: 'SENIOR HIGH',
+    description: 'Senior High School Year 2',
+  },
+  {
+    name: 'SHS 3',
+    category: 'SENIOR HIGH',
+    description: 'Senior High School Year 3',
+  }
+];
+
+const subjects = [
+  {
+    name: 'MATHS',
+    description: 'Mathematics',
+  },
+  {
+    name: 'ENGLISH',
+    description: 'English language',
+  },
+  {
+    name: 'SCIENCE',
+    description: 'General Science',
+  },
+];
+
+
+const notes = [
+  {
+    name: 'Perimeter',
+    text: 'The perimeter of a polygon is the distance around the outside of the polygon.',
+  },
+  {
+    name: 'Area',
+    text: 'Area is the quantity that expresses the extent of a two-dimensional figure or shape.',
+  },
+];
+
+const hints = [
+  {
+    name: 'Perimeter',
+    text: 'Add all the lengths together.',
+  },
+  {
+    name: 'Area',
+    text: 'Length x breadth.',
+  },
+];
+
+const activities = [
+  {
+    name: 'Geometry',
+    type: 'Perimeter',
+  },
+  {
+    name: 'Arithmetic',
+    type: 'Division',
+  },
+  {
+    name: 'Geometry',
+    type: 'Vectors',
+  },
+  {
+    name: 'Arithmetic',
+    type: 'Division',
+  },
+];
+
+const statuses = ['PENDING', 'APPROVED', 'REJECTED'];
+
+const answerSet = [
+  [
+    {
+      text: 'Answer 1',
+      isSolution: true,
+    },
+    {
+      text: 'Answer 2',
+    },
+    {
+      text: 'Answer 3',
+    },
+    {
+      text: 'Answer 4',
+    },
+  ],
+  [
+    {
+      text: 'Answer 1',
+    },
+    {
+      text: 'Answer 2',
+      isSolution: true,
+    },
+    {
+      text: 'Answer 3',
+    },
+    {
+      text: 'Answer 4',
+    },
+  ],
+  [
+    {
+      text: 'Answer 1',
+    },
+    {
+      text: 'Answer 2',
+    },
+    {
+      text: 'Answer 3',
+      isSolution: true,
+    },
+    {
+      text: 'Answer 4',
+    },
+  ],
+  [
+    {
+      text: 'Answer 1',
+    },
+    {
+      text: 'Answer 2',
+    },
+    {
+      text: 'Answer 3',
+    },
+    {
+      text: 'Answer 4',
+      isSolution: true,
+    },
+  ],
+];
+
+function getRandom(list) {
+  const index = Math.floor(Math.random() * list.length);
+  return list[index];
+}
+
+const activitiesPromiseArray = [];
+const notesPromiseArray = [];
+const hintsPromiseArray = [];
+
+notes.forEach((note) => {
+  notesPromiseArray.push(Note
+  .create(note));
+});
+
+hints.forEach((hint) => {
+  hintsPromiseArray.push(Hint
+  .create(hint));
+});
+
+activities.forEach((activity) => {
+  activitiesPromiseArray.push(Activity
+  .create(activity));
+});
+
+levels.forEach((level) => {
+  Level.create(level)
+    .then((createdLevel) => {
+      // subjects
+      subjects.forEach((subject) => {
+        const s = subject;
+        s.level = createdLevel._id;
+        Subject.create(s)
+          .then((createdSubject) => {
+            // topics
+            [1, 2, 3, 4, 5].forEach((j) => {
+              const topic = {
+                name: faker.lorem.word(),
+                description: faker.lorem.sentence(),
+                subject: createdSubject._id,
+              };
+
+              Topic.create(topic)
+                .then((createdTopic) => {
+                  // skill
+                  [1, 2].forEach((j) => {
+                    const skill = {
+                      name: faker.lorem.word(),
+                      description: faker.lorem.sentence(),
+                      topic: createdTopic._id,
+                    };
+
+                    Skill.create(skill)
+                      .then((data) => {});
+
+                  });
+                });
+            })
+          });
+      })
+  });
+});
+
+Promise.all(hintsPromiseArray)
+.then((createdHints) => {
+  Promise.all(notesPromiseArray)
+.then((createdNotes) => {
+  Promise.all(activitiesPromiseArray)
+  .then((createdActivities) => {
+    createdActivities.forEach((createdActivity) => {
+      [1, 2, 3, 4, 5].forEach((j) => {
+        const newQuestion = {
+          preamble: faker.lorem.sentence(),
+          type: faker.lorem.word(),
+          status: getRandom(statuses),
+          explanation: faker.lorem.sentence(),
+          note: getRandom(createdNotes)._id,
+          hint: getRandom(createdHints)._id,
+          answers: getRandom(answerSet),
+        };
+
+        Question
+      .create(newQuestion)
+      .then((createdQuestion) => {
+        const activityContent = {
+          type: 'Question',
+          ref: createdQuestion._id,
+        };
+        Activity
+          .createContent(createdActivity._id, activityContent)
+          .then(() => {
+            console.log(chroma.underline.yellow(`Created Question ${j} under ${createdActivity.name}/${createdActivity.type}`));
+          })
+          .catch((err) => {
+            throw new Error(err.toString());
+          });
+      })
+      .catch((err) => {
+        throw new Error(err.toString());
+      });
+      });
+    });
+  });
+});
+});

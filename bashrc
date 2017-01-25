@@ -119,5 +119,4 @@ export PATH=$HOME/local/bin:$PATH
 
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 
-# Open the Chololate Factory
-alias chocolate='cd ~/TheChocolateFactory/'
+source /etc/bash_completion.d/climate_completion

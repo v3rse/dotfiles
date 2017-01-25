@@ -1,4 +1,8 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =2
-let g:netrw_dirhist_1='/home/v3rse/.vim'
-let g:netrw_dirhist_2='/home/v3rse/dotfiles'
+let g:netrw_dirhist_cnt =6
+let g:netrw_dirhist_1='/home/v3rse/TheFactory/WhiteForest/suckless'
+let g:netrw_dirhist_2='/home/v3rse/TheFactory/WhiteForest/learning/h/code'
+let g:netrw_dirhist_3='/home/v3rse/TheFactory/WhiteForest/learning/h/tools'
+let g:netrw_dirhist_4='/home/v3rse/TheFactory/WhiteForest/learning/h'
+let g:netrw_dirhist_5='/home/v3rse/TheFactory/WhiteForest/learning/h/tools'
+let g:netrw_dirhist_6='/home/v3rse/TheFactory/WhiteForest/learning/h'

@@ -1,0 +1,130 @@
+const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
+const SkillController = require('../../core').getController('Skill');
+
+exports.register = (server, options, next) => {
+  server.route({
+    method: 'GET',
+    path: '/api/skills',
+    config: {
+      description: 'Get skills',
+      notes: 'Returns all skills',
+      tags: ['api', 'skills'],
+      handler: SkillController.get,
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-skill-read'],
+      },
+    },
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/api/skills/{id}',
+    config: {
+      description: 'Get skill by id',
+      notes: 'Returns a skill by id',
+      tags: ['api', 'skills'],
+      handler: SkillController.get,
+      validate: {
+        params: {
+          id: Joi.objectId().required(),
+        },
+      },
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-skill-read'],
+      },
+    },
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/api/skills/{topicId}',
+    config: {
+      description: 'Get skill by topic id',
+      notes: 'Returns a skill by topic id',
+      tags: ['api', 'skills'],
+      handler: SkillController.getSkillByTopic,
+      validate: {
+        params: {
+          topicId: Joi.objectId().required(),
+        },
+      },
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-skill-read'],
+      },
+    },
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/api/skills',
+    config: {
+      description: 'Create skill',
+      notes: 'Create a skill',
+      tags: ['api', 'skills'],
+      handler: SkillController.post,
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          description: Joi.string().required(),
+          topic: Joi.objectId().required(),
+        },
+      },
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-skill-create'],
+      },
+    },
+  });
+
+  server.route({
+    method: 'PATCH',
+    path: '/api/skills/{id}',
+    config: {
+      description: 'Update skill',
+      notes: 'Updates skill document given the id',
+      tags: ['api', 'skills'],
+      handler: SkillController.patch,
+      validate: {
+        payload: {
+          name: Joi.string(),
+          description: Joi.string(),
+          topic: Joi.objectId(),
+        },
+      },
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-skill-update'],
+      },
+    },
+  });
+
+  server.route({
+    method: 'DELETE',
+    path: '/api/skills/{id}',
+    config: {
+      description: 'Delete skill',
+      notes: 'Delete skill document given the id',
+      tags: ['api', 'skills'],
+      handler: SkillController.disable,
+      validate: {
+        params: {
+          id: Joi.objectId().required(),
+        },
+      },
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-skill-delete'],
+      },
+    },
+  });
+
+  return next();
+};
+
+exports.register.attributes = {
+  name: 'skills',
+};

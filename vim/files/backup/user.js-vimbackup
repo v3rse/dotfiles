@@ -1,0 +1,74 @@
+/* eslint-disable class-methods-use-this */
+/* eslint-disable no-unused-vars */
+const Boom = require('boom');
+const User = require('../../../model').getModel('user');
+
+class UserController {
+  // checks
+  // TODO make these Hapi plugins
+  connCheck(from, to, type) {
+    return Promise.resolve(true);
+  }
+
+  authCheck(username) {
+    // check if the user is authenticated.
+    return Promise.resolve(true);
+  }
+
+  registerUser(request, reply) {
+    let user = request.payload;
+    // check if user is already registered
+    User.find('username', user.username)
+      .then((data) => {
+        if (data) {
+          const id = Object.keys(data)[0];
+          User.update(id, { online: true })
+            .then(() => {
+              reply(`User ${data[id].username} online`).code(200);
+            });
+        } else {
+          user.online = true;
+          User.insert(user)
+            .then((userSaved) => {
+              reply(`User ${user.username} created at users/${userSaved.key}`).code(200);
+            });
+        }
+      }).catch((e) => {
+        reply(Boom.wrap(e));
+      });
+  }
+
+// list users
+  listUsers(request, reply) {
+    User.find()
+      .then(data => reply(data).code(200))
+      .catch(err => reply(Boom.wrap(err, 500)));
+  }
+
+  listUsersOnline(request, reply) {
+    User.find('online', true)
+      .then(data => reply(data).code(200))
+      .catch(err => reply(Boom.wrap(err, 500)));
+  }
+
+  listUsersOffline(request, reply) {
+    User.find('online', false)
+      .then(data => reply(data).code(200))
+      .catch(err => reply(Boom.wrap(err, 500)));
+  }
+
+  deregisterUser(request, reply) {
+    User.update(request.params.id, { online: false })
+      .then(() => reply('Update completed').code(200))
+      .catch(err => reply(Boom.wrap(err, 500)));
+  }
+
+  removeUser(request, reply) {
+    User.remove(request.params.id)
+      .then(() => reply('User removed').code(200))
+      .catch(err => reply(Boom.wrap(err, 500)));
+  }
+}
+
+
+module.exports = UserController;

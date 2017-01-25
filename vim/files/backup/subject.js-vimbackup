@@ -1,0 +1,131 @@
+const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
+const SubjectController = require('../../core').getController('Subject');
+
+exports.register = (server, options, next) => {
+  server.route({
+    method: 'GET',
+    path: '/api/subjects',
+    config: {
+      description: 'Get subjects',
+      notes: 'Returns all subjects',
+      tags: ['api', 'subjects'],
+      handler: SubjectController.get,
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-subject-read'],
+      },
+    },
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/api/subjects/{id}',
+    config: {
+      description: 'Get subject by id',
+      notes: 'Returns a subject by id',
+      tags: ['api', 'subjects'],
+      handler: SubjectController.get,
+      validate: {
+        params: {
+          id: Joi.objectId().required(),
+        },
+      },
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-subject-read'],
+      },
+    },
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/api/subjects/level/{levelId}',
+    config: {
+      description: 'Get subject by level id',
+      notes: 'Returns a subject by level id',
+      tags: ['api', 'subjects'],
+      handler: SubjectController.getSubjectByLevel,
+      validate: {
+        params: {
+          levelId: Joi.objectId().required(),
+        },
+      },
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-subject-read'],
+      },
+    },
+  });
+
+
+  server.route({
+    method: 'POST',
+    path: '/api/subjects',
+    config: {
+      description: 'Create subject',
+      notes: 'Create a subject',
+      tags: ['api', 'subjects'],
+      handler: SubjectController.post,
+      validate: {
+        payload: {
+          name: Joi.string().required(),
+          description: Joi.string().required(),
+          level: Joi.objectId().required(),
+        },
+      },
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-subject-create'],
+      },
+    },
+  });
+
+  server.route({
+    method: 'PATCH',
+    path: '/api/subjects/{id}',
+    config: {
+      description: 'Update subject',
+      notes: 'Updates subject document given the id',
+      tags: ['api', 'subjects'],
+      handler: SubjectController.patch,
+      validate: {
+        payload: {
+          name: Joi.string(),
+          description: Joi.string(),
+          level: Joi.objectId(),
+        },
+      },
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-subject-update'],
+      },
+    },
+  });
+
+  server.route({
+    method: 'DELETE',
+    path: '/api/subjects/{id}',
+    config: {
+      description: 'Delete subject',
+      notes: 'Delete subject document given the id',
+      tags: ['api', 'subjects'],
+      handler: SubjectController.disable,
+      validate: {
+        params: {
+          id: Joi.objectId().required(),
+        },
+      },
+      auth: {
+        strategy: 'jwt',
+        scope: ['cms-subject-delete'],
+      },
+    },
+  });
+
+  return next();
+};
+
+exports.register.attributes = {
+  name: 'subjects',
+};

@@ -1,0 +1,18 @@
+//Admin config
+
+AdminConfig = {
+  name: 'Unex',
+  adminEmails: ['lecturer@uniex.com'],
+  userSchema: new SimpleSchema({
+    'profile.authorized': {
+      type: Boolean
+    }
+  }),
+};
+
+//Restrict user editting on the client side
+Meteor.users.allow({
+  update: function(userId, doc, fieldNames, modifier) {
+    return (_.contains(fieldNames, 'profile.classes') || _.contains(fieldNames, 'profile.courses') || _.contains(fieldNames, 'profile.email_notifications') || _.contains(fieldNames, 'profile.push_notifications'));
+  }
+});

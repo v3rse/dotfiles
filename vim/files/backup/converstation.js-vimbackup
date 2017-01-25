@@ -1,0 +1,64 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable arrow-body-style */
+// modules
+const ConversationController = require('../core').getController('conversation');
+const Joi = require('joi');
+
+exports.register = (server, options, next) => {
+  // routes
+  server.route({
+    method: 'POST',
+    path: '/conversation/init',
+    config: {
+      handler: ConversationController.init,
+      validate: {
+        payload: {
+          from: Joi.string().alphanum().min(3).max(30)
+                    .required(),
+          to: Joi.string().alphanum().min(3).max(30)
+                    .required(),
+        },
+      },
+    },
+  });
+
+  /*
+  server.route({
+    method: 'POST',
+    path: '/conversation',
+    config: {
+      handler: ConversationController.create,
+      validate: {
+        payload: {
+          from: Joi.string().alphanum().min(3).max(30)
+                    .required(),
+          to: Joi.string().alphanum().min(3).max(30)
+                    .required(),
+        },
+      },
+    },
+  });
+  
+  server.route({
+    method: 'GET',
+    path: '/conversation/{from}/{to}',
+    config: {
+      handler: ConversationController.getAll,
+      validate: {
+        params: {
+          from: Joi.string().alphanum().min(3).max(30)
+                    .required(),
+          to: Joi.string().alphanum().min(3).max(30)
+                    .required(),
+        },
+      },
+    },
+  });
+  */
+  return next();
+};
+
+
+exports.register.attributes = {
+  name: 'conversation-routes',
+};

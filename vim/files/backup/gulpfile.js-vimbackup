@@ -1,0 +1,61 @@
+/* eslint-disable no-console */
+/* eslint-disable import/no-extraneous-dependencies */
+
+const gulp = require('gulp');
+const spawn = require('child_process').spawn;
+const eslint = require('gulp-eslint');
+
+const paths = {
+  mainJs: 'src',
+  allSrcJs: 'src/**/*.js',
+  gulpFile: 'gulpfile.js',
+};
+
+
+// lint all files with ESlint using Airbnb rules
+gulp.task('lint', () =>
+  gulp.src([
+    paths.allSrcJs,
+    paths.gulpFile,
+  ])
+  .pipe(eslint())
+  .pipe(eslint.format())
+  .pipe(eslint.failAfterError()));
+
+gulp.task('build', ['lint'], (callback) => {
+  try {
+    const dockerBuild = spawn('docker', ['build', '-t', 'v3rse/chat-server', '.'], { maxBuffer: 1024 * 500 });
+    dockerBuild.stdout.on('data', (data) => {
+      console.log(data.toString());
+    });
+    dockerBuild.stderr.on('data', (data) => {
+      console.log(data.toString());
+    });
+  } catch (e) {
+    callback(e);
+  }
+});
+
+
+gulp.task('main', ['lint'], (callback) => {
+  try {
+    const dockerBuild = spawn('node', [paths.mainJs], { maxBuffer: 1024 * 500 });
+    dockerBuild.stdout.on('data', (data) => {
+      console.log(data.toString());
+    });
+    dockerBuild.stderr.on('data', (data) => {
+      console.log(data.toString());
+      callback(data);
+    });
+  } catch (e) {
+    callback(e);
+  }
+});
+
+// watch for file changes
+gulp.task('watch', () => {
+  gulp.watch(paths.allSrcJs, ['main']);
+});
+
+// default task when `gulp` is run
+gulp.task('default', ['watch', 'main']);

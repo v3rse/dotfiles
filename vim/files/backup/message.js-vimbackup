@@ -1,0 +1,26 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable class-methods-use-this */
+const Boom = require('boom');
+const Message = require('../../../model').getModel('message');
+
+class MessageController {
+
+  create(request, reply) {
+    const payload = request.payload;
+    payload.timestamp = new Date().toString();
+    Message.insert(payload).then(() => {
+        reply('Message create').code(200);
+    }).catch((e) => Boom.wrap(e));
+  }
+
+  getAll(request, reply) {
+    const params = request.params;
+    Message.find('conv', params.id, 50)
+                .then((data) => {
+                  reply(data).code(200);
+                }).catch((e) => Boom.wrap(e));
+  } 
+}
+
+
+module.exports = MessageController;

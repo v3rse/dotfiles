@@ -1,0 +1,207 @@
+function seedDB() {
+  //user
+    //student
+    var sampleStudent = {
+      email: "student@uniex.com",
+      username: "uniex_student",
+      profile : {
+        name: faker.name.findName(),
+        courses:[],
+        account_type: "student",
+        classes:[]
+      },
+      password: "un13X_5tud3nt"
+    };
+
+    //lecturer
+    var sampleLecturer = {
+      email: "lecturer@uniex.com",
+      username: "uniex_lecturer",
+      profile : {
+        name: faker.name.findName(),
+        courses:[],
+        account_type: "lecturer",
+        classes:[],
+        authorized:true
+      },
+      password:"un13X_l3ctur3r"
+    }
+    var sampleUnauthorizedLecturer = {
+      email: "unauthlecturer@uniex.com",
+      username: "unauth_lecturer",
+      profile : {
+        name: faker.name.findName(),
+        courses:[],
+        account_type: "lecturer",
+        classes:[],
+        authorized:false
+      },
+      password:"unauthd"
+    }
+
+
+    //TODO:admin
+
+  if (!(Accounts.findUserByUsername(sampleStudent.username) || Accounts.findUserByUsername(sampleLecturer.username))) {
+    var sampleAppUsers = [sampleStudent,sampleLecturer,sampleUnauthorizedLecturer];
+
+
+      sampleAppUsers.forEach(function(user){
+         seedUser(user);
+      });
+
+    if(Accounts.findUserByUsername(sampleLecturer.username)){
+    //courses
+      //create course using lecturers user account
+      seedCourses(sampleLecturer);
+
+
+    //classes
+      //create classes using lecturers user account
+      seedClasses(sampleLecturer);
+
+    //activities
+      //create activities using lecturers user account
+      seedActivities(sampleLecturer);
+    }
+
+    //update all users with courses and classes
+    sampleAppUsers.forEach(function(user){
+         updateUsersWithCoursesAndClasses(user.username);
+    });
+
+  }
+}
+
+
+//seed user
+function seedUser(user) {
+    return Accounts.createUser(user);
+}
+
+//seed courses
+function seedCourses(user) {
+
+
+    _(6).times(function() {
+        var course = {
+          name: faker.lorem.words()[0],
+          description: faker.lorem.paragraphs(),
+          dateAdded: faker.date.past(),
+          classes:[],
+          owner:user._id
+          //TODO: displayImage,displayColor
+        };
+
+        Courses.insert(course);
+    });
+
+
+}
+
+//seed classes
+function seedClasses(user) {
+  //find all courses
+  var courses = Courses.find({},{_id:1,name:1}).fetch();
+
+  //create one class per course
+  courses.forEach(function (course) {
+    _(3).times( function (n){
+        var class_id = Classes.insert({
+          name: course.name + (n+1),
+          course: course._id,
+          owner:user._id
+        })
+
+        //link to course
+        Courses.update(course,{$push:{"classes": class_id}});
+    });
+  });
+}
+
+//seed activities
+function seedActivities(user) {
+  //find all classes
+  Classes.find({},{_id:1,course:1}).fetch().forEach(function (classTest) {
+    //create Announcement
+    Activities.insert({
+      type:"announcement",
+      title:faker.lorem.sentence(),
+      message:faker.lorem.paragraphs(),
+      url:"",
+      "class":classTest._id,
+      course:classTest.course,
+      owner:user._id
+    });
+    //create link
+    Activities.insert({
+      type:"link",
+      title:faker.lorem.sentence(),
+      message:faker.lorem.paragraphs(),
+      url:faker.internet.url,
+      "class":classTest._id,
+      course:classTest.course,
+      owner:user._id
+    });
+    //create Document
+    Activities.insert({
+      type:"Document",
+      title:faker.lorem.sentence(),
+      message:faker.lorem.paragraphs(),
+      //TODO:Place actual file path here
+      url:faker.internet.url,
+      "class":classTest._id,
+      course:classTest.course,
+      owner:user._id
+    });
+
+    seedPapers(user,classTest);
+    seedPapers(user,classTest);
+    seedPapers(user,classTest);
+  });
+}
+
+function seedPapers(user,classTest){
+  Papers.insert({
+    type:"Document",
+    title:faker.lorem.sentence(),
+    message:faker.lorem.paragraphs(),
+    documents:[new Mongo.Collection.ObjectID(),new Mongo.Collection.ObjectID()],
+    course:classTest.course,
+    owner:Meteor.users.findOne({username:user.username})._id,
+    dateCreated:new Date(),
+    price:faker.random.number()
+  });
+}
+
+function updateUsersWithCoursesAndClasses(username) {
+  //each course
+  Courses.find({},{_id:1}).fetch().forEach(function (course) {
+      Meteor.users.update({username:username},{$push:{"profile.courses":course._id}});
+  });
+
+  //each class
+  Classes.find({},{_id:1}).fetch().forEach(function (classs) {
+      Meteor.users.update({username:username},{$push:{"profile.classes":classs._id}});
+  });
+}
+
+
+
+//startup
+Meteor.startup(function () {
+    //seed database with sample data
+    seedDB();
+
+    smtp={
+      username:"unexteamgh@gmail.com",
+      password:"un13X_Sbp2ts1A",
+      server: "smtp.gmail.com",
+      port:"587"
+    }
+    //Email
+    process.env.MAIL_URL = "smtp://"+encodeURIComponent(smtp.username)+":"+encodeURIComponent(smtp.password)+"@"+encodeURIComponent(smtp.server)+":"+smtp.port+"/"
+
+    //startup CORS support
+    BrowserPolicy.content.allowOriginForAll("http://meteor.local");
+});

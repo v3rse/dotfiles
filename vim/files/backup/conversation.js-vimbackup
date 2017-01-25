@@ -1,0 +1,76 @@
+/* eslint-disable class-methods-use-this */
+/* eslint-disable no-unused-vars */
+const Boom = require('boom');
+const Conversation = require('../../../model').getModel('conversation');
+const Message = require('../../../model').getModel('message');
+const UserClass = require('./user');
+
+const UserController = new UserClass();
+
+class ConversationController {
+  init(request, reply) {
+    const payload = request.payload;
+    const usersArray = [payload.from, payload.to].sort();
+    UserController.authCheck(payload.from)
+                  .then((check) => {
+                    if (!check) {
+                      throw Boom.unauthorized('User not authenticated');
+                    }
+                    return UserController.connCheck(payload.from, payload.to);
+                  })
+                  .then((check) => {
+                    if (!check) {
+                      throw Boom.unauthorized(`User not authorized to chat with/in ${payload.to}`);
+                    }
+                    // check if the conversation exists
+                    return Conversation.find('users_index', `${usersArray[0]}_${usersArray[1]}`);
+                  })
+                  .then((data) => {
+                    if (data) {
+                      const id = Object.keys(data)[0];
+                      // return messages limit to max
+                      return Message.find('conv', id, 50);
+                    }
+                    // start conversation
+                    return Conversation.insert({
+                      users: usersArray,
+                      users_index: `${usersArray[0]}_${usersArray[1]}`,
+                    });
+                  })
+                  .then((values) => {
+                      if (values.key) {
+                        reply({conv: values.key, messages: {}}).code(200);
+                      } else {
+                        const id = Object.keys(values)[0];
+                        // Assuming they are all from the same conversation
+                        const convKey = values[id].conv;
+                        reply({conv: convKey, messages: values}).code(200);
+                      }
+                  })
+                  .catch(e => Boom.wrap(e));
+  }
+
+/*
+  create(request, reply) {
+    const payload = request.payload;
+    const usersArray = [payload.from, payload.to].sort();
+    Conversation.insert({
+      'users': usersArray,
+      'users_index': `${usersArray[0]}_${usersArray[1]}`,
+    }).then(() => {
+        reply('Converstation start').code(200);
+    }).catch((e) => Boom.wrap(e));
+  }
+
+  getAll(request, reply) {
+    const params = request.params;
+    const usersArray = [params.from, params.to].sort();
+    Conversation.find('users_index',`${usersArray[0]}_${usersArray[1]}`)
+                .then((data) => {
+                  reply(data).code(200);
+                }).catch((e) => Boom.wrap(e));
+  } */
+}
+
+
+module.exports = ConversationController;

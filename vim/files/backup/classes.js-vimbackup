@@ -1,0 +1,47 @@
+Classes = new Mongo.Collection('classes');
+
+var ClassSchema = new SimpleSchema({
+    name: {
+      type: String,
+    },
+    course: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id,
+    },
+    owner: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id,
+    }
+});
+
+Classes.attacheSchema(ClassSchema);
+
+if (Meteor.isServer) {
+  Classes.allow({
+    insert: function (userId, doc) {
+      return (userId && doc.owner === userId);
+    },
+
+    update: function (userId, doc, fieldNames, modifier) {
+       return doc.owner === userId;
+    },
+
+    remove: function (userId, doc) {
+      return doc.owner === userId;
+    },
+
+    fetch: ['owner']
+  });
+
+  Classes.deny({
+    update: function (userId, doc, fieldNames, modifier) {
+      return _.contains(fieldNames, 'owner');
+    },
+
+    remove: function (userId, doc) {
+      return doc.locked;
+    },
+
+    fetch:['locked']
+  });
+}

@@ -1,0 +1,160 @@
+import React from 'react';
+import {Link} from 'react-router'
+import PrepSelect from './PrepSelect.jsx'
+import { browserHistory } from 'react-router';
+import level_c from '../Controller/level.js';
+import subject_c from '../Controller/subject.js';
+import topic_c from '../Controller/topic.js';
+import skill_c from '../Controller/skill.js';
+
+var BulkUpload = React.createClass({
+    getInitialState: function(){
+        return {
+            filename: '',
+            levels: [],
+            subjects: [], 
+            topics: [], 
+            skills: [], 
+        }
+    },
+    handleChange: function(e,type){
+        var val = e.value
+        var activityObj = {};
+        activityObj[type] = val
+        this.setState(activityObj);
+    },
+    handleFileChange: function(e){
+        var fileSelect = document.getElementById('file-select');
+        var files = fileSelect.files;
+        this.setState({filename: files[0].name})
+
+    },
+    handleCloseUpload(){
+        this.setState({filename: ''})
+    },
+    handleSubmit: function(e){
+        e.preventDefault();
+        //console.log(e.target);
+        var formData = new FormData();
+        var fileSelect = document.getElementById('file-select');
+        var files = fileSelect.files;
+        console.log(files[0])
+        // Files
+        formData.append("file", files[0], files[0].name);
+        formData.append("grade", this.state.grade)
+        var req = $.ajax({
+            url: "http://localhost/event/sendmessage.php",
+            method: "POST",
+            processData: false,
+            contentType: false,
+            data: formData
+        })
+        req.done(function(msg){
+            console.log(msg)
+        })
+        req.fail(function(err){
+            console.log(err);
+        })
+    },
+
+    setCurrentActivityData: function() {
+      window.localStorage.setItem('prep-currentActivityData', JSON.stringify(this.state));
+    },
+    
+    getLevels(token){
+      level_c.getLevels(token, (e,data) => {
+        if(e)
+          throw e;
+        this.setState({levels:data});
+      });
+    },
+    getSubjects(token){
+      subject_c.getSubjects(token, (e,data) => {
+        if(e)
+          throw e;
+        this.setState({subjects:data});
+      });
+    },
+    getTopics(token){
+      topic_c.getTopics(token, (e,data) => {
+        if(e)
+          throw e;
+        this.setState({topics:data});
+      });
+    },
+    getSkills(token){
+      skill_c.getTopics(token, (e,data) => {
+        if(e)
+          throw e;
+        this.setState({skills:data});
+      });
+    },
+    
+    componentDidMount(){
+      //get the token
+      const token = window.localStorage.getItem('prep-token');
+      //get form drop down data
+      this.getLevels(token);
+      this.getSubjects(token);
+      this.getTopics(token);
+      this.getSkills(token);
+    },
+    render: function(){
+        return (
+            <div>
+                <div className="prep-limiter prep-space-bottom">
+                    <div className="prep-sm">
+                     <h2 className="prep-centre"><i style={this.state.filename != '' ? {visibility: "visible"} : {visibility: "hidden"} } onClick={this.handleCloseUpload} className="prep-upload-close lnr lnr-cross"></i>Bulk Upload</h2>
+                     <div className="clearfix"></div>
+                        <form onSubmit={this.handleSubmit} id="uploadForm">
+                            <div className="form-group">
+                                <div className="prep-up-bg">
+                                    <div style={this.state.filename != '' ? {visibility: "hidden"} : {visibility: "visible"} }>
+                                        <input className="prep-bulk-up-btn" id="file-select" type="file" name="bulk" onChange={this.handleFileChange} />
+                                        <div>
+                                            <span>+</span>
+                                            <p>UPLOAD DATA FILE</p>
+                                        </div>
+                                    </div>
+                                    <div style={this.state.filename != '' ? {visibility: "visible"} : {visibility: "hidden"} }>
+                                        <span className="lnr lnr-file-empty"></span>
+                                        <p>{this.state.filename}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="form-group" >
+                                <label className="prep-form-label">LEVEL</label>
+                                <PrepSelect title="Select grade" selectChange={this.handleChange} listItems={this.state.levels} type="grade"/>
+                            </div>
+                            <div className="form-group" >
+                                <label className="prep-form-label">SUBJECT</label>
+                                <PrepSelect title="Select subject" selectChange={this.handleChange} listItems={this.state.subjects} type="subject"/>
+                            </div>
+                            <div className="form-group" >
+                                <label className="prep-form-label">TOPIC</label>
+                                <PrepSelect title="Select topic" selectChange={this.handleChange} listItems={this.state.topics} type="topic"/>
+                            </div>
+                            <div className="form-group" >
+                                <label className="prep-form-label">SKILL</label>
+                                <PrepSelect title="Select skill" selectChange={this.handleChange} listItems={this.state.skills} type="skill"/>
+                            </div>
+          {/* <div className="form-group" >
+                                <label className="prep-form-label">TEMPLATE</label>
+                                <PrepSelect title="Select template" selectChange={this.handleChange} listItems={[{val: 2, name: 'template1' },{val: 3, name: 'template2' }]} type="template"/>
+                            </div> */}
+
+                            <div className="form-group">
+                                <Link to="/activity" className="prep-form-button prep-button-left">BACK</Link>
+                                {this.state.filename != '' ? <a className="prep-form-button prep-button-right">NEXT</a> : <Link to="/activity/question-editor" className="prep-form-button prep-button-right" onClick={this.setCurrentActivityData}>NEXT</Link>}
+                                
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+})
+
+module.exports = BulkUpload

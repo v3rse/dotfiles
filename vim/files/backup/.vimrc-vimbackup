@@ -12,7 +12,6 @@ syntax on                     " Enable syntax highlighting
 " Pathogen Initalisation
 execute pathogen#infect()     
 
-set number                    " Put line numbers in gutter
 set autoindent                " Indent according to previous line.
 set expandtab                 " Use spaces instead of tabs.
 set softtabstop =4            " Tab key indents by 4 spaces.

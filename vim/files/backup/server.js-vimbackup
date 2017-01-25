@@ -1,0 +1,6 @@
+var server = {
+  //"api": "https://prep-academy.herokuapp.com/api/"
+    "api": "https://prep-academy.herokuapp.com/api/"
+}
+
+module.exports = server

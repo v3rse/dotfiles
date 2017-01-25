@@ -1,0 +1,66 @@
+Courses = new Mongo.Collection('courses');
+
+CoursesIndex = new EasySearch.Index({
+    collection: Courses,
+    fields: ['name','description'],
+    engine: new EasySearch.Minimongo({
+      sort: function () {
+        return {"dateAdded":-1};
+      }
+    })
+});
+
+CourseSchema = new SimpleSchema({
+    name: {
+      type: String,
+    },
+    description: {
+      type: String,
+    },
+    dateAdded: { 
+      type: Date
+    },
+    classes: {
+      type: Array,
+      optional: true,
+    },
+    'classes.$': {
+      type: String,
+    },
+    owner: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id,
+    }
+});
+
+Courses.attachScema(CourseSchema);
+
+if (Meteor.isServer) {
+  Courses.allow({
+    insert: function (userId, doc) {
+      return (userId && doc.owner === userId);
+    },
+
+    update: function (userId, doc, fieldNames, modifier) {
+       return doc.owner === userId;
+    },
+
+    remove: function (userId, doc) {
+      return doc.owner === userId;
+    },
+
+    fetch: ['owner']
+  });
+
+  Courses.deny({
+    update: function (userId, doc, fieldNames, modifier) {
+      return _.contains(fieldNames, 'owner');
+    },
+
+    remove: function (userId, doc) {
+      return doc.locked;
+    },
+
+    fetch:['locked']
+  });
+}

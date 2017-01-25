@@ -1,0 +1,49 @@
+const BaseCollection = require("./basecollection");
+const Joi = require("joi");
+
+class Conversation extends BaseCollection{
+  
+  
+  constructor(fbRef) {
+    // Schema
+    const schema = Joi.object().keys({
+      "users": Joi.array().items(Joi.string()),
+    });
+
+    super(fbRef, "conversations", schema); 
+  }
+
+  insert(object) {
+    //validate before insert
+    return this.validate(object)
+      .then(value => super.insert(value))
+      .catch(e => {
+        throw Boom.badData(e.message)
+      });
+  }
+
+  find(key, value) {
+    return super.find(key,value);
+  }
+
+  update(id, object) {
+    //validate before update
+    return this.validate(object)
+      .then(value => super.update(id, value))
+      .catch(e => {
+        throw Boom.badData(e.message)
+      });
+  }
+
+  remove(id) {
+    return super.remove(id);
+  }
+
+  validate(object) {
+    return super.validate(object);
+  }
+
+}
+
+module.exports = Conversation;
+

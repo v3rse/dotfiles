@@ -1,0 +1,68 @@
+const Joi = require('joi');
+
+class BaseCollection {
+  constructor(fbRef, childName, schema) {
+    this.fbRef = fbRef;
+    this.ref = fbRef.child(childName);
+    this.schema = schema;
+  }
+
+  // create
+  insert(object) {
+    // return auto generated key
+    return this.ref.push(object);
+  }
+
+
+  // read
+  find(key, value, max) {
+    if (key && (value != null) && max) {
+      return this.ref
+        .orderByChild(key)
+        .equalTo(value)
+        .limitToFirst(max)
+        .once('value')
+        .then(data => data.val());
+    }else if(key && (value != null)) {
+      return this.ref
+        .orderByChild(key)
+        .equalTo(value)
+        .once('value')
+        .then(data => data.val());
+    }
+
+    return this.ref.orderByKey().once('value').then(data => data.val());
+  }
+
+
+  // update
+  update(id, object) {
+    if (!(id || object)) {
+      throw Error('Please provide id, object');
+    }
+    return this.ref.child(id).update(object);
+  }
+
+  // delete
+  remove(id) {
+    if (!id) {
+      throw Error('Please provide an id');
+    }
+    return this.ref.child(id).remove();
+  }
+
+  //  validate and return a promise
+  validate(object) {
+    return new Promise((fulfill, reject) => {
+      Joi.validate(object, this.schema, (err, value) => {
+        if (err) {
+          reject(err);
+        }
+
+        fulfill(value);
+      });
+    });
+  }
+}
+
+module.exports = BaseCollection;

@@ -1,0 +1,41 @@
+const mongoose = require('mongoose');
+const BaseModel = require('../models/BaseModel');
+
+
+const Schema = mongoose.Schema;
+
+const levelSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  category: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+    required: true,
+  },
+  lastModified: {
+    type: Date,
+    default: Date.now(),
+    required: true,
+  },
+  active: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
+});
+
+const LevelModel = BaseModel(mongoose.model('Level', levelSchema));
+
+module.exports = LevelModel;
