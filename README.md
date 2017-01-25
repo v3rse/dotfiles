@@ -25,4 +25,5 @@ GNU `stow` is what I use  to symlink the files and folders:
 `sudo stow zsh -t /root`
 
 # Features
+i3  - i3wm related configs (includes i3status)
 zsh - z-shell settings, aliases and prompts
