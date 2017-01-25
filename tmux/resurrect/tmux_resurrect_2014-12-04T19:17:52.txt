@@ -1,5 +1,0 @@
-pane	0	0	:tail	1	:*	0	:/home/v3rse/TheChocolateFactory/VendingMachine/iwallet-node	0	vim	:vim index.js
-pane	0	0	:tail	1	:*	1	:/home/v3rse	0	tail	:tail -f /var/log/syslog
-pane	0	0	:tail	1	:*	2	:/home/v3rse	1	zsh	:
-window	0	0	1	:*	d30b,191x51,0,0[191x39,0,0,0,191x11,0,40{95x11,0,40,1,95x11,96,40,2}]
-state	0	
