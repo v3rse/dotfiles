@@ -51,3 +51,7 @@ function get_pwd() {
 setopt promptsubst
 # Wrap escape sequences to prevent displacement of prompt
 PROMPT="%{$cyan%}\$(get_pwd) %{$reset_color%}%{$insert_mode_prompt%} "
+
+#INITIALIZATION
+#swap ESC key with CAPS
+xmodmap ~/.xmodmap

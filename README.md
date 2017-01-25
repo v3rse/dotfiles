@@ -28,3 +28,4 @@ GNU `stow` is what I use  to symlink the files and folders:
 i3  - i3wm related configs (includes i3status)
 zsh - z-shell settings, aliases and prompts
 urxvt - keyboard settings, fonts and color schemes for urxvt
+xmodmap - for swapping keys mostly used in vim
