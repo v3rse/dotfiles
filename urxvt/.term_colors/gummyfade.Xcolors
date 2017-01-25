@@ -1,0 +1,31 @@
+! GUMMYFADE
+! nxll <nxll@teknik.io>
+
+*.cursorcolor: #e4e4e4
+*.background: #273941
+*.foreground: #ffffff
+
+! black
+*.color0: #202f36
+*.color8: #1a262b
+! red
+*.color1: #f8c6c8
+*.color9: #f8babd
+! green
+*.color2: #e5f8c6
+*.color10: #e0f8ba
+! yellow
+*.color3: #f5f8c6
+*.color11: #f4f8ba
+! blue
+*.color4: #cae9f8
+*.color12: #bae9f8
+! magenta
+*.color5: #e8c6f8
+*.color13: #e4baf8
+! cyan
+*.color6: #c6f8eb
+*.color14: #baf8e8
+! white
+*.color7: #e4e4e4
+*.color15: #e0e0e0

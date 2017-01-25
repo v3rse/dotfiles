@@ -1,0 +1,34 @@
+! urxvt
+
+! Color Theme
+#include "/home/v3rse/.term_colors/material.Xcolors"
+
+! Fonts
+urxvt*font: xft:Inconsolata:pixelsize=17:antialias=true:hinting=true
+urxvt*boldFont: xft:Inconsolata:bold:pixelsize=17:antialias=false:hinting=true
+
+
+! Interface
+urxvt*borderless: 1
+urxvt*saveLines: 2000
+urxvt*shading: 10
+urxvt*scrollBar: false
+urxvt*transparent: false
+
+! Modifier
+! urxvt.modifier: super
+
+
+! Clipboard
+urxvt.perl-ext-common: default,clipboard,keyboard-select
+urxvt.keysum.M-Escape: perl:keyboard-select:activate
+urxvt.keysum.C-Shift-c: perl:clipboard:copy
+urxvt.keysum.C-Shift-v: perl:clipboard:paste
+urxvt.keysum.M-Shift-v: perl:clipboard:paste_escaped
+urxvt.clipboard.copycmd: xsel -ib
+urxvt.clipboard.pastecmd: xsel -ob
+
+! Disable ISO
+urxvt.iso14755: false
+urxvt.iso14755_52: false
+
