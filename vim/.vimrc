@@ -1,6 +1,7 @@
 " Using folding
 " vim:fdm=marker
 
+
 "Editor {{{
 
 
@@ -42,8 +43,8 @@ set wrapscan                  " Searches wrap around end-of-file.
 set report     =0             " Always report changed lines.
 set synmaxcol  =200           " Only highlight the first 200 columns.
 
-"colorscheme gruvbox           " Set gruvbox colorscheme.
-"set background =dark          " Use dark theme.
+colorscheme gruvbox           " Set gruvbox colorscheme.
+set background =dark          " Use dark theme.
 
 
 set list                      " Show non-printable characters.
@@ -62,17 +63,6 @@ let mapleader   =" "           " Set leader button
 
 map <leader>s :source ~/.vimrc<CR> 
                               " Source a file
-
-" Put all temporary files (.swp) under the same directory
-set backup
-set backupdir   =$HOME/.vim/files/backup/
-set backupext   =-vimbackup
-set backupskip  =
-set directory   =$HOME/.vim/files/swap//
-set updatecount =100
-set undofile
-set undodir     =$HOME/.vim/files/undo/
-set viminfo     ='100,n$HOME/.vim/files/info/viminfo
 
 " Python plugins
 " Python 2
