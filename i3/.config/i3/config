@@ -100,7 +100,7 @@ bindsym $mod+a focus parent
 set $tag1 "1: eat"
 set $tag2 "2: sleep"
 set $tag3 "3: code"
-set $tag4 "4: wrinse"
+set $tag4 "4: rinse"
 set $tag5 "5: repeat"
 
 # switch to workspace
