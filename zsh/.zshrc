@@ -3,9 +3,6 @@
 # For the ruby stuff
 source ~/.bash_profile
 
-# Load my XResources file for Rofi
-xrdb -I $HOME/.XResources
-
 HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
@@ -26,6 +23,7 @@ compinit
 alias ll='ls -l'
 alias la='ls -al'
 alias md='mkdir -p'
+alias escswitch='xmodmap ~/.xmodmap'
 
 # -Vim
 alias vim='nvim'
