@@ -1,5 +1,11 @@
 # Created by newuser for 5.3.1
 # Lines configured by zsh-newuser-install
+# For the ruby stuff
+source ~/.bash_profile
+
+# Load my XResources file for Rofi
+xrdb -I $HOME/.XResources
+
 HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
@@ -52,4 +58,8 @@ setopt promptsubst
 # Wrap escape sequences to prevent displacement of prompt
 PROMPT="%{$cyan%}\$(get_pwd) %{$reset_color%}%{$insert_mode_prompt%} "
 
-#INITIALIZATIONS
+# INITIALIZATIONS
+# Change n prefix
+export N_PREFIX=$HOME/n
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
