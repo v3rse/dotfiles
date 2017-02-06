@@ -1,11 +1,11 @@
 ! urxvt
 
 ! Color Theme
-#include "/home/v3rse/.term_colors/material.Xcolors"
+#include "/home/v3rse/.term_colors/snazzy.Xcolors"
 
 ! Fonts
-urxvt*font: xft:Inconsolata:pixelsize=17:antialias=true:hinting=true
-urxvt*boldFont: xft:Inconsolata:bold:pixelsize=17:antialias=true:hinting=true
+urxvt*font: xft:MesloLGL:Regular:pixelsize=12:
+urxvt*boldFont: xft:MesloLGL:bold:pixelsize=12
 
 
 ! Interface
@@ -16,18 +16,18 @@ urxvt*scrollBar: false
 urxvt*transparent: false
 
 ! Modifier
-! urxvt.modifier: super
+urxvt.modifier: super
 
 
 ! Clipboard
 urxvt.perl-ext-common: default,clipboard,keyboard-select
 urxvt.keysum.M-Escape: perl:keyboard-select:activate
-urxvt.keysum.C-Shift-c: perl:clipboard:copy
-urxvt.keysum.C-Shift-v: perl:clipboard:paste
+urxvt.keysum.Control-Shift-c: perl:clipboard:copy
+urxvt.keysum.Control-Shift-v: perl:clipboard:paste
 urxvt.keysum.M-Shift-v: perl:clipboard:paste_escaped
 urxvt.clipboard.copycmd: xsel -ib
 urxvt.clipboard.pastecmd: xsel -ob
-
+paste
 ! Disable ISO
 urxvt.iso14755: false
 urxvt.iso14755_52: false
