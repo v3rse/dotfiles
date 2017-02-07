@@ -4,8 +4,20 @@
 #include "/home/v3rse/.term_colors/snazzy.Xcolors"
 
 ! Fonts
-urxvt*font: xft:MesloLGL:Regular:pixelsize=12:
-urxvt*boldFont: xft:MesloLGL:bold:pixelsize=12
+urxvt*font: xft:MesloLGL:Regular:pixelsize=14,\
+            xft:FontAwesome:Regular:pixelsize=14
+urxvt*boldFont: xft:MesloLGL:bold:pixelsize=14
+urxvt.letterSpace: -1
+
+urxvt*.depth: 24
+
+xft.dpi: 96
+xft.autohint: 0
+xft.antialias: 1
+xft.hinting: true
+xft.hintstyle: hintslight
+xft.rgba: rgb
+xft.lcdfilter: lcddefault
 
 
 ! Interface
@@ -14,20 +26,26 @@ urxvt*saveLines: 2000
 urxvt*shading: 10
 urxvt*scrollBar: false
 urxvt*transparent: false
+urxvt*internalBorder: 15
 
 ! Modifier
 urxvt.modifier: super
 
 
-! Clipboard
-urxvt.perl-ext-common: default,clipboard,keyboard-select
-urxvt.keysum.M-Escape: perl:keyboard-select:activate
-urxvt.keysum.Control-Shift-c: perl:clipboard:copy
-urxvt.keysum.Control-Shift-v: perl:clipboard:paste
-urxvt.keysum.M-Shift-v: perl:clipboard:paste_escaped
-urxvt.clipboard.copycmd: xsel -ib
-urxvt.clipboard.pastecmd: xsel -ob
-paste
+! Extensions
+urxvt.perl-ext-common: default,url-select,clipboard
+
+! Url-select
+urxvt.keysum.M-u: perl:url-select:select_next
+urxvt.url-select.autocopy: true
+urxvt.url-select.button: 2
+urxvt.url-select.launcher: qutebrowser 
+urxvt.url-select.underline: true
+
+! Clipboard : haven't managed to get it working
+!urxvt.keysym.Control-Shift-C: perl:clipboard:copy
+!urxvt.keysym.Control-Shift-V: perl:clipboard:paste
+
 ! Disable ISO
 urxvt.iso14755: false
 urxvt.iso14755_52: false
