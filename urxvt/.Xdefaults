@@ -44,10 +44,13 @@ urxvt.url-select.autocopy: true
 urxvt.url-select.button: 2
 urxvt.url-select.launcher: qutebrowser 
 urxvt.url-select.underline: true
+urxvt.keysym.M-o:       perl:url-select:select_next
+urxvt.keysym.M-Escape:  perl:keyboard-select:activate
+urxvt.keysym.M-s:       perl:keyboard-select:search
 
-! Clipboard : haven't managed to get it working
-!urxvt.keysym.Control-Shift-C: perl:clipboard:copy
-!urxvt.keysym.Control-Shift-V: perl:clipboard:paste
+! Clipboard : haven't managed to get it working (install urxvt-perls)
+urxvt.keysym.Control-Shift-C: perl:clipboard:copy
+urxvt.keysym.Control-Shift-V: perl:clipboard:paste
 
 ! Disable ISO
 urxvt.iso14755: false
