@@ -1,5 +1,8 @@
 ! urxvt
 
+! Terminal
+urxvt*termName: rxvt-unicode-256color
+
 ! Color Theme
 #include "/home/v3rse/.term_colors/snazzy.Xcolors"
 
@@ -23,7 +26,7 @@ xft.lcdfilter: lcddefault
 ! Interface
 urxvt*borderless: 1
 urxvt*saveLines: 2000
-urxvt*shading: 10
+urxvt*fading: 2
 urxvt*scrollBar: false
 urxvt*transparent: false
 urxvt*internalBorder: 15
@@ -49,4 +52,8 @@ urxvt.url-select.underline: true
 ! Disable ISO
 urxvt.iso14755: false
 urxvt.iso14755_52: false
+
+! Stop capitalization
+urxvt*keysym.Home: \033[1~
+urxvt*keysym.End: \033[4~
 
