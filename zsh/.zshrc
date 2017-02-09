@@ -58,7 +58,7 @@ alias vim='nvim'
 
 # Main
 # cyan-currdirfirstcomponenthomereplace colored arrors
-PROMPT='%F{cyan}%-~%f %F{red}>%f%F{yellow}>%f%F{green}>%f '
+PROMPT='%F{cyan}%~%f %F{red}>%f%F{yellow}>%f%F{green}>%f '
 # Right side prompt (use for git stuff and command failure)
 RPROMPT=''
 
