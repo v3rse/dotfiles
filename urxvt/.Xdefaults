@@ -7,20 +7,21 @@ urxvt*termName: rxvt-unicode-256color
 #include "/home/v3rse/.term_colors/snazzy.Xcolors"
 
 ! Fonts
-urxvt*font: xft:MesloLGL:Regular:pixelsize=14,\
-            xft:FontAwesome:Regular:pixelsize=14
-urxvt*boldFont: xft:MesloLGL:bold:pixelsize=14
+urxvt*font: xft:Hack:size=13,\
+            xft:FontAwesome:Regular:size=13
+urxvt*boldFont: xft:Hack:bold:size=13
 urxvt.letterSpace: -1
 
 urxvt*.depth: 24
 
-xft.dpi: 96
+xft.dpi: 100
 xft.autohint: 0
 xft.antialias: 1
 xft.hinting: true
 xft.hintstyle: hintslight
 xft.rgba: rgb
 xft.lcdfilter: lcddefault
+xft.weight: 15
 
 
 ! Interface
