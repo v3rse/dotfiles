@@ -1,20 +1,42 @@
-# Created by newuser for 5.3.1
-# Lines configured by zsh-newuser-install
 # For the ruby stuff
 source ~/.bash_profile
 
+# GENERAL
+# History and cd settings
 HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
 setopt appendhistory autocd
-bindkey -v
-# End of lines configured by zsh-newuser-install
-# The following lines were added by compinstall
-zstyle :compinstall filename '/home/v3rse/.zshrc'
 
-autoload -Uz compinit
-compinit
-# End of lines added by compinstall
+# For vi bindings
+bindkey -v
+
+# zstyle :compinstall filename '/home/v3rse/.zshrc'
+
+# BUILT-IN FUNCTIONS
+# 'Import' some function modules (Cool stuff in zshcontrib section of manual)
+autoload -Uz compinit promptinit
+## PROMPT 
+#promptinit # For build in prompt system
+# List all built in prompts using prompt -l or preview with prompt-p
+# Set built in prompt
+#prompt walters
+
+
+## COMPLETION
+# Call the functions
+compinit # Start up completion
+
+# Use menu selection style for completion 
+zstyle ':completion:*' menu select
+
+# Search history up to cursor possition using up or down arrow keys
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+[[ -n "$key[Up]" ]] && bindkey -- "$key[Up]" up-line-or-beginning-search
+[[ -n "$key[Down]" ]] && bindkey -- "$key[Down]" down-line-or-beginning-search
 
 # CUSTOM STUFF
 
@@ -23,38 +45,22 @@ compinit
 alias ll='ls -l'
 alias la='ls -al'
 alias md='mkdir -p'
-alias escswitch='xmodmap ~/.xmodmap'
 
 # -Vim
 alias vim='nvim'
 
 # PROMPT
-# -Colors
-reset_color=$(tput sgr0)
-red=$(tput setaf 1)
-yellow=$(tput setaf 2)
-green=$(tput setaf 3)
-cyan=$(tput setaf 6)
-
-
-# -Prompt modes (vim mode)
-insert_mode_prompt="$red>$green>$yellow>$reset_color"
-normal_mode_prompt="$red<$green<$yellow<$reset_color"
-
-# -Functions
-# Get current directory
-function get_pwd() {
-  echo "${PWD/$HOME/~}"
-}
+# -Colors : %F{} an %K{} colors can be tested using print -P 'string'
+# print -P '%F{cyan}Hello%f'
 
 # TODO: Get git info
 # TODO: Change prompt base on mode
 
-# -Template
-# Enable command substitutions, parameter expansions and arithmetic expansions
-setopt promptsubst
-# Wrap escape sequences to prevent displacement of prompt
-PROMPT="%{$cyan%}\$(get_pwd) %{$reset_color%}%{$insert_mode_prompt%} "
+# Main
+# cyan-currdirfirstcomponenthomereplace colored arrors
+PROMPT='%F{cyan}%-~%f %F{red}>%f%F{yellow}>%f%F{green}>%f '
+# Right side prompt (use for git stuff and command failure)
+RPROMPT=''
 
 # INITIALIZATIONS
 # Change n prefix
