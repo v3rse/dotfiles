@@ -97,11 +97,16 @@ bindsym $mod+a focus parent
 
 #Named workspaces tags
 
-set $tag1 "1: eat"
-set $tag2 "2: sleep"
-set $tag3 "3: code"
-set $tag4 "4: rinse"
-set $tag5 "5: repeat"
+set $tag1 "一"
+set $tag2 "二"
+set $tag3 "三"
+set $tag4 "四"
+set $tag5 "五"
+set $tag6 "六"
+set $tag7 "七"
+set $tag8 "八"
+set $tag9 "九"
+set $tag10 "十"
 
 # switch to workspace
 bindsym $mod+1 workspace $tag1
@@ -109,11 +114,11 @@ bindsym $mod+2 workspace $tag2
 bindsym $mod+3 workspace $tag3
 bindsym $mod+4 workspace $tag4
 bindsym $mod+5 workspace $tag5
-bindsym $mod+6 workspace 6
-bindsym $mod+7 workspace 7
-bindsym $mod+8 workspace 8
-bindsym $mod+9 workspace 9
-bindsym $mod+0 workspace 10
+bindsym $mod+6 workspace $tag6
+bindsym $mod+7 workspace $tag7
+bindsym $mod+8 workspace $tag8
+bindsym $mod+9 workspace $tag9
+bindsym $mod+0 workspace $tag10
 
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace $tag1
@@ -206,7 +211,7 @@ bindsym Control+$mod+l exec i3lock
 #i3-gaps
 new_window none
 smart_borders no_gaps
-gaps inner 5
+gaps inner 15
 gaps outer 10
 
 #Power menu
