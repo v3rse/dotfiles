@@ -7,6 +7,8 @@ HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
 setopt appendhistory autocd
+#ignore duplicate history entries
+setopt hist_ignore_all_dups
 
 # For vi bindings
 bindkey -v
