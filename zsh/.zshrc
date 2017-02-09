@@ -34,6 +34,9 @@ zstyle ':completion:*:descriptions' format '%U%B%d%b%u'
 # When is can't be found
 zstyle ':completion:*:warnings' format '%BNaah bruh! Match not found%b'
 
+# AUTOCORRECT like in prezto
+setopt correctall
+
 # Search history up to cursor possition using up or down arrow keys
 autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
 zle -N up-line-or-beginning-search
