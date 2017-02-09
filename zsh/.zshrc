@@ -54,6 +54,14 @@ zle -N down-line-or-beginning-search
 alias ll='ls -l'
 alias la='ls -al'
 alias md='mkdir -p'
+alias screen-left='xrandr --output eDP1 --output HDMI1 --auto --left-of eDP1'
+alias screen-right='xrandr --output eDP1 --output HDMI1 --auto --right-of eDP1'
+alias sl='screen-left'
+alias sr='screen-right'
+alias workspace-left='i3-msg move workspace to output left'
+alias workspace-right='i3-msg move workspace to output right'
+alias wl='workspace-left'
+alias wr='workspace-right'
 
 # -Vim
 alias vim='nvim'
