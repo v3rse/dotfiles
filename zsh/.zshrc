@@ -29,6 +29,10 @@ compinit # Start up completion
 
 # Use menu selection style for completion 
 zstyle ':completion:*' menu select
+# Put group by completion description
+zstyle ':completion:*:descriptions' format '%U%B%d%b%u'
+# When is can't be found
+zstyle ':completion:*:warnings' format '%BNaah bruh! Match not found%b'
 
 # Search history up to cursor possition using up or down arrow keys
 autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
