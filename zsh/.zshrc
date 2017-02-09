@@ -1,4 +1,4 @@
-# For the ruby stuff
+# For bash stuff
 source ~/.bash_profile
 
 # GENERAL
@@ -65,5 +65,3 @@ RPROMPT=''
 # INITIALIZATIONS
 # Change n prefix
 export N_PREFIX=$HOME/n
-
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
