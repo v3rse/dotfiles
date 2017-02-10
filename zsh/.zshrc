@@ -56,8 +56,10 @@ alias la='ls -al'
 alias md='mkdir -p'
 alias screen-left='xrandr --output eDP1 --output HDMI1 --auto --left-of eDP1'
 alias screen-right='xrandr --output eDP1 --output HDMI1 --auto --right-of eDP1'
+alias screen-off='xrandr --output HDMI1 --auto --off'
 alias sl='screen-left'
 alias sr='screen-right'
+alias sx='screen-off'
 alias workspace-left='i3-msg move workspace to output left'
 alias workspace-right='i3-msg move workspace to output right'
 alias wl='workspace-left'
@@ -83,4 +85,5 @@ SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]?'
 
 # INITIALIZATIONS
 # Change n prefix
-export N_PREFIX=$HOME/n
+
+export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
