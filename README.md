@@ -36,4 +36,4 @@ compton - settings for composite config for shadows etc.
 # Bugs
 - [ ] Terminals flash original theme seconds before loading current.
 - [ ] Prompt bugs out when command gets to end of line
-- [ ] Screen tears after addition of compton.
+- [x] Screen tears after addition of compton.

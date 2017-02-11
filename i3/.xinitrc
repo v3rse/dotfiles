@@ -4,7 +4,6 @@ PATH+=":$HOME/bin"
 export PATH
 
 # Merge custom XResource
-xrdb -merge "${HOME}/.Xdefaults" &
 xrdb -I "${HOME}/.XResources"
 
 # Custom Keymappings

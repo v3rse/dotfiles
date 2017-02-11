@@ -12,7 +12,7 @@ urxvt*font: xft:Hack:size=13,\
 urxvt*boldFont: xft:Hack:bold:size=13
 urxvt.letterSpace: -1
 
-urxvt*.depth: 24
+urxvt*.depth: 20
 
 xft.dpi: 100
 xft.autohint: 0
