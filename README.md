@@ -30,3 +30,10 @@ zsh - z-shell settings, aliases and prompts
 urxvt - keyboard settings, fonts and color schemes for urxvt
 xmodmap - for swapping keys mostly used in vim
 vim - vim configuration, no bundles
+wallpaper - wallpaper for the various color schemes
+compton - settings for composite config for shadows etc.
+
+# Bugs
+- [ ] Terminals flash original theme seconds before loading current.
+- [ ] Prompt bugs out when command gets to end of line
+- [ ] Screen tears after addition of compton.
