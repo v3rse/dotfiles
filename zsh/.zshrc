@@ -90,6 +90,3 @@ export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PR
 
 # Use previously generated color scheme for terminal
 (wal -r &) # Runs in the background
-
-#export my scripts and add them to PATH
-PATH+=":$HOME/bin"
