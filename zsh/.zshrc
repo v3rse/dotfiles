@@ -87,3 +87,9 @@ SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]?'
 # Change n prefix
 
 export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
+
+# Use previously generated color scheme for terminal
+(wal -r &) # Runs in the background
+
+#export my scripts and add them to PATH
+PATH+=":$HOME/bin"

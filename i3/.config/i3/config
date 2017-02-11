@@ -40,6 +40,8 @@ bindsym $mod+Shift+q kill
 # start dmenu (a program launcher)
 #bindsym $mod+d exec dmenu_run
 #bindsym $mod+d exec rofi -show run
+# PROTIP: You can also dynamically set dmenu's colors this way:
+#bindsym $mod+d exec dmenu_run -nb "$fg" -nf "$bg" -sb "$bg" -sf "$fg"
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
@@ -139,6 +141,9 @@ bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
+# Cycle wallpapers and apply new colorscheme.
+bindsym $mod+Shift+w exec "wal -i $HOME/pictures/background"
+
 # resize window (you can also use the mouse for that)
 mode "resize" {
         # These bindings trigger as soon as you enter the resize mode
@@ -165,27 +170,40 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
+# Set colors from Xresources
+# NOTE: The '#f0f0f0' in the lines below is the color i3 will use if
+# it fails to get colors from Xresources for some reason.
+set_from_resource $fg i3wm.color7
+set_from_resource $bg i3wm.color0
+set_from_resource $sbg i3wm.color2
+set from_resource $ubg i3wm.color9
+
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
   status_command i3status
   font pango:Hack,FontAwesome 9
-  #colors {
-   # separator #fabd2f
-   # background #1d2021
-   # statusline #83a598
-   # focused_workspace #fabd2f #282828 #fadb2f
-   # active_workspace #3c3836 #282828 #3c3836
-   # inactive_workspace #1d2021 #d79921 #1d2021
-   # urgent_workspace #fb4934 #fb4934 #3c3836
- # }
+  colors {
+   separator $fg
+   background $bg 
+   statusline $fg
+   focused_workspace $bg     $sbg     $fg
+   active_workspace  $bg     $bg     $fg
+   inactive_workspace $bg     $bg     $fg
+   urgent_workspace $bg     $ubg     $fg
+ }
   position top
   separator_symbol "/"
 }
-#client.focused #282828 #282828 #fabd2f #282828
-#client.focused_inactive #1d2021 #1d2021 #eee8d5 #282828
-#client.unfocused #1d2021 #1d2021 #d79921 #586e75
-#client.urgent #fb4934 #fb4934 #3c3836 #dc322f
+
+# class                 border  backgr. text indicator child_border
+client.focused          $bg     $bg     $fg  $bg       $bg
+client.focused_inactive $bg     $bg     $fg  $bg       $bg
+client.unfocused        $bg     $bg     $fg  $bg       $bg
+client.urgent           $bg     $bg     $fg  $bg       $bg
+client.placeholder      $bg     $bg     $fg  $bg       $bg
+
+client.background       $bg
 
 #Startup apps:
 
@@ -193,7 +211,7 @@ bar {
 #exec --no-startup-id nm-applet
 
 #--Background
-exec --no-startup-id feh --bg-fill /home/v3rse/pictures/backgrounds/lsworld.png
+exec --no-startup-id feh --bg-fill /home/v3rse/pictures/background/5400.png
 
 #--VPN Client
 #exec --no-startup-id pritunl-client-gtk
@@ -203,7 +221,7 @@ exec --no-startup-id feh --bg-fill /home/v3rse/pictures/backgrounds/lsworld.png
 
 #Custom KeyBindings:
 #--Lock Screen
-bindsym Control+$mod+l exec i3lock
+bindsym Control+$mod+l exec i3lock-fancy
 
 #--SCROT
 #bindsym Print exec scrot '%Y-%m-%d-%T_$wx$h_scrot.png' -e 'mv $f ~/Pictures/screenshots/'
@@ -215,7 +233,7 @@ gaps inner 15
 gaps outer 10
 
 #Power menu
-set $Locker i3lock && sleep 5
+set $Locker i3lock-fancy && sleep 5
 
 set $mode_system System (l) lock, (e) logout, (s) suspend, (h) hibernate, (r) reboot, (Shift+s) shutdown
 mode "$mode_system" {
