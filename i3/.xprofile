@@ -13,7 +13,7 @@ xmodmap $HOME/.xmodmap
 urxvtd -q -f -o &
 
 # Use previously generated wal color scheme 
-wal -i "$(< "${HOME}/.cache/wal/wal")"
+wal -i "$(< "${HOME}/.cache/wal/wal")" &
 
 # Compton (Composite manager...Enter the league of shadows!!)
 compton -b --config $HOME/.config/compton.conf &
