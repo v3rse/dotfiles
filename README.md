@@ -37,6 +37,7 @@ compton - settings for composite config for shadows etc.
 - [ ] Terminals flash original theme seconds before loading current.
 - [ ] Prompt bugs out when command gets to end of line
 - [x] Screen tears after addition of compton.
+- [ ] Lock screen/PAM issue
 
 # Notes
 - Had to fix locale environment variables to make glyphs work in `urxvt`
