@@ -17,5 +17,3 @@ wal -i "$(< "${HOME}/.cache/wal/wal")"
 
 # Compton (Composite manager...Enter the league of shadows!!)
 compton -b --config $HOME/.config/compton.conf &
-
-exec i3 -V >> ~/logs/i3log-$(date +'%F-%k-%M-%S') 2>&1
