@@ -54,19 +54,33 @@ zle -N down-line-or-beginning-search
 alias ll='ls -l'
 alias la='ls -al'
 alias md='mkdir -p'
+
+# -Xrandr
 alias screen-left='xrandr --output eDP1 --output HDMI1 --auto --left-of eDP1'
 alias screen-right='xrandr --output eDP1 --output HDMI1 --auto --right-of eDP1'
 alias screen-off='xrandr --output HDMI1 --auto --off'
 alias sl='screen-left'
 alias sr='screen-right'
 alias sx='screen-off'
+
+# -i3 workspace
 alias workspace-left='i3-msg move workspace to output left'
 alias workspace-right='i3-msg move workspace to output right'
 alias wl='workspace-left'
 alias wr='workspace-right'
 
+# -Shortcuts
+alias factory="~/TheFactory"
+alias code="~/TheFactory/code"
+alias work="~/TheFactory/code/work"
+alias play="~/TheFactory/code/play"
+alias done="node ~/TheFactory/code/play/done"
+
 # -Vim
 alias vim='nvim'
+
+# -Xmodmap
+alias escswap='xmodmap ~/.xmodmap'
 
 # PROMPT
 # -Colors : %F{} an %K{} colors can be tested using print -P 'string'
