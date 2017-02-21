@@ -31,8 +31,8 @@ font pango:Hack, FontAwesome 8
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
-#bindsym $mod+Return exec urxvt 
+#bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return exec urxvt 
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -128,11 +128,11 @@ bindsym $mod+Shift+2 move container to workspace $tag2
 bindsym $mod+Shift+3 move container to workspace $tag3
 bindsym $mod+Shift+4 move container to workspace $tag4
 bindsym $mod+Shift+5 move container to workspace $tag5
-bindsym $mod+Shift+6 move container to workspace 6
-bindsym $mod+Shift+7 move container to workspace 7
-bindsym $mod+Shift+8 move container to workspace 8
-bindsym $mod+Shift+9 move container to workspace 9
-bindsym $mod+Shift+0 move container to workspace 10
+bindsym $mod+Shift+6 move container to workspace $tag6
+bindsym $mod+Shift+7 move container to workspace $tag7
+bindsym $mod+Shift+8 move container to workspace $tag8
+bindsym $mod+Shift+9 move container to workspace $tag9
+bindsym $mod+Shift+0 move container to workspace $tag10
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -182,7 +182,7 @@ set from_resource $ubg i3wm.color9
 # finds out, if available)
 bar {
   status_command i3status
-  font pango:Hack,FontAwesome 9
+  font pango:Hack,FontAwesome 13
   colors {
    separator $fg
    background $bg 
@@ -208,7 +208,7 @@ client.background       $bg
 #Startup apps:
 
 #--Network applet
-#exec --no-startup-id nm-applet
+exec --no-startup-id nm-applet
 
 #--Background
 exec --no-startup-id feh --bg-fill /home/v3rse/pictures/background/5400.png
@@ -221,7 +221,7 @@ exec --no-startup-id feh --bg-fill /home/v3rse/pictures/background/5400.png
 
 #Custom KeyBindings:
 #--Lock Screen
-bindsym Control+$mod+l exec i3lock-fancy
+bindsym Control+$mod+l exec i3lock
 
 #--SCROT
 #bindsym Print exec scrot '%Y-%m-%d-%T_$wx$h_scrot.png' -e 'mv $f ~/Pictures/screenshots/'
@@ -233,7 +233,7 @@ gaps inner 15
 gaps outer 10
 
 #Power menu
-set $Locker i3lock-fancy && sleep 5
+set $Locker i3lock && sleep 5
 
 set $mode_system System (l) lock, (e) logout, (s) suspend, (h) hibernate, (r) reboot, (Shift+s) shutdown
 mode "$mode_system" {
