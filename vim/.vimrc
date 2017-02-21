@@ -76,11 +76,15 @@ let g:python3_host_prog = '/usr/bin/python3'
 " Plugins {{{
 
 "1.Command-T
-set wildignore+=*.log,*.sql,*.cache
+"set wildignore+=*.log,*.sql,*.cache
 
 "2.NERDTree
+"Make NERD Tree show hidden files
+let NERDTreeShowHidden=1
+
 "keybinding
 map <C-n> :NERDTreeToggle<CR>
+
 "close vim when NERDTree is last window
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 "Start NERD Tree when vim starts up
