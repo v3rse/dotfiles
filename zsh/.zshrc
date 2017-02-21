@@ -102,5 +102,7 @@ SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]?'
 
 export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
 
+export GOPATH=$HOME/code/learning/g
+
 # Use previously generated color scheme for terminal
 (wal -r &) # Runs in the background
