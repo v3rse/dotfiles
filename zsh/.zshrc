@@ -106,3 +106,5 @@ export GOPATH=$HOME/code/learning/g
 
 # Use previously generated color scheme for terminal
 (wal -r &) # Runs in the background
+
+export PATH="$HOME/.yarn/bin:$PATH"
