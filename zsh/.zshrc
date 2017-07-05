@@ -11,7 +11,7 @@ setopt appendhistory autocd
 setopt hist_ignore_all_dups
 
 # For vi bindings
-bindkey -v
+#bindkey -v
 
 # zstyle :compinstall filename '/home/v3rse/.zshrc'
 
@@ -56,9 +56,9 @@ alias la='ls -al'
 alias md='mkdir -p'
 
 # -Xrandr
-alias screen-left='xrandr --output eDP1 --output HDMI1 --auto --left-of eDP1'
-alias screen-right='xrandr --output eDP1 --output HDMI1 --auto --right-of eDP1'
-alias screen-off='xrandr --output HDMI1 --auto --off'
+alias screen-left='xrandr --output LVDS-1 --output VGA-1 --auto --left-of LVDS-1'
+alias screen-right='xrandr --output LVDS-1 --output VGA-1 --auto --right-of LVDS-1'
+alias screen-off='xrandr --output VGA-1 --auto --off'
 alias sl='screen-left'
 alias sr='screen-right'
 alias sx='screen-off'
@@ -74,7 +74,7 @@ alias factory="~/TheFactory"
 alias code="~/TheFactory/code"
 alias work="~/TheFactory/code/work"
 alias play="~/TheFactory/code/play"
-alias done="node ~/TheFactory/code/play/done"
+# alias done="node ~/TheFactory/code/play/done"
 
 # -Vim
 alias vim='nvim'
@@ -100,11 +100,20 @@ SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]?'
 # INITIALIZATIONS
 # Change n prefix
 
-export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
 
 export GOPATH=$HOME/code/learning/g
 
 # Use previously generated color scheme for terminal
-(wal -r &) # Runs in the background
+#(wal -r &) # Runs in the background
 
 export PATH="$HOME/.yarn/bin:$PATH"
+
+export WP_I18N_LIB="$HOME/WP_I18N_LIB"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+source ~/.zsh-nvm/zsh-nvm.plugin.zsh
+
+export PATH=$PATH:$HOME/.config/composer/vendor/bin

@@ -7,9 +7,9 @@ urxvt*termName: rxvt-unicode-256color
 #include "/home/v3rse/.term_colors/snazzy.Xcolors"
 
 ! Fonts
-urxvt*font: xft:Hack:size=13,\
-            xft:FontAwesome:Regular:size=13
-urxvt*boldFont: xft:Hack:bold:size=13
+urxvt*font: xft:Hack:size=12,\
+            xft:FontAwesome:Regular:size=12
+urxvt*boldFont: xft:Hack:bold:size=12
 urxvt.letterSpace: -1
 
 urxvt*.depth: 20
