@@ -1,1 +1,1 @@
-/home/v3rse/.vimrc
+/home/v3rse/dotfiles/vim/.vimrc
