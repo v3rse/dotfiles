@@ -110,10 +110,8 @@ export PATH="$HOME/.yarn/bin:$PATH"
 
 export WP_I18N_LIB="$HOME/WP_I18N_LIB"
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-source ~/.zsh-nvm/zsh-nvm.plugin.zsh
+#source ~/.zsh-nvm/zsh-nvm.plugin.zsh
 
 export PATH=$PATH:$HOME/.config/composer/vendor/bin
+export PATH="$PATH:/home/v3rse/.php-school/bin"
