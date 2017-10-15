@@ -71,10 +71,10 @@ alias wr='workspace-right'
 
 # -Shortcuts
 alias factory="~/TheFactory"
-alias code="~/TheFactory/code"
+alias codez="~/TheFactory/code"
 alias work="~/TheFactory/code/work"
 alias play="~/TheFactory/code/play"
-alias done="node ~/TheFactory/code/play/done"
+"alias done="node ~/TheFactory/code/play/done"
 
 # -Vim
 alias vim='nvim'
@@ -105,6 +105,6 @@ export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PR
 export GOPATH=$HOME/code/learning/g
 
 # Use previously generated color scheme for terminal
-(wal -r &) # Runs in the background
+#(wal -r &) # Runs in the background
 
 export PATH="$HOME/.yarn/bin:$PATH"

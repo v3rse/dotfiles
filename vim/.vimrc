@@ -43,8 +43,8 @@ set wrapscan                  " Searches wrap around end-of-file.
 set report     =0             " Always report changed lines.
 set synmaxcol  =200           " Only highlight the first 200 columns.
 
-colorscheme gruvbox           " Set gruvbox colorscheme.
-set background =dark          " Use dark theme.
+" colorscheme gruvbox           " Set gruvbox colorscheme.
+" set background =dark          " Use dark theme.
 
 
 set list                      " Show non-printable characters.
