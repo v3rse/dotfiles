@@ -1,0 +1,7 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =5
+let g:netrw_dirhist_1='/Users/v3rse/Library/Preferences/kitty'
+let g:netrw_dirhist_2='/Users/v3rse/TheFactory/code/work/prep/prep-cms-backend'
+let g:netrw_dirhist_3='/Users/v3rse/TheFactory/code/learn/languages/j/deep-javascript-fundamentals'
+let g:netrw_dirhist_4='/Users/v3rse/TheFactory/code/learn/languages/j/deep-javascript-fundamentals/scope'
+let g:netrw_dirhist_5='/Users/v3rse/TheFactory/code/learn/languages/j/deep-javascript-fundamentals'

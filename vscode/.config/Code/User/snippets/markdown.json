@@ -1,5 +1,5 @@
 {
-/*
+	/*
 	// Place your snippets for Markdown here. Each snippet is defined under a snippet name and has a prefix, body and 
 	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
 	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
@@ -17,7 +17,7 @@
 	"Add TODO line": {
 		"prefix": "todo",
 		"body": [
-			"- [ ] __TODO__ $1"
+			"- __TODO__ $1"
 		],
 		"description": "Adds a line with TODO tag in daily journal"
 	},
@@ -31,7 +31,7 @@
 	"Add Read line": {
 		"prefix": "read",
 		"body": [
-			"- __Read__ _$1_"
+			"- [ ] __Read__ _$1_"
 		],
 		"description": "Adds a line with Read tag in daily journal"
 	},
@@ -47,6 +47,13 @@
 		"body": [
 			"- __Problem__ _$1_: $2",
 			"\t- __Recipe:__ $3"
+		],
+		"description": "Adds a line with Think tag in daily journal"
+	},
+	"Add Wow line": {
+		"prefix": "wow",
+		"body": [
+			"- __Wow:__ _$1_"
 		],
 		"description": "Adds a line with Think tag in daily journal"
 	},
