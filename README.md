@@ -32,7 +32,7 @@ xmodmap - for swapping keys mostly used in vim
 vim - vim configuration, no bundles
 wallpaper - wallpaper for the various color schemes
 compton - settings for composite config for shadows etc.
-vscode - settings for my vscode environment. extension can be install using `code --install-extension`
+vscode - settings for my vscode environment. extension can be install using `install.sh` in folder. Extension list can be created using `code --list-extensions > extensions-list`
 
 # Bugs
 - [ ] Terminals flash original theme seconds before loading current.
