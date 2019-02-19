@@ -53,7 +53,7 @@
 	"Add Wow line": {
 		"prefix": "wow",
 		"body": [
-			"- __Wow:__ _$1_"
+			"- __Wow:__ [_$1_]($2)"
 		],
 		"description": "Adds a line with Think tag in daily journal"
 	},

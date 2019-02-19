@@ -31,8 +31,8 @@ font pango:Hack, FontAwesome 8
 floating_modifier $mod
 
 # start a terminal
-#bindsym $mod+Return exec i3-sensible-terminal
-bindsym $mod+Return exec urxvt 
+bindsym $mod+Return exec i3-sensible-terminal
+#bindsym $mod+Return exec urxvt 
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -173,24 +173,24 @@ bindsym $mod+r mode "resize"
 # Set colors from Xresources
 # NOTE: The '#f0f0f0' in the lines below is the color i3 will use if
 # it fails to get colors from Xresources for some reason.
-set_from_resource $fg i3wm.color7
-set_from_resource $bg i3wm.color0
-set_from_resource $sbg i3wm.color2
-set from_resource $ubg i3wm.color9
+set_from_resource $fg color7 #000000
+set_from_resource $bg color0 #000000
+set_from_resource $sbg color2 #000000
+set_from_resource $ubg color9 #000000
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
   status_command i3status
-  font pango:Hack,FontAwesome 13
+  font pango:Hack,FontAwesome 10
   colors {
-   separator $fg
-   background $bg 
-   statusline $fg
-   focused_workspace $bg     $sbg     $fg
-   active_workspace  $bg     $bg     $fg
-   inactive_workspace $bg     $bg     $fg
-   urgent_workspace $bg     $ubg     $fg
+    separator $fg
+    background $bg 
+    statusline $fg
+    focused_workspace $bg     $sbg     $fg
+    active_workspace  $bg     $bg     $fg
+    inactive_workspace $bg     $bg     $fg
+    urgent_workspace $bg     $ubg     $fg
  }
   position top
   separator_symbol "/"
@@ -211,7 +211,7 @@ client.background       $bg
 exec --no-startup-id nm-applet
 
 #--Background
-exec --no-startup-id feh --bg-fill /home/v3rse/pictures/background/5400.png
+exec --no-startup-id feh --bg-fill /home/v3rse/pictures/background/purple-blue.jpg
 
 #--VPN Client
 #exec --no-startup-id pritunl-client-gtk
@@ -255,8 +255,8 @@ bindsym $mod+Delete mode "$mode_system"
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5%
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5%
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle # mute sound
-bindsym XF86MonBrightnessUp exec xbacklight -inc 5
-bindsym XF86MonBrightnessDown exec xbacklight -dec 5
+bindsym XF86MonBrightnessUp exec "light -A 5; notify-send 'brightness up'"
+bindsym XF86MonBrightnessDown exec "light -U 5; notify-send 'brightness down'"
 bindsym XF86AudioPlay exec /usr/bin/playerctl play-pause
 bindsym XF86AudioNext exec /usr/bin/playerctl next
 bindsym XF86AudioPrev exec /usr/bin/playerctl previous

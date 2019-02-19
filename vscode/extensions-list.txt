@@ -27,7 +27,6 @@ PeterJausovec.vscode-docker
 PKief.material-icon-theme
 sdras.night-owl
 shyykoserhiy.vscode-spotify
-spoonscen.es6-mocha-snippets
 teabyii.ayu
 tomphilbin.gruvbox-themes
 traBpUkciP.wolf

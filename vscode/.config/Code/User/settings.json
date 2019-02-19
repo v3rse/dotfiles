@@ -7,7 +7,6 @@
     "zenMode.fullScreen": false,
     "workbench.editor.showTabs": false,
     "javascript.validate.enable": false,
-    "standard.enable": false,
     "editor.tabSize": 2,
     "editor.fontFamily": "'Fira Code','Hack', 'Fura Code Regular Nerd Font Complete', monospace",
     "editor.fontLigatures": true,
@@ -28,10 +27,7 @@
         "suppressUpdateNotice": false,
         "suppressWelcomeNotice": true
     },
-    "materialTheme.cache.workbench.settings": {
-        "themeColours": "Palenight High Contrast"
-    },
-    "terminal.integrated.shell.linux": "/usr/local/bin/fish",
+    "terminal.integrated.shell.linux": "/usr/bin/fish",
     "terminal.integrated.shell.osx": "/usr/local/bin/fish",
     "terminal.integrated.env.osx": {
         "GOOGLE_API_KEY": ""
@@ -40,12 +36,25 @@
     "gitlens.keymap": "alternate",
     "editor.lineNumbers": "relative",
     "python.pythonPath": "/usr/local/bin/python3",
-    "gitlens.historyExplorer.enabled": true,
-    "window.zoomLevel": 0,
+    "window.zoomLevel": 1,
     "git.autofetch": true,
     "breadcrumbs.enabled": false,
     "javascript.updateImportsOnFileMove.enabled": "always",
     "wolf.logErrors": true,
     "wolf.pythonPath": "/usr/local/bin/python3",
-    "editor.formatOnSave": true
+    "window.menuBarVisibility": "toggle",
+    "window.titleBarStyle": "native",
+    "files.associations": {
+        "**/.i3/config": "i3",
+        "**/i3/config": "i3",
+    },
+    "editor.formatOnSave": true,
+    "mocha-snippets.semicolon": false,
+    "workbench.editor.enablePreviewFromQuickOpen": false,
+    // "workbench.colorCustomizations": {
+    //     "titleBar.activeBackground": "#82AAFF",
+    //     "titleBar.activeForeground": "#292D3E",
+    //     "titleBar.inactiveBackground": "#9CC4FF",
+    //     "titleBar.inactiveForeground": "#434758"
+    // }
 }
