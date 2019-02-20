@@ -33,6 +33,7 @@ vim - vim configuration, no bundles
 wallpaper - wallpaper for the various color schemes
 compton - settings for composite config for shadows etc.
 vscode - settings for my vscode environment. extension can be install using `install.sh` in folder. Extension list can be created using `code --list-extensions > extensions-list`
+firefox - contains some CSS for fixing dark themes. N/B:  `stow -t ~/.mozilla/firefox/<generated-code>.default/chrome firefox`. Make sure you create a `chrome` directory.
 
 # Bugs
 - [ ] Terminals flash original theme seconds before loading current.
