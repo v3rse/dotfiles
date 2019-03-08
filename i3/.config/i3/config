@@ -211,7 +211,7 @@ client.background       $bg
 exec --no-startup-id nm-applet
 
 #--Background
-exec --no-startup-id feh --bg-fill /home/v3rse/pictures/background/purple-blue.jpg
+exec --no-startup-id feh --bg-fill /home/v3rse/pictures/background/pixel-gradient.png
 
 #--VPN Client
 #exec --no-startup-id pritunl-client-gtk
@@ -255,8 +255,8 @@ bindsym $mod+Delete mode "$mode_system"
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5%
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5%
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle # mute sound
-bindsym XF86MonBrightnessUp exec "light -A 5; notify-send 'brightness up'"
-bindsym XF86MonBrightnessDown exec "light -U 5; notify-send 'brightness down'"
+bindsym XF86MonBrightnessUp exec "light -A 2; notify-send 'brightness up'"
+bindsym XF86MonBrightnessDown exec "light -U 2; notify-send 'brightness down'"
 bindsym XF86AudioPlay exec /usr/bin/playerctl play-pause
 bindsym XF86AudioNext exec /usr/bin/playerctl next
 bindsym XF86AudioPrev exec /usr/bin/playerctl previous
