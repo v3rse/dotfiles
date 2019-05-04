@@ -17,9 +17,17 @@
 	"Add TODO line": {
 		"prefix": "todo",
 		"body": [
-			"- __TODO__ $1"
+			"- [ ]  __TODO__ $1"
 		],
 		"description": "Adds a line with TODO tag in daily journal"
+	},
+	"Add Task line": {
+		"prefix": "task",
+		"body": [
+			"- __Task__ *$1*:",
+			"\t- $2"
+		],
+		"description": "Adds a line with Task tag in daily journal for notes on a task I'm working on"
 	},
 	"Add Tip line": {
 		"prefix": "tip",
