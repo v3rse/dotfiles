@@ -99,16 +99,16 @@ bindsym $mod+a focus parent
 
 #Named workspaces tags
 
-set $tag1 "一"
-set $tag2 "二"
-set $tag3 "三"
-set $tag4 "四"
-set $tag5 "五"
-set $tag6 "六"
-set $tag7 "七"
-set $tag8 "八"
-set $tag9 "九"
-set $tag10 "十"
+set $tag1 "1:一"
+set $tag2 "2:二"
+set $tag3 "3:三"
+set $tag4 "4:四"
+set $tag5 "5:五"
+set $tag6 "6:六"
+set $tag7 "7:七"
+set $tag8 "8:八"
+set $tag9 "9:九"
+set $tag10 "10:十"
 
 # switch to workspace
 bindsym $mod+1 workspace $tag1
@@ -217,7 +217,7 @@ exec --no-startup-id feh --bg-fill /home/v3rse/pictures/background/pixel-gradien
 #exec --no-startup-id pritunl-client-gtk
 
 #--Redshift
-#exec --no-startup-id gtk-redshit
+exec --no-startup-id gtk-redshit
 
 #Custom KeyBindings:
 #--Lock Screen
