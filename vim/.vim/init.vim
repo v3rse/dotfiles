@@ -1,1 +1,0 @@
-/Users/v3rse/dotfiles/vim/.vimrc

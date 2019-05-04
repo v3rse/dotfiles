@@ -1,4 +1,4 @@
-"Using folding
+
 " vim:fdm=marker
 
 "Startup {{{
@@ -7,15 +7,16 @@ if &compatible
 endif
 
 " Required:
-set runtimepath+=/Users/v3rse/.vim/bundle/repos/github.com/Shougo/dein.vim
+set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
+set rtp+=~/.fzf
 
 " Required:
-if dein#load_state('/Users/v3rse/.vim/bundle')
-  call dein#begin('/Users/v3rse/.vim/bundle')
+if dein#load_state('~/.cache/dein')
+  call dein#begin('~/.cache/dein')
 
   " Let dein manage dein
   " Required:
-  call dein#add('Shougo/dein.vim')
+  call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
 
   " PLUGIN SETUP
 
@@ -38,25 +39,20 @@ if dein#load_state('/Users/v3rse/.vim/bundle')
   call dein#add('airblade/vim-gitgutter')  " show git changes in gutter
   call dein#add('metakirby5/codi.vim')     " a wonderful REPL scratch pad
   call dein#add('plasticboy/vim-markdown') " better markdown
-  call dein#add('junegunn/fzf')            " install fzf. the actual finder
-  call dein#add('junegunn/fzf.vim')        " install fzf.vim. this the plugin
-  call dein#add('Shougo/deoplete.nvim') " dark powered neo-completion
-  if !has('nvim')                       " if we aren't runnin neovim
+  call dein#add('junegunn/fzf.vim')
+  if !has('nvim')                          " if we aren't runnin neovim
     call dein#add('roxma/nvim-yarp')
     call dein#add('roxma/vim-hug-neovim-rpc')
   endif
-  call dein#add('Shougo/neosnippet.vim')      " snippets
-  call dein#add('Shougo/neosnippet-snippets') 
+  call dein#add('scrooloose/nerdcommenter') " comment stuff out
 
-  " Language client
-  call dein#add('autozimu/LanguageClient-neovim', {
-    \ 'rev': 'next',
-    \ 'build': 'bash install.sh',
-    \ })
- 
+  " language server
+  call dein#add('neoclide/coc.nvim', {'build': 'yarn install'})
+
   " JS
   call dein#add('jelera/vim-javascript-syntax') " better javascript syntax
   call dein#add('moll/vim-node')                " makes jumping into modules easier
+  call dein#add('leafgarland/typescript-vim')               " typescript highlighting
 
  "Required:
   call dein#end()
@@ -69,7 +65,6 @@ if dein#check_install()
 endif
 
 "}}}
-
 
 
 
@@ -90,6 +85,10 @@ set backspace   =indent,eol,start " Make backspace work as you would expect
 set hidden                    " Switch between buffers without having to save first
 set laststatus  =2            " Always show statusline.
 set display     =lastline     " Show as much as possible of the last line.
+set cmdheight   =2            " better display for messages
+set shortmess   +=c           " don't give |inc-completion-menu| messages
+set signcolumn  =yes          " always show signcolumn
+
 
 set showmode                  " Show current mode in command-line.
 set showcmd                   " Show already typed keys when more are expected.
@@ -122,8 +121,6 @@ endif
 
 
 
-
-
 " Look settings {{{
 
 " True colors
@@ -144,13 +141,18 @@ set background =dark          " Use gruvbox dark theme.
 " lightline
 let g:lightline = {
       \ 'colorscheme': 'palenight',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'cocstatus': 'coc#status'
+      \ },
       \ }
 
 " palenight
 let g:palenight_terminal_italics=1
 " }}}
-
-
 
 
 
@@ -169,84 +171,113 @@ let g:python3_host_prog = '/usr/local/bin/python3'  " Python 3
 
 
 
-
-
 "Key bindings {{{
 
 " Leader
-map <leader>s :source ~/.vimrc<CR>              
-map <leader>f :FZF<CR>            
+map <leader>R :source ~/.vimrc<CR>              
+map <leader>F :FZF<CR>            
 
 " NERDTree
 map <C-n> :NERDTreeToggle<CR>
-" Tagbar
-nmap <F8> :TagbarToggle<CR>
 
-" Neosnippets
-" Plugin key-mappings.
-" Select and expang snippet
-" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_target)
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-" SuperTab like snippets behavior. Select next field in snippet
-" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-"imap <expr><TAB>
-" \ pumvisible() ? "\<C-n>" :
-" \ neosnippet#expandable_or_jumpable() ?
-" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
 
-" For conceal markers.
-if has('conceal')
-  set conceallevel=2 concealcursor=niv
-endif
+" Use <c-space> for trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
 
+" Use <cr> for confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" Use `[c` and `]c` for navigate diagnostics
+nmap <silent> [c <Plug>(coc-diagnostic-prev)
+nmap <silent> ]c <Plug>(coc-diagnostic-next)
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K for show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if &filetype == 'vim'
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
+
+" Remap for format selected region
+vmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+augroup mygroup
+  autocmd!
+  " Setup formatexpr specified filetype(s).
+  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+  " Update signature help on jump placeholder
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+" Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
+vmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap for do codeAction of current line
+nmap <leader>ac  <Plug>(coc-codeaction)
+" Fix autofix problem of current line
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Use `:Format` for format current buffer
+command! -nargs=0 Format :call CocAction('format')
+
+" Use `:Fold` for fold current buffer
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+
+" COC
+" Using CocList
+" Show all diagnostics
+nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
+" Manage extensions
+nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
+" Show commands
+nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document
+nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols
+nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item.
+nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item.
+nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list
+nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 "}}}
 
 
 
-
-
 " Plugins Settings {{{ 
-
-" ----- language client
-" Required for operations modifying multiple buffers like rename.
-set hidden
-
-let g:LanguageClient_serverCommands = {
-    \ 'javascript': ['javascript-typescript-stdio'],
-    \ 'python': ['/Users/v3rse/Library/Python/3.6/bin/pyls'],
-    \ 'python3': ['/Users/v3rse/Library/Python/3.6/bin/pyls']
-    \ }
-let g:LanguageClient_autoStart = 1
-set completefunc=LanguageClient#complete
-set formatexpr=LanguageClient_textDocument_rangeFormatting()
-nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
-nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
-nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
-
-
-
-
-" ----- deoplete
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#enable_smart_case = 1
-
-" disable autocomplete by default
-let b:deoplete_disable_auto_complete=1 
-let g:deoplete_disable_auto_complete=1
-
-call deoplete#custom#source('_',
-            \ 'disabled_syntaxes', ['Comment', 'String'])
-
-" set sources
-let g:deoplete#sources = {}
-let g:deoplete#sources.javascript = ['LanguageClient']
-let g:deoplete#sources.python = ['LanguageClient']
-let g:deoplete#sources.python3 = ['LanguageClient']
 
 " ----- nerdtree
 let NERDTreeShowHidden=1 "show hidden files 
@@ -280,7 +311,7 @@ let g:limelight_eop = '\ze\n^\s'
 let g:limelight_priority = -1
 
 " ----- goyo
-autocmd! User GoyoEnter Limelight
-autocmd! User GoyoLeave Limelight!
+"autocmd! User GoyoEnter Limelight
+"autocmd! User GoyoLeave Limelight!
 
 "}}}
