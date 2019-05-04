@@ -1,6 +1,8 @@
+package config
 package foreign-env
-package https://github.com/rominf/omf-plugin-pyenv
 package nvm
+package tmux-zen
+theme agnoster
 theme batman
 theme clearance
 theme default
@@ -14,7 +16,6 @@ theme lolfish
 theme mars
 theme one
 theme plain
-theme pure
 theme robbyrussell
 theme spacefish
 theme wolf-theme
