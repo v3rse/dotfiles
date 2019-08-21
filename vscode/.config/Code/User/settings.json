@@ -74,8 +74,20 @@
             "value": "#007fff"
         },
         {
+            "name": "C# Purple",
+            "value": "#68217A"
+        },
+        {
             "name": "Gatsby Purple",
             "value": "#639"
+        },
+        {
+            "name": "Go Cyan",
+            "value": "#5dc9e2"
+        },
+        {
+            "name": "Java Blue-Gray",
+            "value": "#557c9b"
         },
         {
             "name": "JavaScript Yellow",
@@ -103,5 +115,8 @@
         }
     ],
     "peacock.affectTitleBar": false,
-    "peacock.affectStatusBar": true
+    "peacock.affectStatusBar": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "editor.cursorBlinking": "smooth",
+    "editor.cursorSmoothCaretAnimation": true
 }

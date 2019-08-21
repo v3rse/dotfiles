@@ -80,5 +80,29 @@
 			""
 		],
 		"description": "Scaffold a new week journal"
+	},
+	"Start a code log": {
+		"prefix": "codelog",
+		"body": [
+			"# Codelog #$1 - XXXX-XX-XX",
+			"-----",
+			"## Plan for the day",
+			"$2<!-- - [] Fix test that broke due to thread implementation",
+			"- [] Start blog on blogging and logging -->",
+			"$3",
+			"-----",
+			"## To investigate",
+			"[link to something cool](http://blah.com)",
+			"-----",
+			"## Learned today",
+			"<!--A short prose about what you learn today-->",
+			"-----",
+			"## Plan for tomorrow",
+			"<!--What's up for tomorrow-->",
+			"-----",
+			"## Resource List",
+			"<!--Use links to refer to-->",
+			"-----"
+		]
 	}
 }
