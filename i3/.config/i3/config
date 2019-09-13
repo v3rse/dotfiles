@@ -211,7 +211,7 @@ client.background       $bg
 exec --no-startup-id nm-applet
 
 #--Background
-exec --no-startup-id feh --bg-fill /home/v3rse/pictures/background/pixel-gradient.png
+exec --no-startup-id feh --bg-fill /home/v3rse/pictures/background/blue-to-purple.jpg
 
 #--VPN Client
 #exec --no-startup-id pritunl-client-gtk

@@ -10,7 +10,7 @@
     "editor.tabSize": 2,
     "editor.fontFamily": "'Fira Code','Hack', 'Fura Code Regular Nerd Font Complete', monospace",
     "editor.fontLigatures": true,
-    "editor.fontSize": 15,
+    "editor.fontSize": 12,
     "workbench.iconTheme": "vscode-great-icons",
     "workbench.sideBar.location": "right",
     "typescript.check.npmIsInstalled": false,
@@ -35,7 +35,7 @@
     "diffEditor.ignoreTrimWhitespace": true,
     "gitlens.keymap": "alternate",
     "editor.lineNumbers": "relative",
-    "python.pythonPath": "/usr/local/bin/python3",
+    "python.pythonPath": "/home/v3rse/TheFactory/code/learn/devops/kubernetes-workshop-eon01/trendinggitrepositories/api/env/bin/python",
     "window.zoomLevel": 1,
     "git.autofetch": true,
     "breadcrumbs.enabled": false,
@@ -52,6 +52,7 @@
     "mocha-snippets.semicolon": false,
     "workbench.editor.enablePreviewFromQuickOpen": false,
     "cSpell.userWords": [
+        "jsonify",
         "kudobuzz"
     ],
     "liveshare.audio.joinCallBehavior": "accept",
@@ -118,5 +119,10 @@
     "peacock.affectStatusBar": true,
     "typescript.updateImportsOnFileMove.enabled": "always",
     "editor.cursorBlinking": "smooth",
-    "editor.cursorSmoothCaretAnimation": true
+    "editor.cursorSmoothCaretAnimation": true,
+    "python.jediEnabled": false,
+    "debug.console.fontSize": 12,
+    "markdown.preview.fontSize": 12,
+    "terminal.integrated.fontSize": 12,
+    "rest-client.fontSize": 12
 }
