@@ -76,7 +76,7 @@ alias gcm='git commit -m '
 alias go='git checkout '
 
 # Utils
-alias cat='bat'
+alias cat='batcat'
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/v3rse/Downloads/google-cloud-sdk/path.fish.inc' ]
