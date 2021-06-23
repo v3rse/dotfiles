@@ -125,8 +125,31 @@ export NVM_DIR="$HOME/.nvm"
 /usr/bin/keychain --nogui $HOME/.ssh/id_rsa
 source $HOME/.keychain/DESKTOP-86D52AB-sh
 
-exec fish
+# RBENV
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
 
 # WECHALL
 export WECHALLUSER="v3rse"
 export WECHALLTOKEN="7E180-85215-E0594-C4D2C-87136-83A55"
+
+# COMPOSER
+export PATH="$HOME/.config/composer/vendor/bin:$PATH"
+
+# GO
+export PATH="$PATH:/usr/local/go/bin"
+
+# Deno
+export DENO_INSTALL="/home/v3rse/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH"
+
+# Python/PIP
+export PATH="$HOME/.local/bin:$PATH"
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="/home/v3rse/.sdkman"
+[[ -s "/home/v3rse/.sdkman/bin/sdkman-init.sh" ]] && source "/home/v3rse/.sdkman/bin/sdkman-init.sh"
+
+TZ='Africa/Accra'; export TZ
+
+exec fish
