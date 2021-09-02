@@ -23,36 +23,28 @@ if dein#load_state('~/.cache/dein')
   " Add or remove your plugins here:
 
   " Looks
-  call dein#add('morhetz/gruvbox')
-  call dein#add('tomasr/molokai')
   call dein#add('drewtempelmeyer/palenight.vim')
-  call dein#add('junegunn/rainbow_parentheses.vim') " rainbow parentheses for clojure
-  call dein#add('godlygeek/tabular')                " lines up text
-  call dein#add('junegunn/goyo.vim')                " distraction free coding
-  call dein#add('junegunn/limelight.vim')           " light up a line
-  call dein#add('itchyny/lightline.vim')            " lightline as status bar
+  call dein#add('kaicataldo/material.vim', {'branch': 'main'})
   
   " IDE
-  call dein#add('wsdjeg/dein-ui.vim')
   call dein#add('scrooloose/nerdtree')     " filesystem tree sidebar
   call dein#add('lifepillar/vim-cheat40')  " cheatsheet buffer
   call dein#add('airblade/vim-gitgutter')  " show git changes in gutter
-  call dein#add('metakirby5/codi.vim')     " a wonderful REPL scratch pad
   call dein#add('plasticboy/vim-markdown') " better markdown
-  call dein#add('junegunn/fzf.vim')
   if !has('nvim')                          " if we aren't runnin neovim
     call dein#add('roxma/nvim-yarp')
     call dein#add('roxma/vim-hug-neovim-rpc')
   endif
   call dein#add('scrooloose/nerdcommenter') " comment stuff out
+  call dein#add('fatih/vim-go')             " golang support
+  call dein#add('nvim-lua/plenary.nvim')
+  call dein#add('nvim-telescope/telescope.nvim')
+  call dein#add('folke/which-key.nvim')
+  call dein#add('akinsho/toggleterm.nvim')
 
   " language server
   call dein#add('neoclide/coc.nvim', {'build': 'yarn install'})
 
-  " JS
-  call dein#add('jelera/vim-javascript-syntax') " better javascript syntax
-  call dein#add('moll/vim-node')                " makes jumping into modules easier
-  call dein#add('leafgarland/typescript-vim')               " typescript highlighting
 
  "Required:
   call dein#end()
@@ -132,26 +124,10 @@ if (has("termguicolors"))
   set termguicolors
 endif
 
-
-"colorscheme molokai           " Set molokai colorscheme.
-"colorscheme gruvbox           " Set gruvbox colorscheme.
-colorscheme palenight           " Set palenight colorscheme.
-set background =dark          " Use gruvbox dark theme.
-
-" lightline
-let g:lightline = {
-      \ 'colorscheme': 'palenight',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'cocstatus': 'coc#status'
-      \ },
-      \ }
-
-" palenight
-let g:palenight_terminal_italics=1
+" colorscheme settings (note: all options set before color scheme is set)
+let g:material_theme_style='palenight'
+let g:material_terminal_italics=1
+colorscheme material           " Set colorscheme.
 " }}}
 
 
@@ -175,10 +151,17 @@ let g:python3_host_prog = '/usr/local/bin/python3'  " Python 3
 
 " Leader
 map <leader>R :source ~/.vimrc<CR>              
-map <leader>F :FZF<CR>            
+map <leader>n :bnext<CR>
+map <leader>p :bprevious<CR>
 
 " NERDTree
 map <C-n> :NERDTreeToggle<CR>
+
+" Telescope
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
 " Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
@@ -209,6 +192,7 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+nmap <silent> gc <Plug>(coc-rename)
 
 " Use K for show documentation in preview window
 nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -285,33 +269,40 @@ let NERDTreeShowHidden=1 "show hidden files
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 "autocmd vimenter * NERDTree " open nerdtree when vim starts
 
-" ----- limelight
-" Color name (:help cterm-colors) or ANSI code
-let g:limelight_conceal_ctermfg = 'gray'
-let g:limelight_conceal_ctermfg = 240
+" ----- vim.go
+" disable all linters because coc.nvim takes care of that
+let g:go_diagnostics_enabled = 0
+let g:go_metalinter_enabled = []
 
-" Color name (:help gui-colors) or RGB color
-let g:limelight_conceal_guifg = 'DarkGray'
-let g:limelight_conceal_guifg = '#777777'
+" don't jump to errors after metaliner is invoked
+let g:go_jump_to_error = 0
 
-" Default: 0.5
-let g:limelight_default_coefficient = 0.7
+" run go imports on file save
+let g:go_fmt_command = "goimports"
 
-" Number of preceding/following paragraphs to include (default: 0)
- let g:limelight_paragraph_span = 1
+" automatically highlight variable your cursor is on
+let g:go_auto_sameids = 0
 
-" Beginning/end of paragraph
-"   When there's no empty line between the paragraphs
-"   and each paragraph starts with indentation
-let g:limelight_bop = '^\s'
-let g:limelight_eop = '\ze\n^\s'
+" highlight
+let g:go_highlight_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_function_calls = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_build_constraints = 1
+let g:go_highlight_generate_tags = 1
 
-" Highlighting priority (default: 10)
-"   Set it to -1 not to overrule hlsearch
-let g:limelight_priority = -1
+" bindings
+" - testing
+autocmd BufEnter *.go nmap <leader>t <Plug>(go-test)
+autocmd BufEnter *.go nmap <leader>tt <Plug>(go-test-func)
+autocmd BufEnter *.go nmap <leader>c <Plug>(go-coverage-toggle)
 
-" ----- goyo
-"autocmd! User GoyoEnter Limelight
-"autocmd! User GoyoLeave Limelight!
+" - code inspection
+autocmd BufEnter *.go nmap <leader>i  <Plug>(go-info)
+autocmd BufEnter *.go nmap <leader>ii <Plug>(go-implements)
+autocmd BufEnter *.go nmap <leader>ci <Plug>(go-describe)
+autocmd BufEnter *.go nmap <leader>cc <Plug>(go-callers)
 
 "}}}

@@ -92,6 +92,8 @@ fi
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
+alias vim='nvim'
+#alias tmux='tmux -2'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -122,7 +124,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # For loading ssh key
-/usr/bin/keychain --nogui $HOME/.ssh/id_rsa
+/usr/bin/keychain --nogui $HOME/.ssh/id_ed25519
 source $HOME/.keychain/DESKTOP-86D52AB-sh
 
 # RBENV
@@ -151,5 +153,8 @@ export SDKMAN_DIR="/home/v3rse/.sdkman"
 [[ -s "/home/v3rse/.sdkman/bin/sdkman-init.sh" ]] && source "/home/v3rse/.sdkman/bin/sdkman-init.sh"
 
 TZ='Africa/Accra'; export TZ
+
+# more wildcards
+shopt -s extglob
 
 exec fish
