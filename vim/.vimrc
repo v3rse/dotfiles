@@ -1,7 +1,7 @@
-
 " vim:fdm=marker
 
-"Startup {{{
+"Plugin Startup {{{
+
 if &compatible
   set nocompatible               " Be iMproved
 endif
@@ -19,12 +19,11 @@ if dein#load_state('~/.cache/dein')
   call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
 
   " PLUGIN SETUP
-
   " Add or remove your plugins here:
 
   " Looks
-  call dein#add('drewtempelmeyer/palenight.vim')
   call dein#add('kaicataldo/material.vim', {'branch': 'main'})
+  call dein#add('ayu-theme/ayu-vim')
   
   " IDE
   call dein#add('scrooloose/nerdtree')     " filesystem tree sidebar
@@ -40,10 +39,14 @@ if dein#load_state('~/.cache/dein')
   call dein#add('nvim-lua/plenary.nvim')
   call dein#add('nvim-telescope/telescope.nvim')
   call dein#add('folke/which-key.nvim')
-  call dein#add('akinsho/toggleterm.nvim')
+  call dein#add('karolbelina/uxntal.vim')
+  "  all dein#add('github/copilot.vim')
 
-  " language server
+: " language server
   call dein#add('neoclide/coc.nvim', {'build': 'yarn install'})
+
+  " org mode
+  call dein#add('kristijanhusak/orgmode.nvim')
 
 
  "Required:
@@ -58,9 +61,8 @@ endif
 
 "}}}
 
+"Editor Startup {{{
 
-
-"Editor Settings {{{
 filetype plugin indent on     " Load plugins according to detected filetype 
 syntax enable                     " Enable syntax highlighting
 
@@ -71,6 +73,7 @@ set expandtab                 " Use spaces instead of tabs.
 set softtabstop =2            " Tab key indents by 4 spaces.
 set shiftwidth  =2            " >> indents by 4 spaces.
 set shiftround                " >> indents by next multiple of 'shiftwidth'
+set smartindent               " indent when starting a new line
 
 
 set backspace   =indent,eol,start " Make backspace work as you would expect
@@ -102,35 +105,29 @@ set synmaxcol  =200           " Only highlight the first 200 columns.
 set updatetime=250            " Quicker gitgutter updates
 
 set list                      " Show non-printable characters.
+
+
 if has('multi_byte') && &encoding ==# 'utf-8'
   let &listchars = 'tab:▸ ,extends:❯,precedes:❮,nbsp:±'
 else
   let &listchars = 'tab:> ,extends:>,precedes:<,nbsp:.'
 endif
 
-
  "}}}
-
-
 
 " Look settings {{{
 
-" True colors
-if (has("nvim"))
-  let $NVIM_TUI_ENABLE_TRUE_COLOR=1
- endif
-
-if (has("termguicolors"))
-  set termguicolors
-endif
-
 " colorscheme settings (note: all options set before color scheme is set)
-let g:material_theme_style='palenight'
+set termguicolors             " 24-bit RGB color in TUI
+"Material theme settings
 let g:material_terminal_italics=1
+let g:material_theme_style='ocean'
+
+"Ayu theme settings
+"let ayucolor="dark"
+
 colorscheme material           " Set colorscheme.
 " }}}
-
-
 
 "Other Settings {{{
 
@@ -145,14 +142,13 @@ let g:python3_host_prog = '/usr/local/bin/python3'  " Python 3
 
 "}}}
 
-
-
 "Key bindings {{{
 
 " Leader
-map <leader>R :source ~/.vimrc<CR>              
+map <leader>r :source ~/.vimrc<CR>
 map <leader>n :bnext<CR>
-map <leader>p :bprevious<CR>
+map <leader>N :bprevious<CR>
+map <leader>x :!chmod +x %<CR>
 
 " NERDTree
 map <C-n> :NERDTreeToggle<CR>
@@ -259,9 +255,13 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 "}}}
 
-
-
 " Plugins Settings {{{ 
+" --- lua
+lua << EOF
+require('telescope').setup{
+  file_ignore_patterns = {"./node_modules/*", "node_modules", "^node_modules", "node_modules/*"},
+}
+EOF
 
 " ----- nerdtree
 let NERDTreeShowHidden=1 "show hidden files 

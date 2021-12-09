@@ -1,6 +1,3 @@
-set PATH $PATH $HOME/bin
-
-
 # ALIASES:
 # -File System
 alias ls='colorls'
@@ -40,3 +37,5 @@ alias gco='git checkout '
 # Utils
 alias cat='batcat'
 alias vim='nvim'
+
+set SPACEFISH_BATTERY_SHOW false

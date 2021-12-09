@@ -157,4 +157,11 @@ TZ='Africa/Accra'; export TZ
 # more wildcards
 shopt -s extglob
 
+# default editor
+export VISUAL=nvim
+export EDITOR="$VISUAL"
+
+# personal binaries
+export PATH="$HOME/bin:$PATH"
+
 exec fish
