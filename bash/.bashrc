@@ -138,7 +138,14 @@ export EDITOR="$VISUAL"
 # personal binaries
 export PATH="$HOME/bin:$PATH"
 
-if [[ $(ps --no-header --pid=$PPID --format=cmd) != "fish" && -z ${BASH_EXECUTION_STRING} ]]
-then
-	exec fish
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  if [[ $(ps -o "command" -p $PPID) != "fish" && -z ${BASH_EXECUTION_STRING} ]]
+  then
+        exec fish
+  fi
+else
+  if [[ $(ps --no-header --pid=$PPID --format=cmd) != "fish" && -z ${BASH_EXECUTION_STRING} ]]
+  then
+        exec fish
+  fi
 fi
