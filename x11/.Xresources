@@ -1,0 +1,111 @@
+xft.dpi: 96
+xft.antialias: true
+xft.rgba: rgb
+xft.hinting: true
+xft.hintstyle: hintsfull
+xft.autohint: 0
+xft.lcdfilter: lcddefault
+
+! Terminal
+! urxvt*termName: rxvt-unicode-256color
+urxvt*termName: screen-256color
+
+! scrolling
+urxvt*scrollBar: false
+
+! === color scheme ===
+*background: #1d2021
+*foreground: #ebdbb2
+! Black + DarkGrey
+*color0:  #282828
+*color8:  #928374
+! DarkRed + Red
+*color1:  #cc241d
+*color9:  #fb4934
+! DarkGreen + Green
+*color2:  #98971a
+*color10: #b8bb26
+! DarkYellow + Yellow
+*color3:  #d79921
+*color11: #fabd2f
+! DarkBlue + Blue
+*color4:  #458588
+*color12: #83a598
+! DarkMagenta + Magenta
+*color5:  #b16286
+*color13: #d3869b
+! DarkCyan + Cyan
+*color6:  #689d6a
+*color14: #8ec07c
+! LightGrey + White
+*color7:  #a89984
+*color15: #ebdbb2
+! urxvt
+
+
+! Fonts
+urxvt*font: xft:Hack Nerd Font:regular:size=11
+urxvt*imFont: xft:Hack Nerd Font:regular:size=11
+urxvt*boldFont: xft:Hack Nerd Font:bold:size=11
+urxvt*italicFont: xft:Hack Nerd Font:italic:size=11
+urxvt*boldItalicFont: xft:Hack Nerd Font:bold:italic:size=11
+
+urxvt.letterSpace: -1
+
+
+! Interface
+urxvt*borderless: 1
+urxvt*saveLines: 2000
+urxvt*fading: 2
+urxvt*transparent: false
+urxvt*internalBorder: 15
+
+! Modifier
+urxvt.modifier: super
+
+
+! Extensions
+urxvt.perl-ext-common: default,url-select,clipboard
+
+! Url-select
+urxvt.keysum.M-u: perl:url-select:select_next
+urxvt.url-select.autocopy: true
+urxvt.url-select.button: 2
+urxvt.url-select.launcher: qutebrowser 
+urxvt.url-select.underline: true
+urxvt.keysym.M-o:       perl:url-select:select_next
+urxvt.keysym.M-Escape:  perl:keyboard-select:activate
+urxvt.keysym.M-s:       perl:keyboard-select:search
+
+! Disable ISO
+urxvt.iso14755: false
+urxvt.iso14755_52: false
+
+! Clipboard : have not managed to get it working (install urxvt-perls)
+urxvt.keysym.Control-Shift-C: perl:clipboard:copy
+urxvt.keysym.Control-Shift-V: perl:clipboard:paste
+! urxvt.keysym.Control-Shift-C: eval:paste_clipboard
+! urxvt.keysym.Control-Shift-V: eval:selection_to_clipboard
+
+
+! Stop capitalization
+urxvt*keysym.Home: \033[1~
+urxvt*keysym.End: \033[4~
+
+! ROFI Config
+! rofi.modi: run
+! rofi.width: 50
+i rofi.lines: 4
+! rofi.font: Hack 10
+! rofi.padding: 20
+! rofi.hide-scrollbar: true
+! ------------------------------------------------------------------------------
+! ROFI Color theme
+! ------------------------------------------------------------------------------
+! rofi.color-enabled:   true
+! rofi.color-window: #393939, #393939, #268bd2
+! rofi.color-normal: #393939, #ffffff, #393939, #268bd2, #ffffff
+! rofi.color-active: #393939, #268bd2, #393939, #268bd2, #205171
+! rofi.color-urgent: #393939, #f3843d, #393939, #268bd2, #ffc39c
+! rofi.separator-style: solid
+
