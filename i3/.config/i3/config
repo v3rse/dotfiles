@@ -13,15 +13,15 @@
 set $mod Mod1
 
 # Configure border style <normal|1pixel|pixel xx|none|pixel>
-default_border pixel 2
-default_floating_border normal 2
+default_border pixel 5
+default_floating_border normal 5
 
 # Hide borders
 hide_edge_borders none
 
 # change borders
 bindsym $mod+u border none
-bindsym $mod+y border pixel 1
+bindsym $mod+y border pixel 5
 bindsym $mod+n border normal
 
 # Font for window titles. Will also be used by the bar unless a different font
@@ -334,21 +334,21 @@ bar {
     separator $term_background
     background $term_background 
     statusline $term_foreground
-    focused_workspace $term_background     $term_color4     $term_foreground
+    focused_workspace $term_background     $term_color4     $term_color0
     active_workspace  $term_background     $term_background     $term_foreground
     inactive_workspace $term_background     $term_background     $term_foreground
-    urgent_workspace $term_background     $term_color12     $term_foreground
+    urgent_workspace $term_background     $term_color1     $term_color0
  }
 }
 
 
 
 # class                 border  backgr. text indicator child_border
-client.focused          $term_background     $term_background     $term_foreground  $term_background       $term_background
-client.focused_inactive $term_background     $term_background     $term_foreground  $term_background       $term_background
-client.unfocused        $term_background     $term_background     $term_foreground  $term_background       $term_background
-client.urgent           $term_background     $term_background     $term_foreground  $term_background       $term_background
-client.placeholder      $term_background     $term_background     $term_foreground  $term_background       $term_background
+client.focused          $term_foreground     $term_background     $term_foreground  $term_background       $term_color12
+client.focused_inactive $term_foreground     $term_background     $term_foreground  $term_background       $term_color5
+client.unfocused        $term_foreground     $term_background     $term_foreground  $term_background       $term_color7
+client.urgent           $term_foreground     $term_background     $term_foreground  $term_background       $term_color9
+client.placeholder      $term_foreground     $term_background     $term_foreground  $term_background       $term_color3
 
 client.background       $term_background
 
