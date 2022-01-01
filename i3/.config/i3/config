@@ -345,7 +345,7 @@ bar {
 
 # class                 border  backgr. text indicator child_border
 client.focused          $term_foreground     $term_background     $term_foreground  $term_background       $term_color12
-client.focused_inactive $term_foreground     $term_background     $term_foreground  $term_background       $term_color5
+client.focused_inactive $term_foreground     $term_background     $term_foreground  $term_background       $term_color15
 client.unfocused        $term_foreground     $term_background     $term_foreground  $term_background       $term_color7
 client.urgent           $term_foreground     $term_background     $term_foreground  $term_background       $term_color9
 client.placeholder      $term_foreground     $term_background     $term_foreground  $term_background       $term_color3
