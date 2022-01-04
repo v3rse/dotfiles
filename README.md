@@ -16,13 +16,13 @@ GNU `stow` is what I use  to symlink the files and folders:
 `cd dotfiles`
 
 - Install zsh settings to your home
-`stow zsh`
+`stow fish`
 
 - Unistall zsh settings
-`stow -D zsh`
+`stow -D fish`
 
 - Install zsh settings to root user
-`sudo stow zsh -t /root`
+`sudo stow fish -t /root`
 
 # Features
 i3  - i3wm related configs (includes i3status)
