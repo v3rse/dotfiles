@@ -49,6 +49,8 @@ set updatetime=250            " Quicker gitgutter updates
 
 set lazyredraw                " Only redraw when necessary.
 
+set completeopt=menu,menuone,noselect " Configure completion dialogues
+
 
 "}}}
 
@@ -74,6 +76,16 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'kyazdani42/nvim-web-devicons'                            " for file icons
   Plug 'kyazdani42/nvim-tree.lua'                                " file explorer
+
+  Plug 'hrsh7th/cmp-nvim-lsp'                                    " comp source for lsp client
+  Plug 'hrsh7th/cmp-buffer'                                      " comp source for buffer
+  Plug 'hrsh7th/cmp-path'                                        " comp source for path
+  Plug 'hrsh7th/cmp-cmdline'                                     " comp source for vim cmd
+  Plug 'saadparwaiz1/cmp_luasnip'                                " comp source for snippet eng
+  Plug 'hrsh7th/nvim-cmp'                                        " completion engine
+
+  Plug 'L3MON4D3/LuaSnip'                                        " snippets engine
+  Plug 'rafamadriz/friendly-snippets'                            " commonly used snippets
 call plug#end()
 
 "}}}
@@ -99,6 +111,11 @@ colorscheme material
 "LSP Plugin {{{
 
 lua << EOF
+
+-- completions
+-- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
+local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+
 local nvim_lsp = require('lspconfig')
 
 -- when server attaches to buffer map keys for language server
@@ -142,7 +159,8 @@ lsp_installer.on_server_ready(function(server)
     on_attach = on_attach,
     flags = {
       debounce_text_changes = 150,
-    }
+    },
+    capabilities = capabilities
   }
 
   server:setup(opts)
@@ -204,6 +222,73 @@ require("toggleterm").setup({
 })
 EOF
 
+"}}}
+
+"{{{ Snippets
+lua <<EOF
+-- vscode like snippet via friendly-snippets
+require("luasnip.loaders.from_vscode").load()
+
+-- custom snippets
+-- require("luasnip.loaders.from_vscode").load({ paths = { "./my-cool-snippets" } })
+EOF
+"}}}
+
+"{{{ Completion
+lua <<EOF
+local cmp = require("cmp")
+
+cmp.setup({
+  snippet = {
+    -- REQUIRED: specify snippet engine
+    expand = function(args)
+      require('luasnip').lsp_expand(args.body)
+    end,
+  },
+  mapping = {
+    ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
+    ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
+    ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
+    ['<C-y>'] = cmp.config.disable,
+    ['<C-e>'] = cmp.mapping({
+      i = cmp.mapping.abort(),
+      c = cmp.mapping.close(),
+    }),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+  },
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    { name = 'luasnip' }
+  }, {
+    { name = 'buffer' },
+  })
+})
+
+-- Set configuration for specific filetype.
+cmp.setup.filetype('gitcommit', {
+  sources = cmp.config.sources({
+    -- { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it. 
+  }, {
+    { name = 'buffer' },
+  })
+})
+
+-- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline('/', {
+  sources = {
+    { name = 'buffer' }
+  }
+})
+
+-- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline(':', {
+  sources = cmp.config.sources({
+    { name = 'path' }
+  }, {
+    { name = 'cmdline' }
+  })
+})
+EOF
 "}}}
 
 "Keybindings {{{
