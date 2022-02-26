@@ -86,6 +86,8 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'L3MON4D3/LuaSnip'                                        " snippets engine
   Plug 'rafamadriz/friendly-snippets'                            " commonly used snippets
+
+  Plug 'terrortylor/nvim-comment'                                            " commments
 call plug#end()
 
 "}}}
@@ -167,6 +169,12 @@ lsp_installer.on_server_ready(function(server)
 end)
 EOF
 
+"}}}
+
+"{{{ Comments 
+lua <<EOF
+require('nvim_comment').setup()
+EOF
 "}}}
 
 "File Explorer {{{
