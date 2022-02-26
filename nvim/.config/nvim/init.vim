@@ -71,6 +71,9 @@ call plug#begin('~/.vim/plugged')
   Plug 'lewis6991/gitsigns.nvim'                                 " git gitter replacement
 
   Plug 'akinsho/toggleterm.nvim'                                 " intergrated terminal
+
+  Plug 'kyazdani42/nvim-web-devicons'                            " for file icons
+  Plug 'kyazdani42/nvim-tree.lua'                                " file explorer
 call plug#end()
 
 "}}}
@@ -148,6 +151,12 @@ EOF
 
 "}}}
 
+"File Explorer {{{
+lua << EOF
+require("nvim-tree").setup{}
+EOF
+"}}}
+
 "Key Hints Plugin {{{
 lua << EOF
 require("which-key").setup{
@@ -215,6 +224,11 @@ nnoremap <leader>gd <cmd>lua require('telescope.builtin').git_bcommits()<cr>
 nnoremap <leader>gb <cmd>lua require('telescope.builtin').git_branches()<cr>
 nnoremap <leader>gs <cmd>lua require('telescope.builtin').git_status()<cr>
 nnoremap <leader>gx <cmd>lua require('telescope.builtin').git_stash()<cr>
+
+" Nvim Tree
+nnoremap <C-n> :NvimTreeToggle<CR>
+nnoremap <leader>tr :NvimTreeRefresh<CR>
+nnoremap <leader>tn :NvimTreeFindFile<CR>
 
 "}}}
 
