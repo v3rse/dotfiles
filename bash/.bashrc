@@ -92,7 +92,6 @@ fi
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
-#alias tmux='tmux -2'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -118,9 +117,8 @@ if ! shopt -oq posix; then
   fi
 fi
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# N VERSION
+export N_PREFIX="$HOME"
 
 # GO
 export PATH="$PATH:/usr/local/go/bin"
@@ -148,3 +146,5 @@ else
         exec fish
   fi
 fi
+
+export PATH=/home/v3rse/.local/bin:$PATH
