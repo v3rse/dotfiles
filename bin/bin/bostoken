@@ -1,0 +1,26 @@
+#!/bin/bash
+
+username="f315ea1e-df05-4b14-8ef0-7d29bac40a4"
+password="B0tk33p3r!"
+clientid="1lctboeqqm2lut5em4sp7tes5f"
+region="us-east-1"
+aws_profile="okta"
+
+response_json=""
+json_field='IdToken'
+
+token_request=`aws cognito-idp initiate-auth --auth-flow USER_PASSWORD_AUTH --output json --region $region --client-id $clientid --auth-parameters USERNAME=$username,PASSWORD=$password --profile $aws_profile`
+
+# parse json
+function jsonval {
+    temp=`echo $response_json | sed 's/\\\\\//\//g' | sed 's/[{}]//g' | awk -v k="text" '{n=split($0,a,","); for (i=1; i<=n; i++) print a[i]}' | sed 's/\"\:\"/\|/g' | sed 's/[\,]/ /g' | sed 's/\"//g' | grep -w $json_field`
+    echo ${temp##*|}
+}
+
+response_json=$token_request
+access_token=`jsonval`
+result=$access_token
+
+#Strip IdToken field and copy to clipboard
+token="$(cut -d':' -f2 <<<"$result")"
+echo $token | xargs | pbcopy
