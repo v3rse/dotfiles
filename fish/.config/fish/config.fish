@@ -17,4 +17,5 @@ alias gcm='git commit -m '
 alias gco='git checkout '
 alias animedoro='notify-send "animedoro started. 60 minutes to go"; sleep 3600; notify-send "animedoro ended. time to take a break and journal some thoughts"; days journal write'
 alias awslocal='aws --endpoint-url=http://localhost:4566 --region us-east-1'
+alias animedoro30='notify-send "animedoro started. 30 minutes to go"; sleep 1800; notify-send "animedoro ended. time to take a break and journal some thoughts"; days journal write'
 

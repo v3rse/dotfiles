@@ -132,6 +132,10 @@ shopt -s extglob
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 
+export PATH=/home/v3rse/.local/bin:$PATH
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
 # personal binaries
 export PATH="$HOME/bin:$PATH"
 
@@ -147,4 +151,3 @@ else
   fi
 fi
 
-export PATH=/home/v3rse/.local/bin:$PATH

@@ -87,7 +87,9 @@ call plug#begin('~/.vim/plugged')
   Plug 'L3MON4D3/LuaSnip'                                        " snippets engine
   Plug 'rafamadriz/friendly-snippets'                            " commonly used snippets
 
-  Plug 'terrortylor/nvim-comment'                                            " commments
+  Plug 'terrortylor/nvim-comment'                                " commments
+
+  Plug 'karolbelina/uxntal.vim'                                  " uxn highlighting
 call plug#end()
 
 "}}}
