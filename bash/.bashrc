@@ -139,6 +139,12 @@ export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 # personal binaries
 export PATH="$HOME/bin:$PATH"
 
+# kitty ssh
+[[ "$TERM" == "xterm-kitty" ]] && alias ssh="kitty +kitten ssh"
+
+# keychain
+eval $(keychain --eval --quiet id_ed25519)
+
 if [[ "$OSTYPE" == "darwin"* ]]; then
   if [[ $(ps -o "command" -p $PPID) != "fish" && -z ${BASH_EXECUTION_STRING} ]]
   then

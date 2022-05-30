@@ -33,6 +33,7 @@ vim - vim configuration, no bundles
 wallpaper - wallpaper for the various color schemes
 compton - settings for composite config for shadows etc.
 firefox - contains some CSS for fixing dark themes. N/B:  `stow -t ~/.mozilla/firefox/<generated-code>.default/chrome firefox`. Make sure you create a `chrome` directory.
+kitty - kitty configurations and themes
 
 
 # Notes
