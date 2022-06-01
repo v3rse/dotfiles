@@ -352,7 +352,7 @@ bar {
     separator $term_background
     background $term_background 
     statusline $term_foreground
-    focused_workspace $term_background     $term_color5     $term_color0
+    focused_workspace $term_background     $term_foreground     $term_color0
     active_workspace  $term_background     $term_background     $term_foreground
     inactive_workspace $term_background     $term_background     $term_foreground
     urgent_workspace $term_background     $term_color1     $term_color0
