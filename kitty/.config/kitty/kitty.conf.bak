@@ -2083,6 +2083,6 @@ window_padding_width 5 10 5
 
 
 # BEGIN_KITTY_THEME
-# Gruvbox Dark Hard
+# Gruvbox Material Dark Medium
 include current-theme.conf
 # END_KITTY_THEME
