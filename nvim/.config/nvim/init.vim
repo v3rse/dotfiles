@@ -127,9 +127,6 @@ local on_attach = function(clinet, bufnr)
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
   local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
-  -- Enable completion triggered by <c-x><c-o>
-  buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
-
   -- Mappings.
   local opts = { noremap=true, silent=true }
 
@@ -154,11 +151,19 @@ local on_attach = function(clinet, bufnr)
 
 end
 
--- Use a loop to conveniently call 'setup' on multiple servers and
--- map buffer local keybindings when the language server attaches
 local lsp_installer = require("nvim-lsp-installer")
 
-lsp_installer.on_server_ready(function(server)
+-- setup lsp installer
+lsp_installer.settings {
+  automatic_installation = true
+}
+
+-- get list of installed servers
+local servers = lsp_installer.get_installed_servers()
+
+-- Use a loop to conveniently call 'setup' on multiple servers and
+-- map buffer local keybindings when the language server attaches
+for _, server in ipairs(servers) do
   local opts = {
     on_attach = on_attach,
     flags = {
@@ -168,7 +173,7 @@ lsp_installer.on_server_ready(function(server)
   }
 
   server:setup(opts)
-end)
+end
 EOF
 
 "}}}
