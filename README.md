@@ -1,6 +1,10 @@
 # Introduction
 This are a store house for my new dotfile folder. I gutted the previous one because I stuffed that I copied and I truly didn't understand everything in there.
 
+# Prerequisite
+- `i3blocks`: 
+  - [i3blocks-contrib scripts](https://github.com/vivien/i3blocks-contrib)
+
 # Management
 GNU `stow` is what I use  to symlink the files and folders:
 
@@ -34,6 +38,7 @@ wallpaper - wallpaper for the various color schemes
 compton - settings for composite config for shadows etc.
 firefox - contains some CSS for fixing dark themes. N/B:  `stow -t ~/.mozilla/firefox/<generated-code>.default/chrome firefox`. Make sure you create a `chrome` directory.
 kitty - kitty configurations and themes
+i3blocks - replacement for i3status
 
 
 # Notes

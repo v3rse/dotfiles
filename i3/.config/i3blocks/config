@@ -1,0 +1,54 @@
+# Global properties
+#
+# The top properties below are applied to every block, but can be overridden.
+# Each block command defaults to the script name to avoid boilerplate.
+# Change $SCRIPT_DIR to the location of your scripts!
+command=$SCRIPT_DIR/$BLOCK_NAME/$BLOCK_NAME
+separator_block_width=15
+markup=none
+
+[i3-focusedwindow]
+command=$SCRIPT_DIR/$BLOCK_NAME/$BLOCK_NAME 30
+label=💭 
+interval=persist
+
+[cpu_usage]
+markup=pango
+interval=10
+LABEL=﬙ 
+min_width=﬙ 100.00%
+REFRESH_TIME=1
+WARN_PERCENT=50
+CRIT_PERCENT=80
+DECIMALS=2
+
+[memory]
+label=🖬 
+interval=30
+
+[disk]
+LABEL=🖴 
+interval=30
+
+# battery
+# [batterybar]
+# label=bat:
+# interval=5
+# markup=pango
+# min_width=bat: ■■■■■
+[battery2]
+markup=pango
+interval=30
+
+[calendar]
+interval=1
+LABEL= 
+DATEFMT=+%H:%M:%S
+HEIGHT=180
+WIDTH=220
+
+[dunst]
+interval=once
+format=json
+markup=pango
+

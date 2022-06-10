@@ -232,6 +232,8 @@ for_window [class="Skype"] floating enable border normal
 for_window [class="Timeset-gui"] floating enable border normal
 for_window [class="(?i)virtualbox"] floating enable border normal
 for_window [class="Xfburn"] floating enable
+# calendar
+for_window [class="Yad"] floating enable
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -343,13 +345,13 @@ set_from_resource $term_color15    color15
 # finds out, if available)
 bar {
   i3bar_command i3bar
-  status_command i3status
+  status_command SCRIPT_DIR=~/.config/i3blocks/blocklets i3blocks
   position top
 # font pango:Hack
   bindsym button4 nop
   bindsym button5 nop
   colors {
-    separator $term_background
+    separator $term_foreground
     background $term_background 
     statusline $term_foreground
     focused_workspace $term_background     $term_foreground     $term_color0
