@@ -100,6 +100,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'nvim-lualine/lualine.nvim'                            " status line
 
   Plug 'karolbelina/uxntal.vim'                                  " uxn highlighting
+  Plug '~/src/personal/bndr.vim'
 call plug#end()
 
 "}}}
