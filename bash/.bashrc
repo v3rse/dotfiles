@@ -122,6 +122,7 @@ export N_PREFIX="$HOME"
 
 # GO
 export PATH="$PATH:/usr/local/go/bin"
+export PATH="$PATH:$HOME/go/bin"
 
 TZ='Africa/Accra'; export TZ
 
@@ -137,13 +138,23 @@ export PATH=/home/v3rse/.local/bin:$PATH
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 # personal binaries
-export PATH="$HOME/bin:$PATH"
+export PATH="$PATH:$HOME/bin"
+
+# PATH="/home/v3rse/perl5/bin${PATH:+:${PATH}}"; export PATH;
+# PERL5LIB="/home/v3rse/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+# PERL_LOCAL_LIB_ROOT="/home/v3rse/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+# PERL_MB_OPT="--install_base \"/home/v3rse/perl5\""; export PERL_MB_OPT;
+# PERL_MM_OPT="INSTALL_BASE=/home/v3rse/perl5"; export PERL_MM_OPT;
+
+# Ruby
+export PATH="$HOME/.local/share/gem/ruby/3.0.0/bin:$PATH"
 
 # kitty ssh
 [[ "$TERM" == "xterm-kitty" ]] && alias ssh="kitty +kitten ssh"
 
 # keychain
 eval $(keychain --eval --quiet id_ed25519)
+
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
   if [[ $(ps -o "command" -p $PPID) != "fish" && -z ${BASH_EXECUTION_STRING} ]]
@@ -158,8 +169,3 @@ else
 fi
 
 
-PATH="/home/v3rse/perl5/bin${PATH:+:${PATH}}"; export PATH;
-PERL5LIB="/home/v3rse/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
-PERL_LOCAL_LIB_ROOT="/home/v3rse/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
-PERL_MB_OPT="--install_base \"/home/v3rse/perl5\""; export PERL_MB_OPT;
-PERL_MM_OPT="INSTALL_BASE=/home/v3rse/perl5"; export PERL_MM_OPT;

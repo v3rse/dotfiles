@@ -100,7 +100,10 @@ call plug#begin('~/.vim/plugged')
   Plug 'nvim-lualine/lualine.nvim'                            " status line
 
   Plug 'karolbelina/uxntal.vim'                                  " uxn highlighting
+
   Plug '~/src/personal/bndr.vim'
+
+  Plug 'elkowar/yuck.vim'
 call plug#end()
 
 "}}}
@@ -183,7 +186,6 @@ local lsp_installer = require("nvim-lsp-installer")
 
 -- setup lsp installer
 lsp_installer.settings {
-  automatic_installation = true
 }
 
 -- get list of installed servers
@@ -228,24 +230,70 @@ lua <<EOF
 local cmp = require("cmp")
 local lspkind = require("lspkind")
 local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+local luasnip = require("luasnip")
+local cmp_confirm_opts = {
+  behavior = cmp.ConfirmBehavior.Replace,
+  select = false,
+}
+local check_backspace = function()
+  local col = vim.fn.col "." - 1
+  return col == 0 or vim.fn.getline("."):sub(col, col):match "%s"
+end
 
 cmp.setup({
   snippet = {
     -- REQUIRED: specify snippet engine
     expand = function(args)
-      require('luasnip').lsp_expand(args.body)
+      luasnip.lsp_expand(args.body)
     end,
   },
   mapping = {
-    ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
-    ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
-    ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
-    ['<C-y>'] = cmp.config.disable,
-    ['<C-e>'] = cmp.mapping({
-      i = cmp.mapping.abort(),
-      c = cmp.mapping.close(),
-    }),
-    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+    ["<C-k>"] = cmp.mapping.select_prev_item(),
+    ["<C-j>"] = cmp.mapping.select_next_item(),
+    ["<C-d>"] = cmp.mapping.scroll_docs(-4),
+    ["<C-f>"] = cmp.mapping.scroll_docs(4),
+    ["<Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif luasnip.expandable() then
+        luasnip.expand()
+      elseif luasnip.jumpable() then
+        luasnip.jump(1)
+      elseif check_backspace() then
+        fallback()
+      elseif is_emmet_active() then
+        return vim.fn["cmp#complete"]()
+      else
+        fallback()
+      end
+    end, { "i", "s", }),
+    ["<S-Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, { "i", "s", }),
+    ["<C-Space>"] = cmp.mapping.complete(),
+    ["<C-e>"] = cmp.mapping.abort(),
+    ["<CR>"] = cmp.mapping(function(fallback)
+      if cmp.visible() and cmp.confirm(cmp_confirm_opts) then
+        if luasnip.jumpable() then
+          luasnip.jump(1)
+        end
+        return
+      end
+
+      if luasnip.jumpable() then
+        if not luasnip.jump(1) then
+          fallback()
+        end
+      else
+        fallback()
+      end
+    end),
   },
   sources = cmp.config.sources({
     { name = 'nvim_lsp' },
@@ -302,7 +350,7 @@ lua <<EOF
 require('nvim_comment').setup()
 EOF
 "}}}
-"
+
 "{{{ Autopairs
 lua <<EOF
 require('nvim-autopairs').setup{}
@@ -344,6 +392,9 @@ telescope.setup({
     aerial = {
       show_nesting = true
     }
+  },
+  defaults = {
+    file_ignore_patterns = {"node_modules"}
   }
 })
 EOF
@@ -419,7 +470,7 @@ require("colorizer").setup({
 })
 EOF
 "}}}
-"
+
 "Keybindings {{{
 
 " User defined

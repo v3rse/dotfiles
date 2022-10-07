@@ -7,10 +7,11 @@ command=$SCRIPT_DIR/$BLOCK_NAME/$BLOCK_NAME
 separator_block_width=15
 markup=none
 
-[i3-focusedwindow]
-command=$SCRIPT_DIR/$BLOCK_NAME/$BLOCK_NAME 30
-label=💭 
-interval=persist
+# [i3-focusedwindow]
+# command=$SCRIPT_DIR/$BLOCK_NAME/$BLOCK_NAME 30
+# label=💭 
+# interval=persist
+# color=#A6D1FA
 
 [cpu_usage]
 markup=pango
@@ -28,6 +29,12 @@ interval=30
 
 [disk]
 LABEL=🖴 
+DIR=/
+interval=30
+
+[disk]
+LABEL= 
+DIR=/home
 interval=30
 
 # battery
