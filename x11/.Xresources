@@ -7,7 +7,7 @@ xft.autohint: 0
 xft.lcdfilter: lcddefault
 
 ! === color scheme ===
-#include ".term_colors/xdotshare.Xcolors"
+#include ".term_colors/mocha.Xcolors"
 
 ! Terminal
 ! urxvt*termName: rxvt-unicode-256color

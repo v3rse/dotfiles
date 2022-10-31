@@ -133,6 +133,9 @@ shopt -s extglob
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 
+# default browser
+export BROWSER=/usr/bin/qutebrowser
+
 export PATH=/home/v3rse/.local/bin:$PATH
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
@@ -149,12 +152,22 @@ export PATH="$PATH:$HOME/bin"
 # Ruby
 export PATH="$HOME/.local/share/gem/ruby/3.0.0/bin:$PATH"
 
+
+# NVM
+source /usr/share/nvm/init-nvm.sh
+
 # kitty ssh
 [[ "$TERM" == "xterm-kitty" ]] && alias ssh="kitty +kitten ssh"
 
 # keychain
 eval $(keychain --eval --quiet id_ed25519)
 
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="/home/v3rse/.sdkman"
+[[ -s "/home/v3rse/.sdkman/bin/sdkman-init.sh" ]] && source "/home/v3rse/.sdkman/bin/sdkman-init.sh"
+
+# dotnet
+export PATH="$HOME/.dotnet/tools:$PATH"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
   if [[ $(ps -o "command" -p $PPID) != "fish" && -z ${BASH_EXECUTION_STRING} ]]
@@ -167,5 +180,6 @@ else
         exec fish
   fi
 fi
+
 
 

@@ -12,16 +12,15 @@
 
 set $mod Mod1
 
-# Configure border style <normal|1pixel|pixel xx|none|pixel>
-default_border pixel 3
-default_floating_border normal 3
+# Simplified borders
+for_window [class=".*"] split toggle
+for_window [class=".*"] border pixel 0
+for_window [class=".*"] hide_edge_borders vertical
 
-# Hide borders
-hide_edge_borders none
 
 # change borders
 bindsym $mod+u border none
-bindsym $mod+y border pixel 1
+bindsym $mod+y border pixel 5
 bindsym $mod+n border normal
 
 # Font for window titles. Will also be used by the bar unless a different font
@@ -57,7 +56,7 @@ bindsym $mod+Shift+q kill
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
-bindsym $mod+d exec --no-startup-id dmenu_recency
+bindsym $mod+d exec --no-startup-id dmenu_recency -nb '#000000' -nf '#ffffff' -sb '#151515' -sf '#d7d0c7'
 # launch categorized menu
 # bindsym $mod+z exec --no-startup-id morc_menu
 
@@ -184,7 +183,7 @@ bindsym $mod+Shift+a move workspace to output left
 bindsym $mod+Shift+d move workspace to output right
 
 # Reload screen setup
-bindsym $mod+p exec --no-startup-id choose-screenlayout
+# bindsym $mod+p exec --no-startup-id choose-screenlayout
 
 # Applications
 
@@ -208,35 +207,9 @@ bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
 # assign [class="Pcmanfm"] $ws3
 
 # Open specific applications in floating mode
-for_window [title="alsamixer"] floating enable border pixel 1
-for_window [class="calamares"] floating enable border normal
-for_window [class="Clipgrab"] floating enable
-for_window [title="File Transfer*"] floating enable
-for_window [class="fpakman"] floating enable
-for_window [class="Galculator"] floating enable border pixel 1
-for_window [class="GParted"] floating enable border normal
-for_window [title="i3_help"] floating enable sticky enable border normal
-for_window [class="Lightdm-settings"] floating enable
-for_window [class="Lxappearance"] floating enable sticky enable border normal
-for_window [class="Manjaro-hello"] floating enable
-for_window [class="Manjaro Settings Manager"] floating enable border normal
-for_window [title="MuseScore: Play Panel"] floating enable
-for_window [class="Nitrogen"] floating enable sticky enable border normal
-for_window [class="Oblogout"] fullscreen enable
-for_window [class="octopi"] floating enable
-for_window [title="About Pale Moon"] floating enable
-for_window [class="Pamac-manager"] floating enable
-for_window [class="Pavucontrol"] floating enable resize set 720 480
-for_window [class="qt5ct"] floating enable sticky enable border normal
-for_window [class="Qtconfig-qt4"] floating enable sticky enable border normal
-for_window [class="Simple-scan"] floating enable border normal
-for_window [class="(?i)System-config-printer.py"] floating enable border normal
-for_window [class="Skype"] floating enable border normal
-for_window [class="Timeset-gui"] floating enable border normal
-for_window [class="(?i)virtualbox"] floating enable border normal
-for_window [class="Xfburn"] floating enable
-# calendar
+# for_window [class="qutebrowser"] border pixel 3
 for_window [class="Yad"] floating enable
+for_window [title="Nitrogen"] floating enable; move position center
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -315,9 +288,11 @@ bindsym $mod+t [title="dropdown"] scratchpad show; move position center
 
 for_window [title="dropdown"] move scratchpad
 for_window [title="dropdown"] resize set 1280 720
+for_window [title="dropdown"] border pixel 5
 
 for_window [class="Zulip"] move scratchpad
 for_window [class="Zulip"] resize set 1280 720
+for_window [title="Zulip"] border pixel 5
 
 exec --no-startup-id kitty --title dropdown tmux
 exec --no-startup-id zulip
@@ -348,7 +323,7 @@ set_from_resource $term_color15    color15
 # finds out, if available)
 bar {
   i3bar_command i3bar
-  status_command SCRIPT_DIR=~/.config/i3blocks/blocklets i3blocks
+  status_command SCRIPT_DIR=/usr/lib/i3blocks i3blocks
   # status_command i3status
   position top
 # font pango:Hack
@@ -379,7 +354,7 @@ client.background       $term_background
 #i3-gaps
 # Set inner/outer gaps
 gaps inner 14
-gaps outer -2
+gaps outer 5
 
 # Additionally, you can issue commands with the following syntax. This is useful to bind keys to changing the gap size.
 # gaps inner|outer current|all set|plus|minus <px>
@@ -391,7 +366,7 @@ gaps outer -2
 
 # Smart borders (draw borders around container only if it is not the only container on this workspace) 
 # on|no_gaps (on=always activate and no_gaps=only activate if the gap size to the edge of the screen is 0)
-# smart_borders on
+smart_borders on
 
 # Press $mod+Shift+g to enter the gap mode. Choose o or i for modifying outer/inner gaps. Press one of + / - (in-/decrement for current workspace) or 0 (remove gaps for current workspace). If you also press Shift with these keys, the change will be global for all workspaces.
 set $mode_gaps Gaps: (o) outer, (i) inner
