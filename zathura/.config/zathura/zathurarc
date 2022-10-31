@@ -1,3 +1,2 @@
-/* set page-padding 0 */
 set recolor true
 include catppuccin-mocha
