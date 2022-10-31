@@ -1,0 +1,3 @@
+[submodule "qutebrowser/.config/qutebrowser/catppuccin"]
+	path = qutebrowser/.config/qutebrowser/catppuccin
+	url = git@github.com:catppuccin/qutebrowser.git
