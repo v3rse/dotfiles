@@ -153,6 +153,9 @@ export PATH="$PATH:$HOME/bin"
 export PATH="$HOME/.local/share/gem/ruby/3.0.0/bin:$PATH"
 
 
+# Load Angular CLI autocompletion.
+# source <(ng completion script)
+
 # NVM
 source /usr/share/nvm/init-nvm.sh
 
@@ -160,7 +163,7 @@ source /usr/share/nvm/init-nvm.sh
 [[ "$TERM" == "xterm-kitty" ]] && alias ssh="kitty +kitten ssh"
 
 # keychain
-eval $(keychain --eval --quiet id_ed25519)
+eval $(keychain --eval --quiet --agents ssh,gpg id_ed25519 5F910544C18EE265)
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="/home/v3rse/.sdkman"
@@ -168,6 +171,9 @@ export SDKMAN_DIR="/home/v3rse/.sdkman"
 
 # dotnet
 export PATH="$HOME/.dotnet/tools:$PATH"
+
+# GPG
+export GPG_TTY=$(tty)
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
   if [[ $(ps -o "command" -p $PPID) != "fish" && -z ${BASH_EXECUTION_STRING} ]]

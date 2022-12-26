@@ -18,18 +18,29 @@ settings:
     global: true
   content.blocking.method:
     global: both
+  content.blocking.whitelist:
+    global:
+    - https://www.webtoons.com
   content.geolocation:
     https://aquantuo.com: false
     https://eu.docusign.net: true
     https://www.aquantuo.com: false
+  content.javascript.can_access_clipboard:
+    global: true
   content.notifications.enabled:
     https://blog.csdn.net: false
     https://chat.andela.com: false
+    https://coxziptwo.com: false
+    https://mem.ai: false
+    https://starlite.com.gh: false
+    https://www.evernote.com: false
+    https://www.netflix.com: false
     https://www.reddit.com: false
     https://www.wcostream.net: false
   content.private_browsing:
     global: false
   content.register_protocol_handler:
+    https://calendar.google.com?cid=%25s: true
     https://mail.google.com?extsrc=mailto&url=%25s: true
   qt.args:
     global:
