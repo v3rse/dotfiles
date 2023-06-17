@@ -172,6 +172,10 @@ export SDKMAN_DIR="/home/v3rse/.sdkman"
 # dotnet
 export PATH="$HOME/.dotnet/tools:$PATH"
 
+# flutter
+export PATH="/opt/flutter/bin:$PATH"
+export CHROME_EXECUTABLE="/usr/bin/brave"
+
 # GPG
 export GPG_TTY=$(tty)
 
