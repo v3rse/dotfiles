@@ -21,21 +21,38 @@ settings:
   content.blocking.whitelist:
     global:
     - https://www.webtoons.com
+    - https://app.mlsend.com
+    - https://talent.localyze.com
+    - http://rvmx9zly.r.us-west-2.awstrack.me
+    - https://rvmx9zly.r.us-west-2.awstrack.me
   content.geolocation:
     https://aquantuo.com: false
+    https://auskunft.kvb.koeln: true
     https://eu.docusign.net: true
     https://www.aquantuo.com: false
+    https://www.kvb.koeln: true
   content.javascript.can_access_clipboard:
     global: true
+  content.javascript.enabled:
+    global: true
+  content.media.audio_capture:
+    https://meet.google.com: true
+  content.media.audio_video_capture:
+    https://meet.google.com: true
+  content.media.video_capture:
+    https://meet.google.com: true
   content.notifications.enabled:
     https://blog.csdn.net: false
+    https://calendar.google.com: true
     https://chat.andela.com: false
     https://coxziptwo.com: false
+    https://meet.google.com: true
     https://mem.ai: false
     https://starlite.com.gh: false
     https://www.evernote.com: false
     https://www.netflix.com: false
     https://www.reddit.com: false
+    https://www.tiktok.com: false
     https://www.wcostream.net: false
   content.private_browsing:
     global: false

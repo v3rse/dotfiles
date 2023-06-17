@@ -52,6 +52,7 @@ set lazyredraw                " Only redraw when necessary.
 set completeopt=menu,menuone,noselect " Configure completion dialogues
 
 
+
 "}}}
 
 "Plugin Startup {{{
@@ -138,7 +139,7 @@ lua << EOF
 
 -- completions
 -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 local nvim_lsp = require('lspconfig')
 
@@ -178,7 +179,7 @@ local on_attach = function(client, bufnr)
   }, bufnr)
 
   -- Attach symbol outline source
-  require("aerial").on_attach(client, bufnr)
+  -- require("aerial").on_attach(client, bufnr)
 
 end
 
@@ -212,7 +213,7 @@ EOF
 lua << EOF
 require('aerial').setup{
   on_attach = function(bufnr)
-    -- Toggle the aerial window with <leader>a
+   -- Toggle the aerial window with <leader>a
     vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>a', '<cmd>AerialToggle!<CR>', {})
     -- Jump forwards/backwards with '{' and '}'
     vim.api.nvim_buf_set_keymap(bufnr, 'n', '{', '<cmd>AerialPrev<CR>', {})
@@ -359,6 +360,10 @@ EOF
 
 "File Explorer {{{
 lua << EOF
+-- deactivate netrw
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 require("nvim-tree").setup{}
 EOF
 "}}}
