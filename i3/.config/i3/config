@@ -10,12 +10,15 @@
 #
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
-set $mod Mod1
+set $mod Mod4
+
+default_border pixel 5
+default_floating_border normal 8
 
 # Simplified borders
-for_window [class=".*"] split toggle
-for_window [class=".*"] border pixel 0
-for_window [class=".*"] hide_edge_borders vertical
+# for_window [class=".*"] split toggle
+# for_window [class=".*"] border pixel 0
+# for_window [class=".*"] hide_edge_borders vertical
 
 
 # change borders
