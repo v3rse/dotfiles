@@ -196,6 +196,8 @@
 (use-package lsp-ui
   :commands lsp-ui-mode)
 
+(lsp-headerline-breadcrumb-mode -1)
+
 (use-package company
   :hook (after-init . global-company-mode))
 
