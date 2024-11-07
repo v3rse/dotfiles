@@ -2083,6 +2083,6 @@ window_padding_width 10
 
 
 # BEGIN_KITTY_THEME
-# Gruvbox Dark Hard
+# Belafonte Day
 include current-theme.conf
 # END_KITTY_THEME
