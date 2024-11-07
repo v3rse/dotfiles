@@ -1,35 +1,9 @@
-#+TITLE: Config
-#+PROPERTY: header-args :tangle "~/dotfiles/emacs/.config/doom/config.el" :mkdirp yes
-
-* INTRODUCTION
-** Requirement
-- [[https://github.com/plexus/chemacs2?tab=readme-ov-file#doom-emacs][Chemacs2]]
-- [[https://github.com/doomemacs/doomemacs][Doom Emacs]]
-- An =authinfo= file with all the secrets needed for:
-  - gptel
-  - usenet
-  - forge
-
-** Usage
-Run =org-babel-tangle= using ~C-c C-v t~ to create the =config.el= file in the path specified in the headers of this file. This assumes the output file should be your =dotfiles= directory managed by =stow=.
-
-
-* INITIALIZATION
-** Lexical Binding?
-#+begin_src emacs-lisp
+;; test
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
-#+end_src
 
-
-* APPEARANCE
-** General
-#+begin_src emacs-lisp
 (add-hook! 'visual-fill-column-mode-hook (setq display-line-numbers-mode -1))
 (setq display-line-numbers-type t)
-#+end_src
 
-** Dashboard
-#+begin_src emacs-lisp
 (setq fancy-splash-image (concat doom-private-dir "splash.svg"))
 
 (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu)
@@ -38,39 +12,21 @@ Run =org-babel-tangle= using ~C-c C-v t~ to create the =config.el= file in the p
 (add-hook! '+doom-dashboard-mode-hook (hl-line-mode -1))
 
 (setq-hook! '+doom-dashboard-mode-hook evil-normal-state-cursor (list nil))
-#+end_src
 
-** Font
-#+begin_src emacs-lisp
 (setq doom-font (font-spec :family "Iosevka SS04" :size 16 :weight 'regular)
      doom-variable-pitch-font (font-spec :family "ETBembo" :size 20))
-#+end_src
 
-** Theme
-#+begin_src emacs-lisp
 (setq doom-theme 'doom-tomorrow-night)
-#+end_src
 
-
-* APPLICATIONS
-** Programming
-*** Project Management (Projectile)
-#+begin_src emacs-lisp
 (setq projectile-project-search-path '("~/src/personal" "~/src/other" "~/src/lab"))
-#+end_src
 
-** Org Mode
-#+begin_src emacs-lisp
 (setq org-directory "~/org/"
         org-agenda-files '("gtd/inbox.org")
         org-ellipsis " ... "
         org-tags-column -80
         org-log-into-drawer t
         org-hide-emphasis-markers t)
-#+end_src
 
-*** Org [Super] Agenda
-#+begin_src emacs-lisp
 (use-package! org-super-agenda
               :after org-agenda
               :init
@@ -89,40 +45,25 @@ Run =org-babel-tangle= using ~C-c C-v t~ to create the =config.el= file in the p
                                                      :tag "bo")))
               :config
               (org-super-agenda-mode))
-#+end_src
 
-** Note Search (Deft)
-#+begin_src emacs-lisp
 (setq deft-directory "~/org"
       deft-extensions '("org")
       deft-recursive t)
-#+end_src
 
-** Epub Reader (Nov.el)
-#+begin_src emacs-lisp
 (use-package nov
   :config (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
-#+end_src
 
-** Browser (eww)
-#+begin_src emacs-lisp
 (setq browse-url-browser-function 'eww-browse-url
       shr-indentation 2
       shr-width 70)
 
 (set-popup-rule! "^\\*eww\\*" :side 'right :size 0.50)
-#+end_src
 
-** GTP (gptel)
-#+begin_src emacs-lisp
 (use-package! gptel
   :config
   (setq! gptel-default-mode 'org-mode)
   (setq! gptel-default-input-format 'org))
-#+end_src
 
-** RSS (elfeed)
-#+begin_src emacs-lisp
 (setq elfeed-feeds
         '(
           ;; News sites (using Ground News on Phone for now)
@@ -142,10 +83,7 @@ Run =org-babel-tangle= using ~C-c C-v t~ to create the =config.el= file in the p
 
 (after! elfeed
   (setq elfeed-search-filter "@1-day-ago +unread"))
-#+end_src
 
-** IRC (circe)
-#+begin_src emacs-lisp
 (after! circe
   (set-irc-server! "irc.libera.chat"
     `(:tls t
@@ -154,28 +92,17 @@ Run =org-babel-tangle= using ~C-c C-v t~ to create the =config.el= file in the p
       :sasl-username "v3rse"
       :sasl-password "1amHappy"
       :channels ("#emacs" "#systemcrafters" "#org-mode"))))
-#+end_src
 
-** Usenet Reading (gnus)
-#+begin_src emacs-lisp
 (after! gnus
   (setq! gnus-select-method
       '(nntp "news.usenet.farm"
              (nntp-open-connection-function nntp-open-tls-stream)
              (nntp-port-number 563))))
-#+end_src
 
-** Mastodon
-#+begin_src emacs-lisp
 (after! mastodon
   (setq! mastodon-instance-url "https://recurse.social"
       mastodon-active-user "v3rse"))
-#+end_src
 
-
-* CUSTOM
-** Reading Mode
-#+begin_src emacs-lisp
 (defvar-local v3rse/reading nil
     "This is set if reading visuals are active")
 
@@ -203,10 +130,7 @@ Run =org-babel-tangle= using ~C-c C-v t~ to create the =config.el= file in the p
   (if v3rse/reading
       (v3rse/deactivate-reading)
     (v3rse/activate-reading)))
-#+end_src
 
-** Bionic Reading
-#+begin_src emacs-lisp
 (defvar-local bionic-overlays nil
   "The overlays for bionicification in the current buffer.")
 
@@ -249,4 +173,3 @@ Run =org-babel-tangle= using ~C-c C-v t~ to create the =config.el= file in the p
   (interactive)
   (dolist (ov bionic-overlays)
     (delete-overlay ov)))
-#+end_src
