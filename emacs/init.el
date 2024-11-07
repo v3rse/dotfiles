@@ -32,6 +32,7 @@
 		eshell-mode-hook))
     (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
+
 ;; show column number
 (column-number-mode 1)
 
@@ -68,7 +69,7 @@
 (setq global-auto-revert-non-file-buffers t)
 
 (set-face-attribute 'default nil :font "JetBrains Mono" :height 110)
-(set-face-attribute 'variable-pitch nil :family "Iosevka Aile")
+(set-face-attribute 'variable-pitch nil :family "ETBembo" :height 200)
 
 ;; doom emacs themes
 (use-package doom-themes
@@ -78,27 +79,7 @@
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
 
-;; modus themes
-(use-package modus-themes
-  :config
-  (setq modus-themes-italic-constructs t
-    modus-themes-bold-constructs t
-    modus-themes-syntax '(faint yellow-comments)
-    modus-themes-headings
-    '((1 . (rainbow background 1.4))
-      (2 . (rainbow background 1.3))
-      (3 . (rainbow bold 1.2))
-      (t . (semilight 1.1)))
-    modus-themes-paren-match '(bold intense)
-    modus-themes-scale-headings t
-    modus-themes-org-blocks 'gray-background
-    modus-themes-mode-line '(accented borderless padded)
-    modus-themes-region '(bg-only)
-    modus-themes-completions
-    '((matches . (extrabold underline))
-      (selection . (semibold italic)))))
-
-(load-theme 'doom-1337 t)
+(load-theme 'doom-tomorrow-night t)
 
 (use-package counsel
 	:ensure t
@@ -188,9 +169,14 @@
   :mode "\\.ts\\'"
   :hook (typescript-mode . lsp))
 
+(use-package go-mode
+  :mode "\\.go\\'"
+  :hook (go-mode . lsp))
+
 (use-package lsp-mode
   :hook ((js-mode . lsp)
 	 (typescript-mode . lsp))
+  :config (setq lsp-clients-deno-config "./deno.json")
   :commands lsp)
 
 (use-package lsp-ui
@@ -223,6 +209,7 @@
   :hook (company-mode . company-box-mode))
 
 (use-package magit
+  :ensure t
   :bind ("C-x g" . magit-status))
 
 (use-package evil
@@ -266,20 +253,50 @@
   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
-(use-package org-super-agenda
-  :config
-  (org-super-agenda-mode))
 
-(use-package org-modern
-  :init
-  (global-org-modern-mode)
-  :config
-  (set-face-attribute 'org-modern-symbol nil :family "Iosevka"))
+;; (use-package org-modern
+;;   :init
+;;   (global-org-modern-mode)
+;;   :config
+;;   (set-face-attribute 'org-modern-symbol nil :family "Iosevka"))
 
 (require 'org-tempo)
 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist '("py" . "src python"))
 
+
 (global-set-key (kbd "C-c a") 'org-agenda)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-agenda-custom-commands
+   '(("A" "Agenda and all NEXT maintainance"
+      ((agenda ""
+	       ((org-agenda-span 'day)))
+       (tags-todo "MAINTAINANCE+TODO=\"NEXT\"+TODO=\"TODO\"" nil))
+      nil)))
+ '(org-agenda-files
+   '("~/src/personal/codex-org-mode/rainer-course/tutorial.org" "/home/v3rse/notes/org/archive/notes/example.org"))
+ '(org-babel-load-languages '((shell . t) (dot . t) (awk . t) (emacs-lisp . t)))
+ '(org-capture-templates
+   '(("w" "Private templates")
+     ("wt" "TODO entry" entry
+      (file+headline "~/src/personal/codex-org-mode/rainer-course/tutorial.org" "Work Capture")
+      (file "~/src/personal/codex-org-mode/rainer-course/tpl-work-todo.txt"))))
+ '(org-clock-into-drawer "CLOCKING")
+ '(org-export-backends '(ascii beamer html icalendar latex odt))
+ '(org-modules
+   '(ol-bbdb ol-bibtex ol-docview ol-doi ol-eww ol-gnus org-habit ol-info ol-irc ol-mhe ol-rmail ol-w3m))
+ '(org-publish-project-alist
+   '(("joe" :base-directory "~/src/personal/codex-org-mode/rainer-course/joe/" :publishing-directory "~/public_html" :publishing-function org-html-publish-to-html :section-numbers nul :with-toc nil)))
+ '(org-refile-targets nil))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
