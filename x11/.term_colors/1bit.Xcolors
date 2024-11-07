@@ -1,0 +1,35 @@
+! swapped black and white: https://lospec.com/palette-list/1bit-monitor-glow
+*background: #F0F6F0
+*foreground: #222323
+
+! white
+*color0: #F0F6F0
+*color8: #F0F6F0
+
+! red
+*color1: #F0F6F0
+*color9: #F0F6F0
+
+! green
+*color2: #222323
+*color10: #222323
+
+! yellow
+*color3: #222323
+*color11: #222323
+
+! blue
+*color4: #222323
+*color12: #222323
+
+! magenta
+*color5: #222323
+*color13: #222323
+
+! cyan
+*color6: #222323
+*color14: #222323
+
+! black
+*color7: #222323
+*color15: #222323
