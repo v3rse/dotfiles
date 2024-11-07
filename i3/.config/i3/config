@@ -185,9 +185,6 @@ bindsym $mod+Shift+s move workspace to output down
 bindsym $mod+Shift+a move workspace to output left
 bindsym $mod+Shift+d move workspace to output right
 
-# Reload screen setup
-# bindsym $mod+p exec --no-startup-id choose-screenlayout
-
 # Applications
 
 # bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
