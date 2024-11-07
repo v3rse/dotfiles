@@ -159,6 +159,14 @@ export PATH="$HOME/.local/share/gem/ruby/3.0.0/bin:$PATH"
 # NVM
 source /usr/share/nvm/init-nvm.sh
 
+# BUN
+export BUN_INSTALL="$HOME/.bun"
+export PATH=$BUN_INSTALL/bin:$PATH
+
+# DENO
+export DENO_INSTALL="/home/v3rse/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH"
+
 # kitty ssh
 [[ "$TERM" == "xterm-kitty" ]] && alias ssh="kitty +kitten ssh"
 
@@ -190,6 +198,7 @@ else
         exec fish
   fi
 fi
+
 
 
 
