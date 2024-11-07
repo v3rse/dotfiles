@@ -21,7 +21,7 @@ alias awslocal='aws --endpoint-url=http://localhost:4566 --region us-east-1'
 alias animedoro30='notify-send --urgency normal "animedoro started. 30 minutes to go"; sleep 1800; notify-send --urgency  critical "animedoro ended. time to take a break and journal some thoughts";'
 
 # -Vim
-alias vim='nvim'
+alias vim='lvim'
 
 # Bat
 alias cat='bat'
