@@ -1,0 +1,37 @@
+! swapped black and white: https://lospec.com/palette-list/2bit-demichrome
+*background: #E9EFEC
+*foreground: #211E20
+! light colors: #A0A08B - green, yellow, cyan
+! dark colors: #555568 - red, blue, magenta 
+
+! white
+*color0: #E9EFEC
+*color8: #E9EFEC
+
+! red
+*color1: #555568
+*color9: #555568
+
+! green
+*color2: #A0A08B
+*color10: #A0A08B
+
+! yellow
+*color3: #A0A08B
+*color11: #A0A08B
+
+! blue
+*color4: #555568
+*color12: #555568
+
+! magenta
+*color5: #555568
+*color13: #555568
+
+! cyan
+*color6: #A0A08B
+*color14: #A0A08B
+
+! black
+*color7: #211E20
+*color15: #211E20
