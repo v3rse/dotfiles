@@ -1,0 +1,1 @@
+complete --command lsd --no-files --arguments "(env _LSD_COMPLETE=complete_fish _TYPER_COMPLETE_FISH_ACTION=get-args _TYPER_COMPLETE_ARGS=(commandline -cp) lsd)" --condition "env _LSD_COMPLETE=complete_fish _TYPER_COMPLETE_FISH_ACTION=is-args _TYPER_COMPLETE_ARGS=(commandline -cp) lsd"
