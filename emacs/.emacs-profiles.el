@@ -1,3 +1,3 @@
-(("vanilla" . ((user-emacs-directory . "~/.emacs.default")))
- ("default" . ((user-emacs-directory . "~/.config/emacs-configs/doom-emacs")
-           (env . (("DOOMDIR" . "~/.config/doom"))))))
+(("default" . ((user-emacs-directory . "~/.config/emacs-configs/doomemacs")
+            (env . (("DOOMDIR" . "~/.config/doom")))))
+ ("vanilla" . ((user-emacs-directory . "~/.config/emacs-configs/default"))))
