@@ -1,10 +1,13 @@
 #+TITLE: Config
-#+PROPERTY: header-args :tangle "~/dotfiles/emacs/.config/doom/config.el" :mkdirp yes
+#+PROPERTY: header-args emacs-lisp :tangle "~/dotfiles/emacs/.config/doom/config.el" :mkdirp yes
 
 * INTRODUCTION
 ** Requirement
 - [[https://github.com/plexus/chemacs2?tab=readme-ov-file#doom-emacs][Chemacs2]]
 - [[https://github.com/doomemacs/doomemacs][Doom Emacs]]
+- Fonts
+  - ETBook/ETBell
+  - Iosevka SS04
 - An =authinfo= file with all the secrets needed for:
   - gptel
   - usenet
@@ -18,6 +21,13 @@ Run =org-babel-tangle= using ~C-c C-v t~ to create the =config.el= file in the p
 ** Lexical Binding?
 #+begin_src emacs-lisp
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
+#+end_src
+
+** Mac Specific
+This removes the chunky title bar in the mac version fo emacs
+#+begin_src emacs-lisp
+(if (eq window-system 'mac)
+        (add-hook 'doom-after-init-hook (lambda () (tool-bar-mode 1) (tool-bar-mode 0))))
 #+end_src
 
 
@@ -61,6 +71,7 @@ Run =org-babel-tangle= using ~C-c C-v t~ to create the =config.el= file in the p
 
 ** Productivity
 This is active through =org-mode=
+
 *** General
 #+begin_src emacs-lisp
 (after! org
@@ -71,6 +82,11 @@ This is active through =org-mode=
                 org-tags-column -80
                 org-log-into-drawer t
                 org-hide-emphasis-markers t))
+#+end_src
+
+** Terminal (vterm)
+#+begin_src emacs-lisp
+(add-hook 'vterm-mode-hook #'goto-address-mode)
 #+end_src
 
 *** Modules

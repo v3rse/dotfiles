@@ -1,5 +1,8 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
+(if (eq window-system 'mac)
+        (add-hook 'doom-after-init-hook (lambda () (tool-bar-mode 1) (tool-bar-mode 0))))
+
 (add-hook! 'visual-fill-column-mode-hook (setq display-line-numbers-mode -1))
 (setq display-line-numbers-type t)
 
@@ -27,6 +30,8 @@
                 org-tags-column -80
                 org-log-into-drawer t
                 org-hide-emphasis-markers t))
+
+(add-hook 'vterm-mode-hook #'goto-address-mode)
 
 (after! org
   (add-to-list 'org-modules 'org-habit))
