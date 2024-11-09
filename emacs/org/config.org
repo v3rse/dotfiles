@@ -59,37 +59,123 @@ Run =org-babel-tangle= using ~C-c C-v t~ to create the =config.el= file in the p
 (setq projectile-project-search-path '("~/src/personal" "~/src/other" "~/src/lab"))
 #+end_src
 
-** Org Mode
+** Productivity
+This is active through =org-mode=
+*** General
 #+begin_src emacs-lisp
-(setq org-directory "~/org/"
-        org-agenda-files '("gtd/inbox.org")
-        org-ellipsis " ... "
-        org-tags-column -80
-        org-log-into-drawer t
-        org-hide-emphasis-markers t)
+(after! org
+        (setq org-directory "~/org/"
+                org-default-notes-file "~/org/gtd/inbox.org"
+                org-agenda-files '("gtd/inbox.org" "gtd/agenda.org" "gtd/projects.org")
+                org-ellipsis " ... "
+                org-tags-column -80
+                org-log-into-drawer t
+                org-hide-emphasis-markers t))
 #+end_src
 
-*** Org [Super] Agenda
+*** Modules
 #+begin_src emacs-lisp
-(use-package! org-super-agenda
-              :after org-agenda
-              :init
-              (setq org-super-agenda-groups '((:name "Today"
-                                                     :time-grid t
-                                                     :scheduled today)
-                                              (:name "Due today"
-                                                     :deadline today)
-                                              (:name "Important"
-                                                     :priority "A")
-                                              (:name "Overdue"
-                                                     :deadline past)
-                                              (:name "Due soon"
-                                                     :deadline future)
-                                              (:name "Big Outcomes"
-                                                     :tag "bo")))
-              :config
-              (org-super-agenda-mode))
+(after! org
+  (add-to-list 'org-modules 'org-habit))
 #+end_src
+
+*** Getting This Done
+This is from the article [[https://vtimofeenko.com/posts/my-doom-emacs-setup/]["My doom-emacs setup"]]:
+**** Capture
+These are templates for how I *capture* anything that comes to mind based the GTD methodology. Entries are differentiated either using keywords or tags.
+
+  - Tasks: containing some action to be done
+  - Notes: generally not actionable, or for future reference
+  - Meetings: for which notes should be taken
+  - Appointments: which are set sometime in the future
+
+#+begin_src emacs-lisp
+(after! org
+        (setq org-capture-templates
+        `(("t" "Task" entry (file "gtd/inbox.org")
+               ,(string-join '("* TODO %?"
+                                ":PROPERTIES:"
+                                ":CREATED: %U"
+                                ":END:")
+                        "\n"))
+                ("n" "Note" entry (file "gtd/inbox.org")
+                        (string-join '("* %?"
+                                        ":PROPERTIES:"
+                                        ":CREATED: %U"
+                                        ":END:")
+                                "\n"))
+                ("m" "Meeting" entry (file "gtd/inbox.org")
+                        (string-join '("* %? :MEETING"
+                                        "<%<%Y-%m-%d %a %H:00>>"
+                                        ""
+                                        "/Met with: /")
+                                "\n"))
+                ("a" "Appointment" entry (file "gtd/inbox.org")
+                        (string-join '("* %? :APPOINTMENT:"
+                                        ":PROPERTIES:"
+                                        ":CREATED: %U"
+                                        ":END:")
+                                "\n"))
+                )))
+#+end_src
+
+***** Org Task Keywords
+Simplified list of task state keywords and their appearance:
+ - PROJ : large tasks with many sub task that span a longer period
+ - TODO : to be done in future
+ - STRT : being done right now
+ - HOLD : cannot proceed, waits for some external blocker
+ - DONE : terminal state, task is done
+ - CNCL : terminal state, task canceled
+
+#+begin_src emacs-lisp
+(after! org
+        (setq org-todo-keywords '((sequence "TODO(t)" "STRT(n)" "HOLD(w)" "|" "PROJ(p)" "DONE(d)" "CNCL(c)"))
+        org-todo-keyword-faces '(("STRT" . +org-todo-active)
+                                ("HOLD" . +org-todo-onhold)
+                                ("CNCL" . +org-todo-cancel))))
+#+end_src
+
+**** Clarify
+Add custom commands to =org-agenda=
+#+begin_src emacs-lisp
+(after! org-agenda
+        (add-to-list 'org-agenda-custom-commands
+        '("g" "Get Things Done (GTD)"
+                ((tags "INBOX"
+                        ((org-agenda-prefix-format "  %?-12t% s")
+                        ;; The list of items is already filtered by this tag, no point in showing that it exists
+                        (org-agenda-hide-tags-regexp "INBOX")
+                        ;; The header of this section should be "Inbox: clarify and organize"
+                        (org-agenda-overriding-header "\nInbox: clarify and organize\n")))))))
+#+end_src
+**** Organise
+Move things to the proper location.
+In the end you should have an empty inbox.
+***** Refile
+#+begin_src emacs-lisp
+(after! org
+        (setq v3rse/org-refile-target-files '("gtd/agenda.org"
+                                       "gtd/projects.org"
+                                       "gtd/someday-maybe.org"
+                                       "research/notes.org"))
+
+
+        (setq v3rse/org-refile-file-paths
+                        (let (result)
+                                (dolist (file v3rse/org-refile-target-files result)
+                                        (push (expand-file-name file org-directory) result))))
+
+        (setq org-refile-targets
+        '((nil :maxlevel . 9)
+                (v3rse/org-refile-file-paths :maxlevel . 9))))
+#+end_src
+
+***** Archiving
+Nothing to do here. Just using the default settings. All archives go to =<file>_archive=
+
+**** TODO Reflect
+**** TODO Engage
 
 ** Note Search (Deft)
 #+begin_src emacs-lisp
@@ -113,7 +199,7 @@ Run =org-babel-tangle= using ~C-c C-v t~ to create the =config.el= file in the p
 (set-popup-rule! "^\\*eww\\*" :side 'right :size 0.50)
 #+end_src
 
-** GTP (gptel)
+** GPT (gptel)
 #+begin_src emacs-lisp
 (use-package! gptel
   :config
