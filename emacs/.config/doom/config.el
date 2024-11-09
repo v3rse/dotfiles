@@ -1,4 +1,3 @@
-;; test
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
 (add-hook! 'visual-fill-column-mode-hook (setq display-line-numbers-mode -1))
@@ -20,31 +19,77 @@
 
 (setq projectile-project-search-path '("~/src/personal" "~/src/other" "~/src/lab"))
 
-(setq org-directory "~/org/"
-        org-agenda-files '("gtd/inbox.org")
-        org-ellipsis " ... "
-        org-tags-column -80
-        org-log-into-drawer t
-        org-hide-emphasis-markers t)
+(after! org
+        (setq org-directory "~/org/"
+                org-default-notes-file "~/org/gtd/inbox.org"
+                org-agenda-files '("gtd/inbox.org" "gtd/agenda.org" "gtd/projects.org")
+                org-ellipsis " ... "
+                org-tags-column -80
+                org-log-into-drawer t
+                org-hide-emphasis-markers t))
 
-(use-package! org-super-agenda
-              :after org-agenda
-              :init
-              (setq org-super-agenda-groups '((:name "Today"
-                                                     :time-grid t
-                                                     :scheduled today)
-                                              (:name "Due today"
-                                                     :deadline today)
-                                              (:name "Important"
-                                                     :priority "A")
-                                              (:name "Overdue"
-                                                     :deadline past)
-                                              (:name "Due soon"
-                                                     :deadline future)
-                                              (:name "Big Outcomes"
-                                                     :tag "bo")))
-              :config
-              (org-super-agenda-mode))
+(after! org
+  (add-to-list 'org-modules 'org-habit))
+
+(after! org
+        (setq org-capture-templates
+        `(("t" "Task" entry (file "gtd/inbox.org")
+               ,(string-join '("* TODO %?"
+                                ":PROPERTIES:"
+                                ":CREATED: %U"
+                                ":END:")
+                        "\n"))
+                ("n" "Note" entry (file "gtd/inbox.org")
+                        (string-join '("* %?"
+                                        ":PROPERTIES:"
+                                        ":CREATED: %U"
+                                        ":END:")
+                                "\n"))
+                ("m" "Meeting" entry (file "gtd/inbox.org")
+                        (string-join '("* %? :MEETING"
+                                        "<%<%Y-%m-%d %a %H:00>>"
+                                        ""
+                                        "/Met with: /")
+                                "\n"))
+                ("a" "Appointment" entry (file "gtd/inbox.org")
+                        (string-join '("* %? :APPOINTMENT:"
+                                        ":PROPERTIES:"
+                                        ":CREATED: %U"
+                                        ":END:")
+                                "\n"))
+                )))
+
+(after! org
+        (setq org-todo-keywords '((sequence "TODO(t)" "STRT(n)" "HOLD(w)" "|" "PROJ(p)" "DONE(d)" "CNCL(c)"))
+        org-todo-keyword-faces '(("STRT" . +org-todo-active)
+                                ("HOLD" . +org-todo-onhold)
+                                ("CNCL" . +org-todo-cancel))))
+
+(after! org-agenda
+        (add-to-list 'org-agenda-custom-commands
+        '("g" "Get Things Done (GTD)"
+                ((tags "INBOX"
+                        ((org-agenda-prefix-format "  %?-12t% s")
+                        ;; The list of items is already filtered by this tag, no point in showing that it exists
+                        (org-agenda-hide-tags-regexp "INBOX")
+                        ;; The header of this section should be "Inbox: clarify and organize"
+                        (org-agenda-overriding-header "\nInbox: clarify and organize\n")))))))
+
+(after! org
+        (setq v3rse/org-refile-target-files '("gtd/agenda.org"
+                                       "gtd/projects.org"
+                                       "gtd/someday-maybe.org"
+                                       "research/notes.org"))
+
+
+        (setq v3rse/org-refile-file-paths
+                        (let (result)
+                                (dolist (file v3rse/org-refile-target-files result)
+                                        (push (expand-file-name file org-directory) result))))
+
+        (setq org-refile-targets
+        '((nil :maxlevel . 9)
+                (v3rse/org-refile-file-paths :maxlevel . 9))))
 
 (setq deft-directory "~/org"
       deft-extensions '("org")
