@@ -195,7 +195,7 @@ export GPG_TTY=$(tty)
 if [[ "$OSTYPE" == "darwin"* ]]; then
   if [[ $(ps -o "command" -p $PPID) != "fish" && -z ${BASH_EXECUTION_STRING} ]]
   then
-        exec fish
+        exec /opt/homebrew/bin/fish
   fi
 else
   if [[ $(ps --no-header --pid=$PPID --format=cmd) != "fish" && -z ${BASH_EXECUTION_STRING} ]]
