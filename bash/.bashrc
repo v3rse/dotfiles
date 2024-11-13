@@ -2,6 +2,11 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # MAC-ONLY
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+  export PATH=/opt/homebrew/bin/:$PATH
+fi
 
 # If not running interactively, don't do anything
 case $- in
@@ -27,14 +32,6 @@ shopt -s checkwinsize
 # If set, the pattern "**" used in a pathname expansion context will
 # match all files and zero or more directories and subdirectories.
 #shopt -s globstar
-
-# make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
-
-# set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-    debian_chroot=$(cat /etc/debian_chroot)
-fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
@@ -138,7 +135,12 @@ export BROWSER=/usr/bin/qutebrowser
 
 export PATH=/home/v3rse/.local/bin:$PATH
 
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+if [[ "$OSTYPE" != "darwin"* ]]; then
+  export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+fi
+
+# local binaries
+export PATH="$PATH:$HOME/.local/bin"
 
 # personal binaries
 export PATH="$PATH:$HOME/bin"
@@ -176,14 +178,20 @@ export PATH="$DENO_INSTALL/bin:$PATH"
 # check if mac or linux
 if [[ "$OSTYPE" != "darwin"* ]]; then
   eval $(keychain --eval --quiet --agents ssh,gpg id_ed25519 5F910544C18EE265)
+else
+  # 1password
+  export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
+  # aws profile
+  export AWS_PROFILE=integration
+  # java
+  export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"
 fi
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/home/v3rse/.sdkman"
-[[ -s "/home/v3rse/.sdkman/bin/sdkman-init.sh" ]] && source "/home/v3rse/.sdkman/bin/sdkman-init.sh"
 
-# dotnet
-export PATH="$HOME/.dotnet/tools:$PATH"
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
 
 # flutter
 export PATH="/opt/flutter/bin:$PATH"
@@ -195,7 +203,7 @@ export GPG_TTY=$(tty)
 if [[ "$OSTYPE" == "darwin"* ]]; then
   if [[ $(ps -o "command" -p $PPID) != "fish" && -z ${BASH_EXECUTION_STRING} ]]
   then
-        exec /opt/homebrew/bin/fish
+        exec fish
   fi
 else
   if [[ $(ps --no-header --pid=$PPID --format=cmd) != "fish" && -z ${BASH_EXECUTION_STRING} ]]
