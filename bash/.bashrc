@@ -157,7 +157,9 @@ export PATH="$HOME/.local/share/gem/ruby/3.0.0/bin:$PATH"
 # source <(ng completion script)
 
 # NVM
-source /usr/share/nvm/init-nvm.sh
+if [[ "$OSTYPE" != "darwin"* ]]; then
+  source /usr/share/nvm/init-nvm.sh
+fi
 
 # BUN
 export BUN_INSTALL="$HOME/.bun"
@@ -171,7 +173,10 @@ export PATH="$DENO_INSTALL/bin:$PATH"
 [[ "$TERM" == "xterm-kitty" ]] && alias ssh="kitty +kitten ssh"
 
 # keychain
-eval $(keychain --eval --quiet --agents ssh,gpg id_ed25519 5F910544C18EE265)
+# check if mac or linux
+if [[ "$OSTYPE" != "darwin"* ]]; then
+  eval $(keychain --eval --quiet --agents ssh,gpg id_ed25519 5F910544C18EE265)
+fi
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="/home/v3rse/.sdkman"
