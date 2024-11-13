@@ -44,25 +44,26 @@
                                 ":CREATED: %U"
                                 ":END:")
                         "\n"))
-                ("n" "Note" entry (file "gtd/inbox.org")
-                        (string-join '("* %?"
-                                        ":PROPERTIES:"
-                                        ":CREATED: %U"
-                                        ":END:")
-                                "\n"))
-                ("m" "Meeting" entry (file "gtd/inbox.org")
-                        (string-join '("* %? :MEETING"
-                                        "<%<%Y-%m-%d %a %H:00>>"
-                                        ""
-                                        "/Met with: /")
-                                "\n"))
-                ("a" "Appointment" entry (file "gtd/inbox.org")
-                        (string-join '("* %? :APPOINTMENT:"
-                                        ":PROPERTIES:"
-                                        ":CREATED: %U"
-                                        ":END:")
-                                "\n"))
-                )))
+        ("n" "Note" entry (file "gtd/inbox.org")
+                ,(string-join '("* %?"
+                                ":PROPERTIES:"
+                                ":CREATED: %U"
+                                ":END:")
+                        "\n"))
+        ("m" "Meeting" entry (file "gtd/inbox.org")
+                ,(string-join '("* %? :MEETING"
+                                "<%<%Y-%m-%d %a %H:00>>"
+                                ""
+                                "/Met with: /")
+                        "\n"))
+        ("a" "Appointment" entry (file "gtd/inbox.org")
+                ,(string-join '("* %? :APPOINTMENT:"
+                                ":PROPERTIES:"
+                                ":CREATED: %U"
+                                ":END:")
+                        "\n"))
+        ))
+)
 
 (after! org
         (setq org-todo-keywords '((sequence "TODO(t)" "STRT(n)" "HOLD(w)" "|" "PROJ(p)" "DONE(d)" "CNCL(c)"))

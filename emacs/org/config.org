@@ -84,7 +84,7 @@ This is active through =org-mode=
                 org-hide-emphasis-markers t))
 #+end_src
 
-** Terminal (vterm)
+*** Terminal (vterm)
 #+begin_src emacs-lisp
 (add-hook 'vterm-mode-hook #'goto-address-mode)
 #+end_src
@@ -114,25 +114,26 @@ These are templates for how I *capture* anything that comes to mind based the GT
                                 ":CREATED: %U"
                                 ":END:")
                         "\n"))
-                ("n" "Note" entry (file "gtd/inbox.org")
-                        (string-join '("* %?"
-                                        ":PROPERTIES:"
-                                        ":CREATED: %U"
-                                        ":END:")
-                                "\n"))
-                ("m" "Meeting" entry (file "gtd/inbox.org")
-                        (string-join '("* %? :MEETING"
-                                        "<%<%Y-%m-%d %a %H:00>>"
-                                        ""
-                                        "/Met with: /")
-                                "\n"))
-                ("a" "Appointment" entry (file "gtd/inbox.org")
-                        (string-join '("* %? :APPOINTMENT:"
-                                        ":PROPERTIES:"
-                                        ":CREATED: %U"
-                                        ":END:")
-                                "\n"))
-                )))
+        ("n" "Note" entry (file "gtd/inbox.org")
+                ,(string-join '("* %?"
+                                ":PROPERTIES:"
+                                ":CREATED: %U"
+                                ":END:")
+                        "\n"))
+        ("m" "Meeting" entry (file "gtd/inbox.org")
+                ,(string-join '("* %? :MEETING"
+                                "<%<%Y-%m-%d %a %H:00>>"
+                                ""
+                                "/Met with: /")
+                        "\n"))
+        ("a" "Appointment" entry (file "gtd/inbox.org")
+                ,(string-join '("* %? :APPOINTMENT:"
+                                ":PROPERTIES:"
+                                ":CREATED: %U"
+                                ":END:")
+                        "\n"))
+        ))
+)
 #+end_src
 
 ***** Org Task Keywords
