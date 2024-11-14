@@ -6,7 +6,7 @@
 - [[https://github.com/plexus/chemacs2?tab=readme-ov-file#doom-emacs][Chemacs2]]
 - [[https://github.com/doomemacs/doomemacs][Doom Emacs]]
 - Fonts
-  - ETBook/ETBell
+  - ETBook/ETBembo
   - Iosevka SS04
 - An =authinfo= file with all the secrets needed for:
   - gptel
@@ -69,6 +69,14 @@ This removes the chunky title bar in the mac version fo emacs
 (setq projectile-project-search-path '("~/src/personal" "~/src/other" "~/src/lab"))
 #+end_src
 
+*** Terminal (vterm)
+#+begin_src emacs-lisp
+(after! vterm
+  (setq vterm-shell "/usr/bin/zsh"))
+
+(add-hook 'vterm-mode-hook #'goto-address-mode)
+#+end_src
+
 ** Productivity
 This is active through =org-mode=
 
@@ -82,11 +90,6 @@ This is active through =org-mode=
                 org-tags-column -80
                 org-log-into-drawer t
                 org-hide-emphasis-markers t))
-#+end_src
-
-*** Terminal (vterm)
-#+begin_src emacs-lisp
-(add-hook 'vterm-mode-hook #'goto-address-mode)
 #+end_src
 
 *** Modules
