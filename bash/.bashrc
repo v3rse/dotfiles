@@ -121,8 +121,6 @@ export N_PREFIX="$HOME"
 export PATH="$PATH:/usr/local/go/bin"
 export PATH="$PATH:$HOME/go/bin"
 
-TZ='Africa/Accra'; export TZ
-
 # more wildcards
 shopt -s extglob
 
@@ -132,8 +130,6 @@ export EDITOR="$VISUAL"
 
 # default browser
 export BROWSER=/usr/bin/qutebrowser
-
-export PATH=/home/v3rse/.local/bin:$PATH
 
 if [[ "$OSTYPE" != "darwin"* ]]; then
   export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
