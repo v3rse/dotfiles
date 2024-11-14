@@ -157,6 +157,10 @@ export PATH="$HOME/.local/share/gem/ruby/3.0.0/bin:$PATH"
 # NVM
 if [[ "$OSTYPE" != "darwin"* ]]; then
   source /usr/share/nvm/init-nvm.sh
+else
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 fi
 
 # BUN
@@ -207,6 +211,7 @@ else
         exec fish
   fi
 fi
+
 
 
 
