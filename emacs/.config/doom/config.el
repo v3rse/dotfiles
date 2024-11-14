@@ -22,6 +22,11 @@
 
 (setq projectile-project-search-path '("~/src/personal" "~/src/other" "~/src/lab"))
 
+(after! vterm
+  (setq vterm-shell "/usr/bin/zsh"))
+
+(add-hook 'vterm-mode-hook #'goto-address-mode)
+
 (after! org
         (setq org-directory "~/org/"
                 org-default-notes-file "~/org/gtd/inbox.org"
@@ -30,8 +35,6 @@
                 org-tags-column -80
                 org-log-into-drawer t
                 org-hide-emphasis-markers t))
-
-(add-hook 'vterm-mode-hook #'goto-address-mode)
 
 (after! org
   (add-to-list 'org-modules 'org-habit))
