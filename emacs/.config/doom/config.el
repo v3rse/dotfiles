@@ -43,28 +43,31 @@
 
 (after! org
         (setq org-capture-templates
-        `(("t" "Task" entry (file "gtd/inbox.org")
+        `(("t" "Task" entry (file+headline "gtd/inbox.org" "Tasks")
                ,(string-join '("* TODO %?"
                                 ":PROPERTIES:"
                                 ":CREATED: %U"
+                                ":CATEGORY: Task"
                                 ":END:")
                         "\n"))
-        ("n" "Note" entry (file "gtd/inbox.org")
+        ("n" "Note" entry (file+headline "gtd/inbox.org" "Notes")
                 ,(string-join '("* %?"
                                 ":PROPERTIES:"
                                 ":CREATED: %U"
+                                ":CATEGORY: Note"
                                 ":END:")
                         "\n"))
-        ("m" "Meeting" entry (file "gtd/inbox.org")
+        ("m" "Meeting" entry (file+headline "gtd/inbox.org" "Meetings")
                 ,(string-join '("* %? :MEETING"
                                 "<%<%Y-%m-%d %a %H:00>>"
                                 ""
                                 "/Met with: /")
                         "\n"))
-        ("a" "Appointment" entry (file "gtd/inbox.org")
+        ("a" "Appointment" entry (file+headline "gtd/inbox.org" "Appointments")
                 ,(string-join '("* %? :APPOINTMENT:"
                                 ":PROPERTIES:"
                                 ":CREATED: %U"
+                                ":CATEGORY: Appointment"
                                 ":END:")
                         "\n"))
         ))
