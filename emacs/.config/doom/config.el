@@ -126,16 +126,16 @@
 (setq elfeed-feeds
         '(
           ;; News sites (using Ground News on Phone for now)
-          ;; ("https://www.euronews.com/rss" news euronews)
+          ("https://www.euronews.com/rss" news euronews)
           ;; Papers
           ("https://rss.arxiv.org/rss/cs" papers arxiv-cs)
-          ;; Blogs and aggregators
+          ;; Blogs
+          ("https://frontendmasters.com/blog/feed/" blog frontendmasters)
+          ("https://sachachua.com/blog/feed/" blog sachachuaemacs)
+          ;; Aggregators
           ("https://blaggregator.recurse.com/atom.xml?token=561d4f124fc342d78c6e25da65dfd69a" agg recurse)
           ("https://news.ycombinator.com/rss" agg hackernews)
           ("https://planet.emacslife.com/atom.xml" agg plantemacs)
-          ("https://sachachua.com/blog/feed/" agg sachachuaemacs)
-          ("https://emacsredux.com/atom.xml" agg emacsredux)
-          ("https://research.swtch.com/feed.atom" agg russcoxresearch)
           ("https://lobste.rs/rss" agg lobsters)
         )
 )
