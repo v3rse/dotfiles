@@ -6,6 +6,11 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # Initialisation
+# Timezone
+if  [[ "$OSTYPE" != "darwin"* ]]; then
+  export TZ=Europe/Berlin
+fi
+
 # PATH
 export PATH="$PATH:/usr/local/go/bin"
 export PATH="$PATH:$HOME/go/bin"

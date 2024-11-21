@@ -23,6 +23,11 @@ Run =org-babel-tangle= using ~C-c C-v t~ to create the =config.el= file in the p
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 #+end_src
 
+** Timezone
+#+begin_src emacs-lisp
+(setenv "TZ" "Europe/Berlin")
+#+end_src
+
 ** Mac Specific
 This removes the chunky title bar in the mac version fo emacs
 #+begin_src emacs-lisp
