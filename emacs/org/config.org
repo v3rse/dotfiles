@@ -76,9 +76,6 @@ This removes the chunky title bar in the mac version fo emacs
 
 *** Terminal (vterm)
 #+begin_src emacs-lisp
-(after! vterm
-  (setq vterm-shell "/usr/bin/zsh"))
-
 (add-hook 'vterm-mode-hook #'goto-address-mode)
 #+end_src
 
