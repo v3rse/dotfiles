@@ -24,9 +24,6 @@
 
 (setq projectile-project-search-path '("~/src/personal" "~/src/other" "~/src/lab"))
 
-(after! vterm
-  (setq vterm-shell "/usr/bin/zsh"))
-
 (add-hook 'vterm-mode-hook #'goto-address-mode)
 
 (after! org
