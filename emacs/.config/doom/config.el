@@ -33,7 +33,9 @@
                 org-ellipsis " ... "
                 org-tags-column -80
                 org-log-into-drawer t
-                org-hide-emphasis-markers t))
+                org-hide-emphasis-markers t
+                org-agenda-start-day nil
+                org-log-done 'time))
 
 (after! org
   (add-to-list 'org-modules 'org-habit))
@@ -71,20 +73,42 @@
 )
 
 (after! org
-        (setq org-todo-keywords '((sequence "TODO(t)" "STRT(n)" "HOLD(w)" "|" "PROJ(p)" "DONE(d)" "CNCL(c)"))
-        org-todo-keyword-faces '(("STRT" . +org-todo-active)
+        (setq org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "PROJ(p)" "DONE(d)" "CNCL(c)"))
+        org-todo-keyword-faces '(("NEXT" . +org-todo-active)
                                 ("HOLD" . +org-todo-onhold)
-                                ("CNCL" . +org-todo-cancel))))
+                                ("CNCL" . +org-todo-cancel)
+                                ("PROJ" . +org-todo-project))))
 
 (after! org-agenda
         (add-to-list 'org-agenda-custom-commands
         '("g" "Get Things Done (GTD)"
-                ((tags "INBOX"
-                        ((org-agenda-prefix-format "  %?-12t% s")
-                        ;; The list of items is already filtered by this tag, no point in showing that it exists
-                        (org-agenda-hide-tags-regexp "INBOX")
-                        ;; The header of this section should be "Inbox: clarify and organize"
-                        (org-agenda-overriding-header "\nInbox: clarify and organize\n")))))))
+                ((agenda ""
+                         ((org-agenda-span 'day)
+                          (org-agenda-skip-function
+                           '(org-agenda-skip-entry-if 'deadline))
+                          (org-deadline-warning-days 0)))
+                 (todo "TODO"
+                        ((org-agenda-overriding-header "Refile")
+                        (org-agenda-files '("gtd/inbox.org"))))
+                (todo "NEXT"
+                        ((org-agenda-overriding-header "In Progress")
+                                (org-agenda-files '("gtd/someday-maybe.org"
+                                                "gtd/projects.org"
+                                                "gtd/agenda.org"))))
+                (todo "PROJ"
+                        ((org-agenda-overriding-header "Projects")
+                                (org-agenda-files '("gtd/projects.org"))))
+                (todo "TODO"
+                      ((org-agenda-overriding-header "One-off Tasks")
+                       (org-agenda-files '("gtd/agenda.org"))
+                       (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
+                 (agenda nil
+                         ((org-agenda-entry-types '(:deadline))
+                          (org-deadline-warning-days 7)
+                          (org-agenda-overriding-header "\nDeadlines\n")))
+                 (tags "CLOSED>=\"<today>\""
+                       ((org-agenda-overriding-header "\nCompleted today\n")))
+                ))))
 
 (after! org
         (setq v3rse/org-refile-target-files '("gtd/agenda.org"
