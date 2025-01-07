@@ -1,41 +1,48 @@
-(setq gc-cons-threshold (* 50 1000 1000))
+(setq gc-cons-threshold (* 100 1024 1024))
 (setq read-process-output-max (* 1024 1024)) ;; 1MB
 (setq large-file-warning-threshold (* 100 1024 1024)) ;; 100MB
 
-(require 'package)
-(setq package-archives '(("melpa-stable" . "https://stable.melpa.org/packages/")
-			 ("melpa" . "https://melpa.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")
-                         ("gnu" . "https://elpa.gnu.org/packages/")))
-(package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
+(setq make-backup-files nil)
 
-(require 'use-package)
-(setq use-package-always-ensure t)
+(setq create-lockfiles nil)
 
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
+(make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
+(setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
+      auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
+
+
+;; Basic UI configuration
+(menu-bar-mode 0)
+(tool-bar-mode 0)
+(scroll-bar-mode 0)
 (setq inhibit-startup-screen t)
-(setq initial-scratch-message ";; Welcome to v3rsemacs: An idea machine")
-(setq visible-bell t)
-(setq use-dialog-box nil)
+(setq initial-scratch-message "")
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
+(set-face-attribute 'variable-pitch nil :font "Iosevka Etoile" :height 130)
 
-;; highlight the current line
-(hl-line-mode 1)
+(tooltip-mode 0)
+(global-completion-preview-mode 1)
+(which-key-mode 1)
+(tab-bar-mode 1)
+(desktop-save-mode 1)
 
-;; line and column numbers:
-(global-display-line-numbers-mode 1)
-;; don't show line numbers for the following modes
-(dolist (mode '(org-mode-hook
-		term-mode-hook
-		eshell-mode-hook))
-    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+(setq completion-styles '(basic flex)
+      completion-auto-select t
+      completion-auto-help 'visible
+      completions-format 'one-column
+      completions-sort 'historical
+      completions-max-height 20
+      completion-ignore-case t)
 
+(fido-vertical-mode 1)
 
-;; show column number
-(column-number-mode 1)
+;; Load a simple theme
+(load-theme 'modus-vivendi-tinted t)
+
+;; Simple fringe configuration
+(modify-all-frames-parameters '((internal-border-width . 24)
+                                (left-fringe . 0)
+                                (right-fringe . 0)))
 
 ;; recent files
 (recentf-mode 1)
@@ -51,254 +58,173 @@
 ;; enable clipbard
 (setq select-enable-clipboard t)
 
-;; match bracket pairs only in programming modes
-(add-hook 'prog-mode-hook 'electric-pair-mode)
+;; match bracket pairs
+(electric-pair-mode 1)
 
 ;; auto indent
 (electric-indent-mode 1)
 
-;; stop the cursor from blinking
-(blink-cursor-mode -1)
+;; Basic Coding Settings
+(use-package eglot
+  :hook ((python-mode . eglot-ensure)
+         (js-mode . eglot-ensure)
+         (typescript-mode . eglot-ensure)
+         (web-mode . eglot-ensure)
+         (html-mode . eglot-ensure)
+         (css-mode . eglot-ensure)))
 
-;; minibuffer prompt history
-(setq history-length 25)
-(savehist-mode 1)
-
-;; reload buffer when file changes on system
-(global-auto-revert-mode 1)
-;; reloads buffer when content changes on systeme
-(setq global-auto-revert-non-file-buffers t)
-
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 110)
-(set-face-attribute 'variable-pitch nil :family "ETBembo" :height 200)
-
-;; doom emacs themes
-(use-package doom-themes
+(use-package treesit
   :config
-  (setq doom-themes-enable-bold t
-	doom-themes-enable-italic t)
-  (doom-themes-visual-bell-config)
-  (doom-themes-org-config))
+  (setq major-mode-remap-alist
+        '((c-mode          . c-ts-mode)
+          (c++-mode        . c++-ts-mode)
+          (css-mode        . css-ts-mode)
+          (java-mode       . java-ts-mode)
+          (javascript-mode . js-ts-mode)
+          (js-json-mode    . json-ts-mode)
+          (python-mode     . python-ts-mode)
+          (typescript-mode . typescript-ts-mode)
+          (ruby-mode       . ruby-ts-mode)
+          (go-mode         . go-ts-mode)
+          (rust-mode       . rust-ts-mode))))
 
-(load-theme 'doom-tomorrow-night t)
+(setq eglot-autoshutdown t)
 
-(use-package counsel
-	:ensure t
-	:bind (("M-x" . counsel-M-x)
-	       ("C-x b" . counsel-ibuffer)
-	       ("C-x C-f" . counsel-find-file)
-	       :map minibuffer-local-map
-	       ("C-r" . 'counsel-minibuffer-history)))
+(use-package project
+  :bind (("C-x p f" . project-find-file)
+	 ("C-x p p" . project-switch-project)
+	 ("C-x p s" . project-search)
+	 ("C-x p k" . project-kill-buffers)
+	 ("C-x p t" . project-shell)
+	 ("C-x p d" . project-dired)))
 
-  (use-package ivy
-	:diminish
-	:bind (("C-s" . swiper)
-		:map ivy-minibuffer-map
-		("TAB" . ivy-alt-done)
-		("C-l" . ivy-alt-done)
-		("C-j" . ivy-next-line)
-		("C-k" . ivy-previous-line)
-		:map ivy-switch-buffer-map
-		("C-k" . ivy-previous-line)
-		("C-l" . ivy-done)
-		("C-d" . ivy-switch-buffer-kill)
-		:map ivy-reverse-i-search-map
-		("C-k" . ivy-previous-line)
-		("C-d" . ivy-reverse-i-search-kill))
-	:config
-	(ivy-mode 1))
-
-(use-package ivy-rich
-    :init
-    (ivy-rich-mode 1))
-
-  (use-package swiper
-	:ensure t)
-
-  (use-package lsp-ivy
-    :ensure t
-    :commands lsp-ivy-workspace-symbol
-    :bind ("C-c s" . lsp-ivy-workspace-symbol))
-
-  ; helpful: more contextual docs with counsel
-  (use-package helpful
-    :custom
-    (counsel-describe-function-function #'helpful-callable)
-    (counsel-describe-variable-function #'helpful-variable)
-    :bind
-    ([remap describe-function] . counsel-describe-function)
-    ([remap describe-command] . helpful-command)
-    ([remap describe-variable] . counsel-describe-variable)
-    ([remap describe-key] . helpful-key))
-
-;; Customize the modeline
-(use-package minions
-  :ensure t
-  :config
-  (minions-mode 1))
-
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1)
-  :custom
-  (doom-modeline-buffer-file-name-style 'truncate-upto-project)
-  (doom-modeline-buffer-state-icon t)
-  (doom-modeline-icon t)
-  (doom-modeline-major-mode-color-icon t)
-  (doom-modeline-minor-modes nil)
-  (doom-modeline-enable-word-count nil)
-  (doom-modeline-buffer-encoding t))
-
-(use-package which-key
-  :init (which-key-mode)
-  :diminish which-key-mode
-  :config
-  (setq which-key-idle-delay 0.3))
-
-(use-package projectile
-  :ensure t
-  :config
-  (projectile-mode +1)
-  :bind (:map projectile-mode-map
-	      ("C-c p" . projectile-command-map)))
-
-(use-package js2-mode
-  :mode "\\.js\\'"
-  :hook (js2-mode . lsp))
-
-(use-package typescript-mode
-  :mode "\\.ts\\'"
-  :hook (typescript-mode . lsp))
-
-(use-package go-mode
-  :mode "\\.go\\'"
-  :hook (go-mode . lsp))
-
-(use-package lsp-mode
-  :hook ((js-mode . lsp)
-	 (typescript-mode . lsp))
-  :config (setq lsp-clients-deno-config "./deno.json")
-  :commands lsp)
-
-(use-package lsp-ui
-  :commands lsp-ui-mode)
-
-(lsp-headerline-breadcrumb-mode -1)
-
-(use-package company
-  :hook (after-init . global-company-mode))
-
-(use-package flycheck
-  :init (global-flycheck-mode))
-
-(use-package prettier-js
-  :hook ((js2-mode . prettier-js-mode)
-	 (typescript-mode . prettier-js-mode)))
-
-(use-package company
-  :after lsp-mode
-  :hook (lsp-mode . company-mode)
-  :bind (:map company-active-map
-         ("<tab>" . company-complete-selection))
-        (:map lsp-mode-map
-         ("<tab>" . company-indent-or-complete-common))
-  :custom
-  (company-minimum-prefix-length 1)
-  (company-idle-delay 0.0))
-
-(use-package company-box
-  :hook (company-mode . company-box-mode))
-
-(use-package magit
-  :ensure t
-  :bind ("C-x g" . magit-status))
-
-(use-package evil
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-u-scroll t)
-  (setq evil-want-C-i-jump nil)
-  :config
-  (evil-mode 1)
-  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-
-  ;; Use visual line motions even outside of visual-line-mode buffers
-  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
-
-;; addition evil stuff
-(use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init))
-
+(use-package xref
+  :bind (("M-?" . xref-find-references)
+         ("M-." . xref-find-definitions)
+         ("M-," . xref-go-back)))
+;; Org
 (use-package org
-  :config
-  (setq org-directory "~/notes/org/")
-  (setq org-agenda-files
-	'("tasks.org" "habits.org" "birthdays.org"))
-  (setq org-agenda-start-with-log-mode t)
-  (setq org-log-done 'time)
-  (setq org-log-into-drawer t)
-  (setq org-archive-location "~/notes/org/archive.org::datetree/*")
-  (set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+  :config (setq org-directory "~/org/"
+                org-default-notes-file "~/org/gtd/inbox.org"
+                org-agenda-files '("gtd/inbox.org" "gtd/agenda.org" "gtd/projects.org")
+                org-ellipsis " ... "
+                org-tags-column -80
+                org-log-into-drawer t
+                org-hide-emphasis-markers t
+                org-agenda-start-day nil
+                org-log-done 'time))
+
+(use-package org-attach
+  :after org
+  :ensure nil)
+
+(setq org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "PROJ(p)" "|" "DONE(d)" "CNCL(c)")))
+
+(setq org-capture-templates
+        `(("t" "Task" entry (file+headline "gtd/inbox.org" "Tasks")
+           ,(string-join '("* TODO %?"
+                           ":PROPERTIES:"
+                           ":CREATED: %U"
+                           ":CATEGORY: Task"
+                           ":END:")
+                         "\n"))
+          ("n" "Note" entry (file+headline "gtd/inbox.org" "Notes")
+           ,(string-join '("* %?"
+                           ":PROPERTIES:"
+                           ":CREATED: %U"
+                           ":CATEGORY: Note"
+                           ":END:")
+                         "\n"))
+          ("m" "Meeting" entry (file+headline "gtd/inbox.org" "Meetings")
+           ,(string-join '("* %? :MEETING"
+                           "<%<%Y-%m-%d %a %H:00>>"
+                           ""
+                           "/Met with: /")
+                         "\n"))
+          ("a" "Appointment" entry (file+headline "gtd/inbox.org" "Appointments")
+           ,(string-join '("* %? :APPOINTMENT:"
+                           ":PROPERTIES:"
+                           ":CREATED: %U"
+                           ":CATEGORY: Appointment"
+                           ":END:")
+                         "\n"))))
+	
+(add-to-list 'org-modules 'org-habit)
+
+ (setq org-agenda-custom-commands
+        '(("g" "Get Things Done (GTD)"
+                ((agenda ""
+                         ((org-agenda-span 'day)
+                          (org-agenda-skip-function
+                           '(org-agenda-skip-entry-if 'deadline))
+                          (org-deadline-warning-days 0)))
+                 (todo "TODO"
+                        ((org-agenda-overriding-header "Refile")
+                        (org-agenda-files '("gtd/inbox.org"))))
+                (todo "NEXT"
+                        ((org-agenda-overriding-header "In Progress")
+                                (org-agenda-files '("gtd/someday-maybe.org"
+                                                "gtd/projects.org"
+                                                "gtd/agenda.org"))))
+                (todo "PROJ"
+                        ((org-agenda-overriding-header "Projects")
+                                (org-agenda-files '("gtd/projects.org"))))
+                (todo "TODO"
+                      ((org-agenda-overriding-header "One-off Tasks")
+                       (org-agenda-files '("gtd/agenda.org"))
+                       (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
+                 (agenda nil
+                         ((org-agenda-entry-types '(:deadline))
+                          (org-deadline-warning-days 7)
+                          (org-agenda-overriding-header "\nDeadlines\n")))
+                 (tags "CLOSED>=\"<today>\""
+                       ((org-agenda-overriding-header "\nCompleted today\n")))
+                 ))))
+(setq v3rse/org-refile-target-files '("gtd/agenda.org"
+                                      "gtd/projects.org"
+                                      "gtd/someday-maybe.org"
+                                      "research/notes.org"))
 
 
-;; (use-package org-modern
-;;   :init
-;;   (global-org-modern-mode)
-;;   :config
-;;   (set-face-attribute 'org-modern-symbol nil :family "Iosevka"))
+(setq v3rse/org-refile-file-paths
+      (let (result)
+        (dolist (file v3rse/org-refile-target-files result)
+          (push (expand-file-name file org-directory) result))))
 
-(require 'org-tempo)
-(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-(add-to-list 'org-structure-template-alist '("py" . "src python"))
+(setq org-refile-targets
+      '((nil :maxlevel . 9)
+        (v3rse/org-refile-file-paths :maxlevel . 9)))
 
-(use-package vterm
-  :ensure t)
+(define-key global-map (kbd "C-c a") 'org-agenda)
+(define-key global-map (kbd "C-c c") 'org-capture)
 
-(global-set-key (kbd "C-c a") 'org-agenda)
-(global-set-key (kbd "C-x C-b") 'ibuffer)
+;; News
+(setq newsticker-url-list
+      '(
+          ("Euronews" "https://www.euronews.com/rss")
+          ("Allsides New" "https://www.allsides.com/rss/news")
+          ("Sacha Chua" "https://sachachua.com/blog/feed/")
+          ("Recurse" "https://blaggregator.recurse.com/atom.xml?token=561d4f124fc342d78c6e25da65dfd69a")
+          ("Hacker News" "https://news.ycombinator.com/rss")
+          ("Plant Emacs" "https://planet.emacslife.com/atom.xml")
+          ("Lobsters" "https://lobste.rs/rss")
+	)
+)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-custom-commands
-   '(("A" "Agenda and all NEXT maintainance"
-      ((agenda ""
-	       ((org-agenda-span 'day)))
-       (tags-todo "MAINTAINANCE+TODO=\"NEXT\"+TODO=\"TODO\"" nil))
-      nil)))
- '(org-agenda-files
-   '("~/src/personal/codex-org-mode/rainer-course/tutorial.org" "/home/v3rse/notes/org/archive/notes/example.org"))
- '(org-babel-load-languages '((shell . t) (dot . t) (awk . t) (emacs-lisp . t)))
- '(org-capture-templates
-   '(("w" "Private templates")
-     ("wt" "TODO entry" entry
-      (file+headline "~/src/personal/codex-org-mode/rainer-course/tutorial.org" "Work Capture")
-      (file "~/src/personal/codex-org-mode/rainer-course/tpl-work-todo.txt"))))
- '(org-clock-into-drawer "CLOCKING")
- '(org-export-backends '(ascii beamer html icalendar latex odt))
- '(org-modules
-   '(ol-bbdb ol-bibtex ol-docview ol-doi ol-eww ol-gnus org-habit ol-info ol-irc ol-mhe ol-rmail ol-w3m))
- '(org-publish-project-alist
-   '(("joe" :base-directory "~/src/personal/codex-org-mode/rainer-course/joe/" :publishing-directory "~/public_html" :publishing-function org-html-publish-to-html :section-numbers nul :with-toc nil)))
- '(org-refile-targets nil)
  '(package-selected-packages
-   '(vterm go-mode which-key visual-fill-column typescript-mode rainbow-delimiters projectile prettier-js org-super-agenda org-modern org-bullets minions magit lsp-ui lsp-ivy js2-mode ivy-rich helpful flycheck exec-path-from-shell evil-collection doom-themes doom-modeline counsel company-box)))
+   '(command-log-mode company-box corfu counsel denote doom-modeline
+		      doom-themes ef-themes elfeed evil-collection
+		      exwm flycheck fontaine go-mode helpful ivy-rich
+		      js2-mode lsp-ivy lsp-ui magit marginalia minions
+		      modus-themes org-bullets org-modern
+		      org-super-agenda paredit prettier-js projectile
+		      rainbow-delimiters spacious-padding
+		      typescript-mode vc-use-package vertico
+		      visual-fill-column web-mode which-key yaml-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
