@@ -73,7 +73,7 @@
 )
 
 (after! org
-        (setq org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "PROJ(p)" "DONE(d)" "CNCL(c)"))
+        (setq org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "PROJ(p)" "|" "DONE(d)" "CNCL(c)"))
         org-todo-keyword-faces '(("NEXT" . +org-todo-active)
                                 ("HOLD" . +org-todo-onhold)
                                 ("CNCL" . +org-todo-cancel)
@@ -147,9 +147,10 @@
 (setq elfeed-feeds
         '(
           ;; News sites (using Ground News on Phone for now)
-          ("https://www.euronews.com/rss" news euronews)
+          ;; ("https://www.euronews.com/rss" news euronews)
+          ("https://www.allsides.com/rss/news" news allsides)
           ;; Papers
-          ("https://rss.arxiv.org/rss/cs" papers arxiv-cs)
+          ;; ("https://rss.arxiv.org/rss/cs" papers arxiv-cs)
           ;; Blogs
           ("https://frontendmasters.com/blog/feed/" blog frontendmasters)
           ("https://sachachua.com/blog/feed/" blog sachachuaemacs)
