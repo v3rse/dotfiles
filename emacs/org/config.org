@@ -175,23 +175,25 @@ Add custom commands to =org-agenda=
                            '(org-agenda-skip-entry-if 'deadline))
                           (org-deadline-warning-days 0)))
                  (todo "TODO"
-                        ((org-agenda-overriding-header "Refile")
+                        ((org-agenda-overriding-header "Refile Tasks")
                         (org-agenda-files '("gtd/inbox.org"))))
-                (todo "NEXT"
-                        ((org-agenda-overriding-header "In Progress")
-                                (org-agenda-files '("gtd/someday-maybe.org"
-                                                "gtd/projects.org"
-                                                "gtd/agenda.org"))))
-                (todo "PROJ"
-                        ((org-agenda-overriding-header "Projects")
-                                (org-agenda-files '("gtd/projects.org"))))
                 (todo "TODO"
                       ((org-agenda-overriding-header "One-off Tasks")
                        (org-agenda-files '("gtd/agenda.org"))
                        (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
+                (todo "NEXT"
+                        ((org-agenda-overriding-header "Follow-up Tasks")
+                                (org-agenda-files '("gtd/someday-maybe.org"
+                                                "gtd/projects.org"
+                                                "gtd/agenda.org"))
+                                (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
+                (todo "PROJ"
+                        ((org-agenda-overriding-header "Projects")
+                                (org-agenda-files '("gtd/projects.org"))))
                  (agenda nil
-                         ((org-agenda-entry-types '(:deadline))
-                          (org-deadline-warning-days 7)
+                         ((org-agenda-span 3)
+                          (org-agenda-entry-types '(:deadline))
+                          (org-deadline-warning-days 3)
                           (org-agenda-overriding-header "\nDeadlines\n")))
                  (tags "CLOSED>=\"<today>\""
                        ((org-agenda-overriding-header "\nCompleted today\n")))
@@ -222,6 +224,17 @@ In the end you should have an empty inbox.
 
 ***** Archiving
 Nothing to do here. Just using the default settings. All archives go to =<file>_archive=
+*** Calendar/Diary
+Use diary file in my synched folder
+#+begin_src emacs-lisp
+(setq diary-file "~/org/emacs-diary")
+#+end_src
+
+Setup org-agenda to use diary file
+#+begin_src emacs-lisp
+(after! org-agenda
+  (setq org-agenda-include-diary t))
+#+end_src
 
 ** Note Search (Deft)
 #+begin_src emacs-lisp
@@ -385,4 +398,21 @@ Nothing to do here. Just using the default settings. All archives go to =<file>_
   (interactive)
   (dolist (ov bionic-overlays)
     (delete-overlay ov)))
+#+end_src
+
+** gptel models
+#+begin_src emacs-lisp
+(defun v3rse/gptel-use-claude ()
+  "Switch to a claude backend for gptel"
+  (interactive)
+  (setq gptel-model 'claude-3-sonnet-20240229
+        gptel-backend (gptel-make-anthropic "Claude"
+                        :stream t
+                        :key (cadr (auth-source-user-and-password "api.anthropic.com" "apikey")))))
+
+(defun v3rse/gptel-use-chatgpt ()
+  "Switch to a chatgpt backend for gptel"
+  (interactive)
+  (setq gptel-model (default-value 'gptel-model)
+        gptel-backend (default-value 'gptel-backend)))
 #+end_src
