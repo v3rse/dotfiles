@@ -88,23 +88,25 @@
                            '(org-agenda-skip-entry-if 'deadline))
                           (org-deadline-warning-days 0)))
                  (todo "TODO"
-                        ((org-agenda-overriding-header "Refile")
+                        ((org-agenda-overriding-header "Refile Tasks")
                         (org-agenda-files '("gtd/inbox.org"))))
-                (todo "NEXT"
-                        ((org-agenda-overriding-header "In Progress")
-                                (org-agenda-files '("gtd/someday-maybe.org"
-                                                "gtd/projects.org"
-                                                "gtd/agenda.org"))))
-                (todo "PROJ"
-                        ((org-agenda-overriding-header "Projects")
-                                (org-agenda-files '("gtd/projects.org"))))
                 (todo "TODO"
                       ((org-agenda-overriding-header "One-off Tasks")
                        (org-agenda-files '("gtd/agenda.org"))
                        (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
+                (todo "NEXT"
+                        ((org-agenda-overriding-header "Follow-up Tasks")
+                                (org-agenda-files '("gtd/someday-maybe.org"
+                                                "gtd/projects.org"
+                                                "gtd/agenda.org"))
+                                (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
+                (todo "PROJ"
+                        ((org-agenda-overriding-header "Projects")
+                                (org-agenda-files '("gtd/projects.org"))))
                  (agenda nil
-                         ((org-agenda-entry-types '(:deadline))
-                          (org-deadline-warning-days 7)
+                         ((org-agenda-span 3)
+                          (org-agenda-entry-types '(:deadline))
+                          (org-deadline-warning-days 3)
                           (org-agenda-overriding-header "\nDeadlines\n")))
                  (tags "CLOSED>=\"<today>\""
                        ((org-agenda-overriding-header "\nCompleted today\n")))
@@ -125,6 +127,11 @@
         (setq org-refile-targets
         '((nil :maxlevel . 9)
                 (v3rse/org-refile-file-paths :maxlevel . 9))))
+
+(setq diary-file "~/org/emacs-diary")
+
+(after! org-agenda
+  (setq org-agenda-include-diary t))
 
 (setq deft-directory "~/org"
       deft-extensions '("org")
