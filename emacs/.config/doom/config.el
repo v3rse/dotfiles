@@ -261,3 +261,26 @@
   (interactive)
   (dolist (ov bionic-overlays)
     (delete-overlay ov)))
+
+(defun v3rse/gptel-use-claude ()
+  "Switch to a claude backend for gptel"
+  (interactive)
+  (setq gptel-model 'claude-3-sonnet-20240229
+        gptel-backend (gptel-make-anthropic "Claude"
+                        :stream t
+                        :key (cadr (auth-source-user-and-password "api.anthropic.com" "apikey")))))
+
+(defun v3rse/gptel-use-ollama ()
+  "Switch to a ollama backend for gptel"
+  (interactive)
+  (setq gptel-model 'deepseek-r1:latest
+        gptel-backend (gptel-make-ollama "Ollama"
+                        :host "192.168.178.45:11434"
+                        :stream t
+                        :models '(deepseek-r1:latest))))
+
+(defun v3rse/gptel-use-chatgpt ()
+  "Switch to a chatgpt backend for gptel"
+  (interactive)
+  (setq gptel-model (default-value 'gptel-model)
+        gptel-backend (default-value 'gptel-backend)))

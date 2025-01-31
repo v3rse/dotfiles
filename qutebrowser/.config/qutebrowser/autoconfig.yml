@@ -10,6 +10,8 @@ settings:
     global: true
   colors.webpage.darkmode.enabled:
     global: false
+  colors.webpage.darkmode.policy.images:
+    global: never
   confirm_quit:
     global:
     - multiple-tabs

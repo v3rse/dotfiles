@@ -23,12 +23,15 @@
 (tooltip-mode 0)
 (global-completion-preview-mode 1)
 (which-key-mode 1)
-(tab-bar-mode 1)
-(desktop-save-mode 1)
+;;(tab-bar-mode 0)
+;;(desktop-save-mode 1)
+
+;; modeline
+(setq mode-line-format (default-value 'mode-line-format))
 
 ;; tab bar mode
-(setq tab-bar-show nil)
-(add-hook 'emacs-startup-hook #'tab-switcher)
+;;(setq tab-bar-show nil)
+;;(add-hook 'emacs-startup-hook #'tab-switcher)
 
 (setq completion-styles '(basic flex)
       completion-auto-select t
@@ -40,8 +43,6 @@
 
 (fido-vertical-mode 1)
 
-;; Load a simple theme
-(load-theme 'modus-vivendi-tinted t)
 
 ;; Simple fringe configuration
 (modify-all-frames-parameters '((internal-border-width . 24)
@@ -125,6 +126,9 @@
 		org-outline-path-complete-in-steps nil
 		org-M-RET-may-split-line '((default . nil))
 		org-insert-heading-respect-content t))
+
+(setq fill-column 90)
+(add-hook 'org-mode-hook 'visual-line-fill-column-mode)
 
 (use-package org-attach
   :after org
@@ -216,6 +220,7 @@
 
 (define-key global-map (kbd "C-c a") 'org-agenda)
 (define-key global-map (kbd "C-c c") 'org-capture)
+(define-key global-map (kbd "C-c l") 'org-store-link)
 
 ;; News
 (setq newsticker-url-list
@@ -229,30 +234,44 @@
           ("Plant Emacs" "https://planet.emacslife.com/atom.xml")
           ("Lobsters" "https://lobste.rs/rss")
 	  ("Org Mode Woof Feed" "https://tracker.orgmode.org/index.rss")
+	  ("Joshua Blais" "https://joshblais.com/index.xml")
 	)
       )
-;; Communication
+
+;; Theming
+(use-package emacs
+  :config
+  (require-theme 'modus-themes)
+  
+  (setq modus-themes-italic-constructs t
+      modus-themes-bold-constructs nil
+      modus-themes-mixed-fonts t
+      modus-themes-custom-auto-reload nil
+      modus-themes-prompts '(italic bold)
+      modus-themes-custom-auto-reload t
+      modus-themes-disable-other-themes t
+      modus-themes-variable-pitch-ui nil
+      modus-themes-completions
+      '((matches . (extrabold))
+	(selection . (semibold italic text-also)))
+      modus-themes-org-blocks 'gray-background
+      modus-themes-headings
+      '((0 . (variable-pitch 1.8))
+	(1 . (variable-pitch 1.5))
+	(2 . (1.3))
+	(agenda-date . (1.3))
+	(agenda-structure . (variable-pitch light 1.8))
+	(t . (1.1)))
+      modus-themes-common-palette-overrides
+      `(
+	(border-mode-line-active unspecified)
+	(border-mode-line-inactive unspecified)
+	,@modus-themes-preset-overrides-cooler))
+  
+  ;; Load a simple theme
+  (load-theme 'modus-vivendi-tinted :no-confirm)
+  (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
 
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(command-log-mode company-box corfu counsel denote doom-modeline
-		      doom-themes ef-themes elfeed evil-collection
-		      exwm flycheck fontaine go-mode helpful htmlize
-		      ivy-rich js2-mode lsp-ivy lsp-ui magit
-		      marginalia minions modus-themes org-bullets
-		      org-modern org-super-agenda paredit prettier-js
-		      projectile rainbow-delimiters spacious-padding
-		      typescript-mode vc-use-package vertico
-		      visual-fill-column web-mode which-key yaml-mode)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
+;; Default Brower
+(setq browse-url-browser-function 'eww-browse-url)
