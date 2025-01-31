@@ -410,6 +410,15 @@ Setup org-agenda to use diary file
                         :stream t
                         :key (cadr (auth-source-user-and-password "api.anthropic.com" "apikey")))))
 
+(defun v3rse/gptel-use-ollama ()
+  "Switch to a ollama backend for gptel"
+  (interactive)
+  (setq gptel-model 'deepseek-r1:latest
+        gptel-backend (gptel-make-ollama "Ollama"
+                        :host "192.168.178.45:11434"
+                        :stream t
+                        :models '(deepseek-r1:latest))))
+
 (defun v3rse/gptel-use-chatgpt ()
   "Switch to a chatgpt backend for gptel"
   (interactive)
