@@ -128,7 +128,7 @@
         '((nil :maxlevel . 9)
                 (v3rse/org-refile-file-paths :maxlevel . 9))))
 
-(setq org-archive-location "~/org/archive/%s_archive::datetree/*")
+(setq org-archive-location "~/org/archive/%s_archive::datetree/")
 
 (setq diary-file "~/org/emacs-diary")
 
@@ -264,28 +264,28 @@
   (dolist (ov bionic-overlays)
     (delete-overlay ov)))
 
-  (defvar v3rse/gptel-ollama-host "localhost"
-    "The ollama host server address for gptel")
+(defvar v3rse/gptel-ollama-host "localhost"
+  "The ollama host server address for gptel")
 
-  (defun v3rse/gptel-use-claude ()
-    "Switch to a claude backend for gptel"
-    (interactive)
-    (setq gptel-model 'claude-3-sonnet-20240229
+(defun v3rse/gptel-use-claude ()
+  "Switch to a claude backend for gptel"
+  (interactive)
+  (setq gptel-model 'claude-3-sonnet-20240229
 	  gptel-backend (gptel-make-anthropic "Claude"
 			  :stream t
 			  :key (cadr (auth-source-user-and-password "api.anthropic.com" "apikey")))))
 
-  (defun v3rse/gptel-use-ollama ()
-    "Switch to a ollama backend for gptel"
-    (interactive)
-    (setq gptel-model 'deepseek-r1:latest
+(defun v3rse/gptel-use-ollama ()
+  "Switch to a ollama backend for gptel"
+  (interactive)
+  (setq gptel-model 'deepseek-r1:latest
 	  gptel-backend (gptel-make-ollama "Ollama"
 			  :host (format "%s:11434" v3rse/gptel-ollama-host)
 			  :stream t
 			  :models '(deepseek-r1:latest))))
 
-  (defun v3rse/gptel-use-chatgpt ()
-    "Switch to a chatgpt backend for gptel"
-    (interactive)
-    (setq gptel-model (default-value 'gptel-model)
+(defun v3rse/gptel-use-chatgpt ()
+  "Switch to a chatgpt backend for gptel"
+  (interactive)
+  (setq gptel-model (default-value 'gptel-model)
 	  gptel-backend (default-value 'gptel-backend)))

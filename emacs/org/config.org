@@ -226,7 +226,7 @@ In the end you should have an empty inbox.
 Nothing to do here. Just using the default settings. All archives go to =<file>_archive=
 
 #+begin_src emacs-lisp
-(setq org-archive-location "~/org/archive/%s_archive::datetree/*")
+(setq org-archive-location "~/org/archive/%s_archive::datetree/")
 #+end_src
 
 *** Calendar/Diary
