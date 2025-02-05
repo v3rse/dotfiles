@@ -115,7 +115,7 @@
   :config (setq org-directory "~/org/"
                 org-default-notes-file "~/org/inbox.org"
                 org-agenda-files '("inbox.org" "agenda.org" "projects.org")
-		org-archive-location "~/org/archive/%s_archive::datetree/*"
+		org-archive-location "~/org/archive/%s_archive::datetree/"
                 org-ellipsis " ... "
                 org-tags-column -80
                 org-log-into-drawer t
