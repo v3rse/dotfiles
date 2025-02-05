@@ -28,8 +28,8 @@
 
 (after! org
         (setq org-directory "~/org/"
-                org-default-notes-file "~/org/gtd/inbox.org"
-                org-agenda-files '("gtd/inbox.org" "gtd/agenda.org" "gtd/projects.org")
+                org-default-notes-file "~/org/inbox.org"
+                org-agenda-files '("inbox.org" "agenda.org" "projects.org")
                 org-ellipsis " ... "
                 org-tags-column -80
                 org-log-into-drawer t
@@ -42,27 +42,27 @@
 
 (after! org
         (setq org-capture-templates
-        `(("t" "Task" entry (file+headline "gtd/inbox.org" "Tasks")
+        `(("t" "Task" entry (file+headline "inbox.org" "Tasks")
                ,(string-join '("* TODO %?"
                                 ":PROPERTIES:"
                                 ":CREATED: %U"
                                 ":CATEGORY: Task"
                                 ":END:")
                         "\n"))
-        ("n" "Note" entry (file+headline "gtd/inbox.org" "Notes")
+        ("n" "Note" entry (file+headline "inbox.org" "Notes")
                 ,(string-join '("* %?"
                                 ":PROPERTIES:"
                                 ":CREATED: %U"
                                 ":CATEGORY: Note"
                                 ":END:")
                         "\n"))
-        ("m" "Meeting" entry (file+headline "gtd/inbox.org" "Meetings")
+        ("m" "Meeting" entry (file+headline "inbox.org" "Meetings")
                 ,(string-join '("* %? :MEETING"
                                 "<%<%Y-%m-%d %a %H:00>>"
                                 ""
                                 "/Met with: /")
                         "\n"))
-        ("a" "Appointment" entry (file+headline "gtd/inbox.org" "Appointments")
+        ("a" "Appointment" entry (file+headline "inbox.org" "Appointments")
                 ,(string-join '("* %? :APPOINTMENT:"
                                 ":PROPERTIES:"
                                 ":CREATED: %U"
@@ -89,20 +89,20 @@
                           (org-deadline-warning-days 0)))
                  (todo "TODO"
                         ((org-agenda-overriding-header "Refile Tasks")
-                        (org-agenda-files '("gtd/inbox.org"))))
+                        (org-agenda-files '("inbox.org"))))
                 (todo "TODO"
                       ((org-agenda-overriding-header "One-off Tasks")
-                       (org-agenda-files '("gtd/agenda.org"))
+                       (org-agenda-files '("agenda.org"))
                        (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
                 (todo "NEXT"
                         ((org-agenda-overriding-header "Follow-up Tasks")
-                                (org-agenda-files '("gtd/someday-maybe.org"
-                                                "gtd/projects.org"
-                                                "gtd/agenda.org"))
+                                (org-agenda-files '("someday-maybe.org"
+                                                "projects.org"
+                                                "agenda.org"))
                                 (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
                 (todo "PROJ"
                         ((org-agenda-overriding-header "Projects")
-                                (org-agenda-files '("gtd/projects.org"))))
+                                (org-agenda-files '("projects.org"))))
                  (agenda nil
                          ((org-agenda-span 3)
                           (org-agenda-entry-types '(:deadline))
@@ -113,10 +113,10 @@
                 ))))
 
 (after! org
-        (setq v3rse/org-refile-target-files '("gtd/agenda.org"
-                                       "gtd/projects.org"
-                                       "gtd/someday-maybe.org"
-                                       "research/notes.org"))
+        (setq v3rse/org-refile-target-files '("agenda.org"
+                                       "projects.org"
+                                       "someday-maybe.org"
+                                       "notes.org"))
 
 
         (setq v3rse/org-refile-file-paths
@@ -127,6 +127,8 @@
         (setq org-refile-targets
         '((nil :maxlevel . 9)
                 (v3rse/org-refile-file-paths :maxlevel . 9))))
+
+(setq org-archive-location "~/org/archive/%s_archive::datetree/*")
 
 (setq diary-file "~/org/emacs-diary")
 
