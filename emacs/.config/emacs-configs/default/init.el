@@ -113,8 +113,9 @@
 ;; Org
 (use-package org
   :config (setq org-directory "~/org/"
-                org-default-notes-file "~/org/gtd/inbox.org"
-                org-agenda-files '("gtd/inbox.org" "gtd/agenda.org" "gtd/projects.org")
+                org-default-notes-file "~/org/inbox.org"
+                org-agenda-files '("inbox.org" "agenda.org" "projects.org")
+		org-archive-location "~/org/archive/%s_archive::datetree/*"
                 org-ellipsis " ... "
                 org-tags-column -80
                 org-log-into-drawer t
@@ -144,33 +145,28 @@
 (setq org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "PROJ(p)" "|" "DONE(d)" "CNCL(c)")))
 
 (setq org-capture-templates
-        `(("t" "Task" entry (file+headline "gtd/inbox.org" "Tasks")
+        `(("t" "Task" entry (file+headline "inbox.org" "Tasks")
            ,(string-join '("* TODO %?"
                            ":PROPERTIES:"
                            ":CREATED: %U"
                            ":CATEGORY: Task"
                            ":END:")
                          "\n"))
-          ("n" "Note" entry (file+headline "gtd/inbox.org" "Notes")
+          ("n" "Note" entry (file+headline "inbox.org" "Notes")
            ,(string-join '("* %?"
                            ":PROPERTIES:"
                            ":CREATED: %U"
                            ":CATEGORY: Note"
                            ":END:")
                          "\n"))
-          ("m" "Meeting" entry (file+headline "gtd/inbox.org" "Meetings")
+          ("m" "Meeting" entry (file+headline "inbox.org" "Meetings")
            ,(string-join '("* %? :MEETING"
                            "<%<%Y-%m-%d %a %H:00>>"
                            ""
                            "/Met with: /")
                          "\n"))
-          ("a" "Appointment" entry (file+headline "gtd/inbox.org" "Appointments")
-           ,(string-join '("* %? :APPOINTMENT:"
-                           ":PROPERTIES:"
-                           ":CREATED: %U"
-                           ":CATEGORY: Appointment"
-                           ":END:")
-                         "\n"))))
+	  ("j" "Journal" entry (file+datetree "journal.org")
+	   "* %?\nEntered on %U\n %i\n %a")))
 	
 (add-to-list 'org-modules 'org-habit)
 
@@ -179,22 +175,22 @@
                 ((agenda ""
                          ((org-agenda-span 'day)
                           (org-agenda-skip-function
-                           '(org-agenda-skip-entry-if 'deadline))
+                          '(org-agenda-skip-entry-if 'deadline))
                           (org-deadline-warning-days 0)))
                  (todo "TODO"
                         ((org-agenda-overriding-header "Refile")
-                        (org-agenda-files '("gtd/inbox.org"))))
+                        (org-agenda-files '("inbox.org"))))
                 (todo "NEXT"
                         ((org-agenda-overriding-header "In Progress")
-                                (org-agenda-files '("gtd/someday-maybe.org"
-                                                "gtd/projects.org"
-                                                "gtd/agenda.org"))))
+                                (org-agenda-files '("someday-maybe.org"
+                                                "projects.org"
+                                                "agenda.org"))))
                 (todo "PROJ"
                         ((org-agenda-overriding-header "Projects")
-                                (org-agenda-files '("gtd/projects.org"))))
+                                (org-agenda-files '("projects.org"))))
                 (todo "TODO"
                       ((org-agenda-overriding-header "One-off Tasks")
-                       (org-agenda-files '("gtd/agenda.org"))
+                       (org-agenda-files '("agenda.org"))
                        (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
                  (agenda nil
                          ((org-agenda-entry-types '(:deadline))
@@ -203,10 +199,11 @@
                  (tags "CLOSED>=\"<today>\""
                        ((org-agenda-overriding-header "\nCompleted today\n")))
                  ))))
-(setq v3rse/org-refile-target-files '("gtd/agenda.org"
-                                      "gtd/projects.org"
-                                      "gtd/someday-maybe.org"
-                                      "research/notes.org"))
+
+(setq v3rse/org-refile-target-files '("agenda.org"
+                                      "projects.org"
+                                      "someday-maybe.org"
+                                      "notes.org"))
 
 
 (setq v3rse/org-refile-file-paths
@@ -228,13 +225,13 @@
           ("Euronews" "https://www.euronews.com/rss")
           ("Allsides New" "https://www.allsides.com/rss/news")
 	  ("arstechnica" "https://feeds.arstechnica.com/arstechnica/index")
-          ("Sacha Chua" "https://sachachua.com/blog/feed/")
+          ;;("Sacha Chua" "https://sachachua.com/blog/feed/")
           ("Recurse" "https://blaggregator.recurse.com/atom.xml?token=561d4f124fc342d78c6e25da65dfd69a")
           ("Hacker News" "https://news.ycombinator.com/rss")
           ("Plant Emacs" "https://planet.emacslife.com/atom.xml")
           ("Lobsters" "https://lobste.rs/rss")
-	  ("Org Mode Woof Feed" "https://tracker.orgmode.org/index.rss")
-	  ("Joshua Blais" "https://joshblais.com/index.xml")
+;;	  ("Org Mode Woof Feed" "https://tracker.orgmode.org/index.rss")
+;;	  ("Joshua Blais" "https://joshblais.com/index.xml")
 	)
       )
 
@@ -275,3 +272,4 @@
 
 ;; Default Brower
 (setq browse-url-browser-function 'eww-browse-url)
+
