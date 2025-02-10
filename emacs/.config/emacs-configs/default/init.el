@@ -128,8 +128,8 @@
 		org-M-RET-may-split-line '((default . nil))
 		org-insert-heading-respect-content t))
 
-(setq fill-column 90)
-(add-hook 'org-mode-hook 'visual-line-fill-column-mode)
+(setq-default fill-column 90)
+(add-hook 'org-mode-hook 'visual-line-mode)
 
 (use-package org-attach
   :after org
@@ -261,6 +261,7 @@
 	(t . (1.1)))
       modus-themes-common-palette-overrides
       `(
+	(bg-main "#2E3440") (fg-main "#ECEFF4")
 	(border-mode-line-active unspecified)
 	(border-mode-line-inactive unspecified)
 	,@modus-themes-preset-overrides-cooler))
