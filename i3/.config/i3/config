@@ -283,19 +283,19 @@ exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
 
 # applications in scratch pad
-bindsym $mod+z [class="Zulip"] scratchpad show; move position center
+# bindsym $mod+z [class="Zulip"] scratchpad show; move position center
 bindsym $mod+t [title="dropdown"] scratchpad show; move position center
 
 for_window [title="dropdown"] move scratchpad
 for_window [title="dropdown"] resize set 1280 720
 for_window [title="dropdown"] border pixel 5
 
-for_window [class="Zulip"] move scratchpad
-for_window [class="Zulip"] resize set 1280 720
-for_window [title="Zulip"] border pixel 5
+# for_window [class="Zulip"] move scratchpad
+# for_window [class="Zulip"] resize set 1280 720
+# for_window [title="Zulip"] border pixel 5
 
 exec --no-startup-id kitty --title dropdown tmux
-exec --no-startup-id zulip
+# exec --no-startup-id zulip
 
 # Set colors from Xresources
 # NOTE: The '#f0f0f0' in the lines below is the color i3 will use if

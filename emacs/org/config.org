@@ -271,6 +271,13 @@ Setup org-agenda to use diary file
   (setq! gptel-default-input-format 'org))
 #+end_src
 
+** AI Editing (aider)
+#+begin_src emacs-lisp
+(use-package aider
+  :config
+  (setq aider-args '("--model" "anthropic/claude-3-5-sonnet-20241022")))
+#+end_src
+
 ** RSS (elfeed)
 #+begin_src emacs-lisp
 (setq elfeed-feeds
@@ -278,6 +285,7 @@ Setup org-agenda to use diary file
           ;; News sites (using Ground News on Phone for now)
           ;; ("https://www.euronews.com/rss" news euronews)
           ("https://www.allsides.com/rss/news" news allsides)
+          ("https://www.polygon.com/rss/index.xml" news polygon)
           ;; Papers
           ;; ("https://rss.arxiv.org/rss/cs" papers arxiv-cs)
           ;; Blogs

@@ -26,9 +26,6 @@
 ;;(tab-bar-mode 0)
 ;;(desktop-save-mode 1)
 
-;; modeline
-(setq mode-line-format (default-value 'mode-line-format))
-
 ;; tab bar mode
 ;;(setq tab-bar-show nil)
 ;;(add-hook 'emacs-startup-hook #'tab-switcher)
@@ -45,9 +42,12 @@
 
 
 ;; Simple fringe configuration
-(modify-all-frames-parameters '((internal-border-width . 24)
-                                (left-fringe . 0)
-                                (right-fringe . 0)))
+(setq default-frame-alist '(
+			    (left-fringe . 0) (right-fringe . 0)
+			    (internal-border-width . 24)
+			    (bottom-divider-width . 0) (right-divider-bars . 0)
+			    (undecorated-round . t)))
+(modify-frame-parameters nil default-frame-alist)
 
 ;; recent files
 (recentf-mode 1)
@@ -223,8 +223,10 @@
 (setq newsticker-url-list
       '(
           ("Euronews" "https://www.euronews.com/rss")
-          ("Allsides New" "https://www.allsides.com/rss/news")
+          ("Allsides News" "https://www.allsides.com/rss/news")
 	  ("arstechnica" "https://feeds.arstechnica.com/arstechnica/index")
+          ("The Verge" "https://www.theverge.com/rss/index.xml")
+          ("Polygon" "https://www.polygon.com/rss/index.xml")
           ;;("Sacha Chua" "https://sachachua.com/blog/feed/")
           ("Recurse" "https://blaggregator.recurse.com/atom.xml?token=561d4f124fc342d78c6e25da65dfd69a")
           ("Hacker News" "https://news.ycombinator.com/rss")
@@ -273,4 +275,18 @@
 
 ;; Default Brower
 (setq browse-url-browser-function 'eww-browse-url)
-
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-agenda-files
+   '("~/org/notes.org" "/home/v3rse/org/inbox.org" "/home/v3rse/org/agenda.org"
+     "/home/v3rse/org/projects.org"))
+ '(package-selected-packages nil))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
