@@ -61,3 +61,6 @@
 
 ;; nov - ebup support
 (package! nov)
+
+;; aider - cursor style ai assistant
+(package! aider :recipe (:host github :repo "tninja/aider.el" :files ("aider.el" "aider-doom.el")))
