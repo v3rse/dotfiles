@@ -10,6 +10,12 @@
 (setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
       auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
 
+;; Keybindings
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+
+;; Better Defaults
+(setq visible-bell t
+      custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 ;; Basic UI configuration
 (menu-bar-mode 0)
@@ -135,6 +141,10 @@
   :after org
   :ensure nil)
 
+(use-package org-protocol
+  :after org
+  :ensure nil)
+
 (use-package org-tempo
   :after org
   :ensure nil
@@ -165,8 +175,22 @@
                            ""
                            "/Met with: /")
                          "\n"))
+	  ("b" "Bookmark" entry (file+headline "inbox.org" "Bookmarks")
+	   ,(string-join '("* %:description"
+			 ":PROPERTIES:"
+			 ":CREATED: %U"
+			 ":CATEGORY: Bookmark"
+			 ":END:"
+			 "%:link"
+			 ""
+			 "%i"
+			 ""
+			 "%?")
+			 "\n")
+	   :empty-lines 1)
 	  ("j" "Journal" entry (file+datetree "journal.org")
-	   "* %?\nEntered on %U\n %i\n %a")))
+	   "* %?\nEntered on %U\n %i\n %a")
+	  ))
 	
 (add-to-list 'org-modules 'org-habit)
 
@@ -263,7 +287,8 @@
 	(t . (1.1)))
       modus-themes-common-palette-overrides
       `(
-	(bg-main "#2E3440") (fg-main "#ECEFF4")
+	;; (bg-main "#2E3440") (fg-main "#ECEFF4")
+	;; (cursor "#dfaf7a")
 	(border-mode-line-active unspecified)
 	(border-mode-line-inactive unspecified)
 	,@modus-themes-preset-overrides-cooler))
@@ -275,18 +300,7 @@
 
 ;; Default Brower
 (setq browse-url-browser-function 'eww-browse-url)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(org-agenda-files
-   '("~/org/notes.org" "/home/v3rse/org/inbox.org" "/home/v3rse/org/agenda.org"
-     "/home/v3rse/org/projects.org"))
- '(package-selected-packages nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
+;; Server
+(server-start)
+
