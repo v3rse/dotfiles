@@ -17,7 +17,7 @@
 
 (setq-hook! '+doom-dashboard-mode-hook evil-normal-state-cursor (list nil))
 
-(setq doom-font (font-spec :family "Iosevka SS04" :size 15 :weight 'medium)
+(setq doom-font (font-spec :family "Iosevka" :size 15 :weight 'medium)
      doom-variable-pitch-font (font-spec :family "ETBembo" :size 20))
 
 (setq doom-theme 'doom-tomorrow-night)
@@ -87,7 +87,7 @@
                           (org-agenda-skip-function
                            '(org-agenda-skip-entry-if 'deadline))
                           (org-deadline-warning-days 0)))
-                 (todo "TODO"
+                 (tags-todo "TODO"
                         ((org-agenda-overriding-header "Refile Tasks")
                         (org-agenda-files '("inbox.org"))))
                 (todo "TODO"
@@ -106,11 +106,18 @@
                  (agenda nil
                          ((org-agenda-span 3)
                           (org-agenda-entry-types '(:deadline))
+                          (org-agenda-format-date "")
                           (org-deadline-warning-days 3)
                           (org-agenda-overriding-header "\nDeadlines\n")))
                  (tags "CLOSED>=\"<today>\""
                        ((org-agenda-overriding-header "\nCompleted today\n")))
                 ))))
+
+(after! org-agenda
+  (setq org-agenda-prefix-format '((agenda . "  %i %?-12t")
+                                   (todo . "  %i")
+                                   (tags . "  %i %-12:c")
+                                   (search . "  %i %-12:c"))))
 
 (after! org
         (setq v3rse/org-refile-target-files '("agenda.org"
@@ -153,15 +160,12 @@
   (setq! gptel-default-mode 'org-mode)
   (setq! gptel-default-input-format 'org))
 
-(use-package aider
-  :config
-  (setq aider-args '("--model" "anthropic/claude-3-5-sonnet-20241022")))
-
 (setq elfeed-feeds
         '(
           ;; News sites (using Ground News on Phone for now)
           ;; ("https://www.euronews.com/rss" news euronews)
           ("https://www.allsides.com/rss/news" news allsides)
+          ("https://www.polygon.com/rss/index.xml" news polygon)
           ;; Papers
           ;; ("https://rss.arxiv.org/rss/cs" papers arxiv-cs)
           ;; Blogs

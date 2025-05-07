@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
@@ -10,7 +11,7 @@
   (let ((mono-spaced-font "Iosevka")
         (proportionately-spaced-font "Iosevka Etoile"))
 
-    (set-face-attribute 'default nil :family mono-spaced-font :height 120)
+    (set-face-attribute 'default nil :family mono-spaced-font :height 130 :weight 'medium)
     (when (eq system-type 'darwin)
       (set-face-attribute 'default nil :family mono-spaced-font :height 140))
   
@@ -54,7 +55,7 @@
   (electric-pair-mode 1)
   ;; auto indent
   (electric-indent-mode 1)
-
+  
   ;; history and completions
   (savehist-mode 1)
   (recentf-mode 1)
@@ -68,9 +69,7 @@
 )
 
 ;; usability
-(use-package eww
-  :config
-  (setq browse-url-browser-function 'eww-browse-url))
+(use-package eww)
 
 (use-package delsel
   :ensure nil
@@ -139,6 +138,20 @@
 		org-insert-heading-respect-content t)
   ;; keywords
   (setq org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "PROJ(p)" "|" "DONE(d)" "CNCL(c)")))
+  (setq org-todo-keyword-faces
+	'(("TODO" . (:inherit (bold font-lock-builtin-face org-todo)))
+	  ("HOLD" . (:inherit (bold warning org-todo)))
+	  ("DONE" . (:inherit (bold org-todo)))
+	  ("PROJ" . (:inherit (bold font-lock-keyword-face org-todo)))
+	  ("NEXT" . (:inherit (bold font-lock-constant-face org-todo)))
+	  ("CNCL" . (:inherit (bold warning org-todo)))))
+  (setq org-modern-todo-faces
+	'(("TODO" . (:inherit (bold font-lock-builtin-face org-modern-todo)))
+	  ("HOLD" . (:inherit (bold warning org-modern-todo)))
+	  ("DONE" . (:inherit (bold org-modern-todo)))
+	  ("PROJ" . (:inherit (bold font-lock-keyword-face org-modern-todo)))
+	  ("NEXT" . (:inherit (bold font-lock-constant-face org-modern-todo)))
+	  ("CNCL" . (:inherit (bold warning org-modern-todo)))))
   ;; capture templates
   (setq org-capture-templates
         `(("t" "Task" entry (file+headline "inbox.org" "Tasks")
@@ -177,7 +190,13 @@
 	  ("j" "Journal" entry (file+datetree "journal.org")
 	   "* %?\nEntered on %U\n %i\n %a")
 	  ))
+
   ;; agenda
+  (setq org-agenda-prefix-format '((agenda . "  %i %?-12t")
+                                   (todo . "  %i")
+                                   (tags . "  %i %-12:c")
+                                   (search . "  %i %-12:c")))
+	
   (setq org-agenda-custom-commands
         '(("g" "Get Things Done (GTD)"
                 ((agenda ""
@@ -259,15 +278,11 @@
           ("Euronews" "https://www.euronews.com/rss")
           ("Allsides News" "https://www.allsides.com/rss/news")
 	  ("arstechnica" "https://feeds.arstechnica.com/arstechnica/index")
-          ("The Verge" "https://www.theverge.com/rss/index.xml")
           ("Polygon" "https://www.polygon.com/rss/index.xml")
-          ;;("Sacha Chua" "https://sachachua.com/blog/feed/")
           ("Recurse" "https://blaggregator.recurse.com/atom.xml?token=561d4f124fc342d78c6e25da65dfd69a")
           ("Hacker News" "https://news.ycombinator.com/rss")
-          ("Plant Emacs" "https://planet.emacslife.com/atom.xml")
+          ("Planet Emacs" "https://planet.emacslife.com/atom.xml")
           ("Lobsters" "https://lobste.rs/rss")
-;;	  ("Org Mode Woof Feed" "https://tracker.orgmode.org/index.rss")
-;;	  ("Joshua Blais" "https://joshblais.com/index.xml")
 	)
      )
   )
@@ -331,11 +346,6 @@
     (corfu-history-mode 1)
     (add-to-list 'savehist-additional-variables 'corfu-history)))
 
-(use-package ef-themes
-  :ensure t
-  :config
-  (load-theme 'ef-dream))
-
 (use-package nerd-icons
   :ensure t
   :defer t) ;; only load when needed
@@ -359,6 +369,24 @@
   :defer t
   :hook
   (dired-mode . nerd-icons-dired-mode))
+
+;; (use-package ef-themes
+;;   :ensure t
+;;   :config
+;;   (load-theme 'ef-dream))
+
+(use-package doom-themes
+  :ensure t
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-tomorrow-night t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
 
 (use-package doom-modeline
   :ensure t
@@ -403,6 +431,32 @@
   :init
   (keycast-header-line-mode 1))
 
+(use-package magit
+  :ensure t
+  :bind (("C-c g" . magit)))
+
+(use-package aidermacs
+  :bind (("C-c x" . aidermacs-transient-menu))
+  :config
+  ; Set Ollama API endpoint (no API key needed)
+  (setenv "OLLAMA_API_BASE" "http://localhost:11434")
+  (add-to-list 'exec-path "~/.local/bin")
+  (setq aidermacs-aider-command "~/.local/bin")
+  :custom
+  ; See the Configuration section below
+  (aidermacs-default-model "ollama_chat/deepseek-r1:14b"))
+
+(use-package org-modern
+  :ensure t
+  :defer t
+  :hook ((org-mode . org-modern-mode)
+         (org-agenda-finalize . org-modern-agenda)))
+
+(use-package diff-hl
+  :ensure t
+  :init
+  (global-diff-hl-mode 1))
+
 ;; -- EXWM
 ;; (use-package exwm
 ;;   :ensure t
@@ -435,4 +489,4 @@
 ;;   (exwm-enable))
 
 ;; -- Server
-;; (server-start)
+(server-start)

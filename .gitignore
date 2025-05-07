@@ -4,3 +4,4 @@ i3/.config/i3blocks/blocklets
 bin/bin/
 /emacs/.config/doom/custom.el
 /emacs/.config/emacs-configs/default/*.*~
+.aider*
