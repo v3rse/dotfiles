@@ -57,7 +57,7 @@ This removes the chunky title bar in the mac version fo emacs
 
 ** Font
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "Iosevka SS04" :size 15 :weight 'medium)
+(setq doom-font (font-spec :family "Iosevka" :size 15 :weight 'medium)
      doom-variable-pitch-font (font-spec :family "ETBembo" :size 20))
 #+end_src
 
@@ -174,7 +174,7 @@ Add custom commands to =org-agenda=
                           (org-agenda-skip-function
                            '(org-agenda-skip-entry-if 'deadline))
                           (org-deadline-warning-days 0)))
-                 (todo "TODO"
+                 (tags-todo "TODO"
                         ((org-agenda-overriding-header "Refile Tasks")
                         (org-agenda-files '("inbox.org"))))
                 (todo "TODO"
@@ -193,11 +193,22 @@ Add custom commands to =org-agenda=
                  (agenda nil
                          ((org-agenda-span 3)
                           (org-agenda-entry-types '(:deadline))
+                          (org-agenda-format-date "")
                           (org-deadline-warning-days 3)
                           (org-agenda-overriding-header "\nDeadlines\n")))
                  (tags "CLOSED>=\"<today>\""
                        ((org-agenda-overriding-header "\nCompleted today\n")))
                 ))))
+#+end_src
+***** Formatting
+- no category section
+- no schedule repeat
+#+begin_src emacs-lisp
+(after! org-agenda
+  (setq org-agenda-prefix-format '((agenda . "  %i %?-12t")
+                                   (todo . "  %i")
+                                   (tags . "  %i %-12:c")
+                                   (search . "  %i %-12:c"))))
 #+end_src
 
 **** Moving Headings
@@ -272,12 +283,6 @@ Setup org-agenda to use diary file
 #+end_src
 
 ** AI Editing (aider)
-#+begin_src emacs-lisp
-(use-package aider
-  :config
-  (setq aider-args '("--model" "anthropic/claude-3-5-sonnet-20241022")))
-#+end_src
-
 ** RSS (elfeed)
 #+begin_src emacs-lisp
 (setq elfeed-feeds
