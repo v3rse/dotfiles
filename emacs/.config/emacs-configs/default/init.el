@@ -59,7 +59,6 @@
   ;; history and completions
   (savehist-mode 1)
   (recentf-mode 1)
-  (fido-vertical-mode 1) ;; replaces vertico
 
   ;; help
   (which-key-mode 1)
@@ -85,27 +84,6 @@
          (web-mode . eglot-ensure)
          (html-mode . eglot-ensure)
          (css-mode . eglot-ensure)))
-
-
-(use-package window
-  :ensure nil
-  :custom
-  (display-buffer-alist
-   '(
-      ;; auxiliary buffers: bottom 25%
-      ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\|[Hh]elp\\|Messages\\|Bookmark List\\|Ibuffer\\|Occur\\|eldoc.*\\)\\*"
-      (display-buffer-in-side-window)
-      (window-height . 0.25)
-      (side . bottom)
-      (slot . 0))
-
-      ;; flymake and completions: bottom 25%
-      ("\\*\\(Flymake diagnostics\\|xref\\|ivy\\|Swiper\\|Completions\\)"
-      (display-buffer-in-side-window)
-      (window-height . 0.25)
-      (side . bottom)
-      (slot . 1))
-      )))
 
 (use-package dired
   :ensure nil
@@ -265,6 +243,7 @@
   (add-to-list 'org-structure-template-alist '("q" . "quote")))
 
 (use-package newst-reader
+  :ensure nil
   :custom
   (custom-set-faces
    '(newsticker-feed-face ((t (:inherit ef-themes-heading-1 :height 1.4))))
@@ -284,7 +263,7 @@
           ("Planet Emacs" "https://planet.emacslife.com/atom.xml")
           ("Lobsters" "https://lobste.rs/rss")
 	)
-     )
+     ) 
   )
 
 ;; -- external --
@@ -370,11 +349,6 @@
   :hook
   (dired-mode . nerd-icons-dired-mode))
 
-;; (use-package ef-themes
-;;   :ensure t
-;;   :config
-;;   (load-theme 'ef-dream))
-
 (use-package doom-themes
   :ensure t
   :config
@@ -382,7 +356,6 @@
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
   (load-theme 'doom-tomorrow-night t)
-
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
   ;; Corrects (and improves) org-mode's native fontification.
@@ -429,7 +402,7 @@
 (use-package keycast
   :ensure t
   :init
-  (keycast-header-line-mode 1))
+  (keycast-mode-line-mode 1))
 
 (use-package magit
   :ensure t
@@ -440,7 +413,6 @@
   :config
   ; Set Ollama API endpoint (no API key needed)
   (setenv "OLLAMA_API_BASE" "http://localhost:11434")
-  (add-to-list 'exec-path "~/.local/bin")
   (setq aidermacs-aider-command "~/.local/bin")
   :custom
   ; See the Configuration section below
