@@ -429,36 +429,60 @@
   :init
   (global-diff-hl-mode 1))
 
-;; -- EXWM
-;; (use-package exwm
-;;   :ensure t
-;;   :config
-;;   (setq exwm-workspace-number 4)
-;;   ;; application class name = buffer name
-;;   (add-hook 'exwm-update-class-hook
-;; 	    (lambda () (exwm-workspace-rename-buffer exwm-class-name)))
-;;   ;; keybindings
-;;   (setq exwm-input-global-keys
-;; 	`(([?\s-r] . exwm-reset) ;; s-r: Reset (to line-mode)
-;; 	  ([?\s-w] . exwm-workspace-switch) ;; s-w: Switch workspace.
-;; 	  ([?\s-&] . (lambda (cmd) ;; s-&: Launch application
-;; 		       (interactive (list (read-shell-command "$ ")))
-;;  		       (start-process-shell-command cmd nil cmd)))
-;; 	  ;; s-No. : Switch to workspace by number
-;; 	  ,@(mapcar (lambda (i)
-;; 		      `(,(kbd (format "s-%d" i)) .
-;; 			(lambda ()
-;; 			  (interactive)
-;; 			  (exwm-workspace-switch-create ,i))))
-;; 		    (number-sequence 0 9))))
-;;   :init
-;;   (use-package exwm-systemtray
-;;    :config
-;;    (setq exwm-systemtray-height 32) 
-;;    :init
-;;    (exwm-systemtray-mode 1))
-  
-;;   (exwm-enable))
+(use-package org-pomodoro
+  :ensure t
+  :commands (org-pomodoro)
+  :config
+  (setq org-pomodoro-length 45
+	org-pomodoro-short-break-length 15))
+
+(use-package kubernetes
+  :ensure t
+  :commands (kubernetes-overview)
+  :config
+  (setq kubernetes-poll-frequency 3600
+        kubernetes-redraw-frequency 3600))
+
+(use-package vterm
+  :ensure t
+  :bind (("C-c t" . vterm)))
+
+(use-package popper
+  :ensure t ;
+  :bind (("C-`"   . popper-toggle)
+         ("C-M-`"   . popper-cycle)
+         ("C-x C-`" . popper-toggle-type))
+  :init
+  (setq popper-reference-buffers
+        '("\\*Messages\\*"
+          ("Output\\*$" . hide)
+          "\\*Async Shell Command\\*"
+	  helpful-mode
+          help-mode
+          compilation-mode
+	  occur-mode
+	  eldoc-mode
+	  ;; terms
+	  "^\\*eshell.*\\*$" eshell-mode
+          "^\\*shell.*\\*$"  shell-mode
+          "^\\*term.*\\*$"   term-mode
+          "^\\*vterm.*\\*$"  vterm-mode)
+	 popper-window-height 0.33) ;; 33% of display
+  (popper-mode +1)
+  (popper-echo-mode +1))                ; For echo area hints
+
+(use-package helpful
+  :ensure t
+  :bind (("C-h f" . #'helpful-callable)
+	 ("C-h v" . #'helpful-variable)
+	 ("C-h k" . #'helpful-key)
+	 ("C-h x"  . #'helpful-command)
+	 ("C-h F" . #'helpful-function)
+         ("C-c C-d" . #'helpful-at-point)))
+
+(use-package god-mode
+  :ensure t
+  :bind (("<escape>" . god-local-mode)))
 
 ;; -- Server
 (server-start)
