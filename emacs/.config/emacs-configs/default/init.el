@@ -297,6 +297,11 @@
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode t))
 
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode))
+
 (use-package marginalia
   :ensure t
   :hook (after-init . marginalia-mode))
