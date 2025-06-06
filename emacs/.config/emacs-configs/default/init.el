@@ -235,6 +235,10 @@
   :after org
   :ensure nil)
 
+(use-package ox-md
+  :after org
+  :ensure nil)
+
 (use-package org-tempo
   :after org
   :ensure nil
