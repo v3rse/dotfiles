@@ -37,6 +37,9 @@
 
   (setq-default fill-column 90)
 
+  ;; tab for completion
+  (setq tab-always-indent 'complete)
+
   
   :init
   ;; gui bars
@@ -74,16 +77,43 @@
   :ensure nil
   :hook (after-init . delete-selection-mode))
 
+;; lsp
 (use-package eglot
   :ensure nil
+  :custom
+  (eglot-sync-connect 0) ; async do not block
+  (eglot-autoshutdown t) ; shutdown after closing last managed buffer
+  (eglot-report-progress nil) ; disable messages
+  :hook ((prog-mode . eglot-ensure)
+	 (eglot--managed-mode . eldoc-mode))
+  :bind
+  (:map eglot-mode-map
+	("C-c e r" . eglot-rename)
+	("C-c e a" . eglot-code-actions)
+	("C-c e f" . eglot-format-buffer)
+	("C-c e i" . eglot-find-implementation)))
+
+(use-package eglot-booster
+  :ensure t
+  :after eglot
+  :vc (eglot-booster :url "git@github.com:jdtsmith/eglot-booster.git"
+		     :branch "main")
+  :config (eglot-booster-mode))
+
+;; debugger
+(use-package dape
+  :ensure t
+  :hook ((kill-emacs . dape-breakpoint-save)
+	 (after-init . dape-breakpoint-load))
   :config
-  (setq eglot-autoshutdown t)
-  :hook ((python-mode . eglot-ensure)
-         (js-mode . eglot-ensure)
-         (typescript-mode . eglot-ensure)
-         (web-mode . eglot-ensure)
-         (html-mode . eglot-ensure)
-         (css-mode . eglot-ensure)))
+  (dape-breakpoint-global-mode)
+  (setq dape-buffer-window-arrangment 'right
+	dape-inlay-hints t)
+  (add-hook 'dape-display-source-hook 'pulse-momentary-highlight-one-line))
+
+(use-package repeat
+  :config
+  (repeat-mode))
 
 (use-package dired
   :ensure nil
@@ -301,38 +331,134 @@
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode t))
 
+;; completions
+
 (use-package vertico
   :ensure t
-  :init
-  (vertico-mode))
+  :hook (after-init . vertico-mode)
+  :config
+  (setq vertico-cycle t)
+  (setq vertico-resize t)
+  (setq vertico-count 5)
+  (setq vertico-scroll-margin 5))
 
 (use-package marginalia
   :ensure t
-  :hook (after-init . marginalia-mode))
+  :hook (after-init . marginalia-mode)
+  :config
+  (setq marginalia-max-relative-age 0))
 
 (use-package orderless
   :ensure t
   :config
   (setq completion-styles '(orderless basic))
-  (setq completion-category-defaults nil)
-  (setq completion-category-overrides nil))
+        completion-category-overrides '((file (styles basic partial-completion))))
+
+(use-package consult
+  :ensure t
+  :bind (
+	 ;; general
+	 ;; remaps
+         ([remap recentf-open-files] . consult-recent-file)
+         ([remap recentf] . consult-recent-file)
+	 ([remap repeat-complex-command] . consult-complex-command) ; C-x M-:
+         ([remap switch-to-buffer] . consult-buffer) ; C-x b
+         ([remap switch-to-buffer-other-window] . consult-buffer-other-window) ; C-x 4 b
+         ([remap switch-to-buffer-other-frame] . consult-buffer-other-frame) ; C-x 5 b
+         ([remap switch-to-buffer-other-tab] . consult-buffer-other-tab) ; C-x t b
+         ([remap bookmark-jump] . consult-bookmark) ; C-x r b
+         ([remap project-switch-to-buffer] . consult-project-buffer) ; C-x p b
+	 ([remap yank-pop] . consult-yank-pop) ; M-y
+	 ;; mode specific commands
+	 ("C-c M-x" . consult-mode-command)
+	 ;; search info manual
+	 ("C-c i" . consult-info)
+	 ;; themes
+	 ("C-c T" . consult-theme)
+	 
+	 ;; search
+	 ;; remaps
+	 ([remap Info-search] . consult-info)
+	 ;; recursive grep
+	 ("M-s g" . consult-grep)
+	 ;; search with git grep
+	 ("M-s G" . consult-git-grep)
+	 ;; search file name recursively
+	 ("M-s f" . consult-find)
+	 ;; search with fd
+	 ("M-s F" . consult-fd)
+	 ;; search current buffer
+	 ("M-s l" . consult-line)
+	 ;; search multiple buffers
+	 ("M-s L" . consult-line-multi)
+	 ;; search with ripgrep
+	 ("M-s r" . consult-ripgrep)
+	 ;; search keeping lines with matches
+	 ("M-s k" . consult-keep-line)
+	 ;; search and match line using overlays
+	 ("M-s u" . consult-focus-lines)
+	 ;; isearch integration
+	 ("M-s e" . consult-isearch-history)
+
+	 ;; goto
+	 ;; remaps
+	 ([remap imenu] . consult-imenu)
+         ([remap goto-line] . consult-goto-line) ; M-g g or M-g M-g
+	 ;; jump to compilation error
+	 ("M-g e" . consult-compile-error)
+	 ;; jump to flymake diagnostic
+	 ("M-g f" . consult-flymake)
+	 ;; jump to outline heading
+	 ("M-g o" . consult-outline)
+	 ;; jump to marker (buffer local)
+	 ("M-g m" . consult-mark)
+	 ;; jump to marker (global)
+	 ("M-g k" . consult-global-mark)
+	 ;; select from imenu project wide
+	 ("M-g I" . consult-imenu-multi)
+	 ;; jump to symbol
+	 ("M-g s" . consult-eglot-symbols)))
+
+(use-package consult-eglot
+  :ensure t
+  :config
+  (consult-customize
+   consult-eglot-symbols
+   :initial (or (thing-at-point 'region t) (thing-at-point 'symbol t))))
+
+(use-package embark
+  :ensure t
+  :bind (("C-." . embark-act)
+	 :map minibuffer-local-map
+	 ("C-c C-c" . embark-collect)
+	 ("C-c C-e" . embark-export)))
+
+(use-package embark-consult
+  :ensure t)
 
 (use-package corfu
   :ensure t
   :hook (after-init . global-corfu-mode)
   :bind (:map corfu-map ("<tab>" . corfu-complete))
+  :custom
+  (corfu-auto t)
+  (corfu-cycle t)
+  (corfu-preview-current nil)
+  (corfu-min-width 20)
   :config
   (setq tab-always-indent 'complete)
-  (setq corfu-preview-current nil)
-  (setq corfu-min-width 20)
-
   (setq corfu-popupinfo-delay '(1.25 . 0.5))
   (corfu-popupinfo-mode 1) ; shows documentation after `corfu-popupinfo-delay'
 
   ;; Sort by input history (no need to modify `corfu-sort-function').
   (with-eval-after-load 'savehist
-    (corfu-history-mode 1)
     (add-to-list 'savehist-additional-variables 'corfu-history)))
+
+(use-package cape
+  :ensure t
+  :bind ("C-c p" . cape-prefix-map)
+  :init
+  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent))
 
 (use-package nerd-icons
   :ensure t
@@ -342,12 +468,10 @@
   :ensure t
   :defer t
   :after marginalia
-  :config
-  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+  :hook (marginalia-mode . nerd-icons-completion-marginalia-setup))
 
 (use-package nerd-icons-corfu
   :ensure t
-  :defer t
   :after corfu
   :config
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
@@ -397,8 +521,8 @@
            :tab-width 4
            :right-divider-width 30
            :scroll-bar-width 8
-           :left-fringe-width 20
-           :right-fringe-width 20))
+           :left-fringe-width 8
+           :right-fringe-width 8))
 
   ;; Read the doc string of `spacious-padding-subtle-mode-line' as
   ;; it is very flexible.
@@ -435,6 +559,7 @@
 
 (use-package diff-hl
   :ensure t
+  :hook ((dired-mode . diff-hl-dir-mode))
   :init
   (global-diff-hl-mode 1))
 
@@ -456,11 +581,43 @@
   :ensure t
   :bind (("C-c t" . vterm)))
 
+(use-package ace-window
+  :ensure t
+  :bind (("M-o" . ace-window))
+  :custom
+  (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?i)))
+
+(use-package shackle
+  :ensure t
+  :custom
+  (shackle-default-size .33)
+  (shackle-select-reused-windows t)
+  (shackle-inhibit-window-quit-on-same-windows t)
+  (shackle-rules
+   `((compilation-mode                :align below :popup t)
+     (flymake-diagnostics-buffer-mode :align below :popup t)
+     (magit-process-mode              :align below :popup t)
+     ("*Async-native-compile-log*"    :align below :popup t)
+     ("*Messages*"                    :align below :popup t)
+     ("*eldoc*"                       :align below :popup t)
+     ("*Process List*"                :align below :popup t :select t)
+     ("*Warnings*"                    :align below :popup t :select t)
+     ("*dired-check-process output*"  :align below :popup t :select t)
+     ("*eshell*"                      :align below :popup t :select t)
+     ("*vterm*"                       :align below :popup t :select t)
+     (help-mode                       :align right  :popup t :select t :size 82)
+     (helpful-mode                    :align right :popup t :select t :size 82)))
+  :init
+   (shackle-mode))
+
 (use-package popper
-  :ensure t ;
+  :ensure t
+  :functions popper-group-by-project
   :bind (("C-`"   . popper-toggle)
          ("C-M-`"   . popper-cycle)
          ("C-x C-`" . popper-toggle-type))
+  :custom
+  (popper-display-control nil)
   :init
   (setq popper-reference-buffers
         '("\\*Messages\\*"
@@ -469,14 +626,12 @@
 	  helpful-mode
           help-mode
           compilation-mode
+	  flymake-diagnostics-buffer-mode
 	  occur-mode
 	  eldoc-mode
-	  ;; terms
-	  "^\\*eshell.*\\*$" eshell-mode
-          "^\\*shell.*\\*$"  shell-mode
-          "^\\*term.*\\*$"   term-mode
-          "^\\*vterm.*\\*$"  vterm-mode)
-	 popper-window-height 0.33) ;; 33% of display
+	  ;; terms and shells require both values
+	 "^\\*eshell.*\\*$" eshell-mode
+          "^\\*vterm.*\\*$" vterm-mode))
   (popper-mode +1)
   (popper-echo-mode +1))                ; For echo area hints
 
