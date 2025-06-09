@@ -131,7 +131,7 @@
 (use-package org
   :config (setq org-directory "~/org/"
                 org-default-notes-file "~/org/inbox.org"
-                org-agenda-files '("inbox.org" "agenda.org" "projects.org")
+                org-agenda-files '("inbox.org" "agenda.org" "projects.org" "notes.org")
 		org-archive-location "~/org/archive/%s_archive::datetree/"
                 org-ellipsis " ... "
                 org-tags-column -80
