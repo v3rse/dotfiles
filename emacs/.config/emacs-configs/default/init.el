@@ -11,7 +11,7 @@
   (let ((mono-spaced-font "Iosevka")
         (proportionately-spaced-font "Iosevka Etoile"))
 
-    (set-face-attribute 'default nil :family mono-spaced-font :height 130 :weight 'medium)
+    (set-face-attribute 'default nil :family mono-spaced-font :height 120 :weight 'medium)
     (when (eq system-type 'darwin)
       (set-face-attribute 'default nil :family mono-spaced-font :height 140))
   
