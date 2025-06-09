@@ -630,7 +630,7 @@
 	  occur-mode
 	  eldoc-mode
 	  ;; terms and shells require both values
-	 "^\\*eshell.*\\*$" eshell-mode
+	  "^\\*eshell.*\\*$" eshell-mode
           "^\\*vterm.*\\*$" vterm-mode))
   (popper-mode +1)
   (popper-echo-mode +1))                ; For echo area hints
