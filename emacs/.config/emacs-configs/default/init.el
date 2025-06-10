@@ -439,7 +439,8 @@
 (use-package corfu
   :ensure t
   :hook (after-init . global-corfu-mode)
-  :bind (:map corfu-map ("<tab>" . corfu-complete))
+  :bind (:map corfu-map
+	      ("<tab>" . corfu-complete))
   :custom
   (corfu-auto t)
   (corfu-cycle t)
@@ -662,8 +663,24 @@
 
 (use-package evil
   :ensure t
+  :config
+  (defun v3rse/vterm-copy-mode-evil ()
+    (if (bound-and-true-p vterm-copy-mode)
+	(evil-normal-state)
+      ;; because evil-emacs-state doesn't work well with god-mode
+      (evil-god-toggle-execute-in-god-off-state)))
+  (add-hook 'vterm-copy-mode-hook #'my/vterm-copy-mode-evil)
   :init
+  ;; required for evil-collection
+  (setq evil-want-keybinding nil)
+  :config
   (evil-mode 1))
+
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
 
 (use-package evil-god-toggle
   :ensure t
@@ -677,12 +694,17 @@
   :config
   (evil-god-toggle-mode 1)
 
-  ;; from evil normal/insert to god mode
-  (evil-define-key '(normal insert)
+  ;; from evil normal to god mode
+  (evil-define-key '(normal)
+    evil-god-toggle-mode-map
+    [escape] #'evil-god-toggle-execute-in-god-state)
+
+  ;; from evil insert to god
+  (evil-define-key '(insert)
     evil-god-toggle-mode-map
     (kbd "C-;") #'evil-god-toggle-execute-in-god-state)
 
-  ;; from god back to previous evil state
+  ;; from god back to previous evil state (just press ; to switch)
   (evil-define-key 'god
     evil-god-toggle-mode-map
     (kbd "C-;") #'evil-change-to-previous-state)
@@ -702,15 +724,7 @@
     ;; enter god mode for one command
     (evil-define-key '(normal insert)
       evil-god-toggle-mode-map
-      (kbd "C-,") #'evil-god-toggle-once)
-
-    ;; change cursor color by mode
-    ;; (setq evil-god-state-cursor  '(box    "Red")
-    ;;       evil-god-off-state-cursor '(bar    "Green")
-    ;;       evil-insert-state-cursor '(bar    "Red")
-    ;;       evil-visual-state-cursor '(hollow "Red")
-    ;;       evil-normal-state-cursor '(hollow "Blue"))
-    )
+      (kbd "C-,") #'evil-god-toggle-once))
 
 ;; (use-package meow
 ;;   :ensure t
