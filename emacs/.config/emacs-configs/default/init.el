@@ -519,8 +519,8 @@
            :tab-width 4
            :right-divider-width 30
            :scroll-bar-width 8
-           :left-fringe-width 8
-           :right-fringe-width 8))
+           :left-fringe-width 10
+           :right-fringe-width 10))
 
   ;; Read the doc string of `spacious-padding-subtle-mode-line' as
   ;; it is very flexible.
@@ -535,9 +535,19 @@
   :init
   (keycast-mode-line-mode 1))
 
+;; version control
+
 (use-package magit
   :ensure t
   :bind (("C-c g" . magit)))
+
+(use-package diff-hl
+  :ensure t
+  :hook ((dired-mode . diff-hl-dir-mode)
+	 (magit-post-refresh . diff-hl-magit-post-refresh))
+  :init
+  (global-diff-hl-mode 1)
+  (diff-hl-margin-mode))
 
 (use-package aidermacs
   :bind (("C-c x" . aidermacs-transient-menu))
@@ -554,12 +564,6 @@
   :defer t
   :hook ((org-mode . org-modern-mode)
          (org-agenda-finalize . org-modern-agenda)))
-
-(use-package diff-hl
-  :ensure t
-  :hook ((dired-mode . diff-hl-dir-mode))
-  :init
-  (global-diff-hl-mode 1))
 
 (use-package org-pomodoro
   :ensure t
