@@ -635,6 +635,17 @@
   (popper-mode +1)
   (popper-echo-mode +1))                ; For echo area hints
 
+(use-package solaire-mode
+  :ensure t
+  :init
+  (solaire-global-mode))
+
+(use-package otpp
+  :ensure t
+  :after project
+  :init
+  (otpp-mode 1))
+
 (use-package helpful
   :ensure t
   :bind (("C-h f" . #'helpful-callable)
