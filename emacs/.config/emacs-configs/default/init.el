@@ -624,6 +624,7 @@
   (setq popper-reference-buffers
         '("\\*Messages\\*"
           ("Output\\*$" . hide)
+	  "\\*Warnings*\\*"
           "\\*Async Shell Command\\*"
 	  helpful-mode
           help-mode
