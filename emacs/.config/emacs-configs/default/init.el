@@ -658,12 +658,13 @@
 (use-package which-key
   :ensure nil
   :init
-  ;; enable god-mode support
-  (which-key-enable-god-mode-support)
   (which-key-mode 1))
 
 (use-package god-mode
-  :ensure t) 
+  :ensure t
+  :init
+  ;; enable god-mode support
+  (which-key-enable-god-mode-support))
 
 (use-package evil
   :ensure t
