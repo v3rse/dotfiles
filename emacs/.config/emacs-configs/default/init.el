@@ -63,9 +63,6 @@
   (savehist-mode 1)
   (recentf-mode 1)
 
-  ;; help
-  (which-key-mode 1)
-
   :bind (("C-x C-r" . recentf-open-files)
 	 ("C-x C-b" . ibuffer))
 )
@@ -657,6 +654,13 @@
          ("C-c C-d" . #'helpful-at-point)))
 
 ;; keybindings
+
+(use-package which-key
+  :ensure nil
+  :init
+  ;; enable god-mode support
+  (which-key-enable-god-mode-support)
+  (which-key-mode 1))
 
 (use-package god-mode
   :ensure t) 
