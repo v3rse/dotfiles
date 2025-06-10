@@ -644,6 +644,8 @@
 	 ("C-h F" . #'helpful-function)
          ("C-c C-d" . #'helpful-at-point)))
 
+;; keybindings
+
 ;; (use-package god-mode
 ;;   :ensure t
 ;;   :bind (("<escape>" . god-local-mode)))
