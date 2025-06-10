@@ -96,7 +96,7 @@
 (use-package eglot-booster
   :ensure t
   :after eglot
-  :vc (eglot-booster :url "git@github.com:jdtsmith/eglot-booster.git"
+  :vc (eglot-booster :url "https://github.com/jdtsmith/eglot-booster.git"
 		     :branch "main")
   :config (eglot-booster-mode))
 
@@ -657,103 +657,154 @@
 
 ;; keybindings
 
-;; (use-package god-mode
-;;   :ensure t
-;;   :bind (("<escape>" . god-local-mode)))
+(use-package god-mode
+  :ensure t) 
 
-
-(use-package meow
+(use-package evil
   :ensure t
-  :demand t
+  :init
+  (evil-mode 1))
+
+(use-package evil-god-toggle
+  :ensure t
+  :after (evil god-mode which-key)
+  :vc (evil-god-toggle :url "https://github.com/jam1015/evil-god-toggle.git"
+		       :branch "main")
+  :init
+  (setq evil-god-toggle-persist-visual 'always
+        ;; Make god-mode global (applies to all buffers) instead of buffer-local:
+        evil-god-toggle-global t)
   :config
-  (defun meow-setup ()
-    (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
-    (meow-motion-define-key
-     '("j" . meow-next)
-     '("k" . meow-prev)
-     '("<escape>" . ignore))
-    (meow-leader-define-key
-     ;; Use SPC (0-9) for digit arguments.
-     '("1" . meow-digit-argument)
-     '("2" . meow-digit-argument)
-     '("3" . meow-digit-argument)
-     '("4" . meow-digit-argument)
-     '("5" . meow-digit-argument)
-     '("6" . meow-digit-argument)
-     '("7" . meow-digit-argument)
-     '("8" . meow-digit-argument)
-     '("9" . meow-digit-argument)
-     '("0" . meow-digit-argument)
-     '("/" . meow-keypad-describe-key)
-     '("?" . meow-cheatsheet))
-    (meow-normal-define-key
-     '("0" . meow-expand-0)
-     '("9" . meow-expand-9)
-     '("8" . meow-expand-8)
-     '("7" . meow-expand-7)
-     '("6" . meow-expand-6)
-     '("5" . meow-expand-5)
-     '("4" . meow-expand-4)
-     '("3" . meow-expand-3)
-     '("2" . meow-expand-2)
-     '("1" . meow-expand-1)
-     '("-" . negative-argument)
-     '(";" . meow-reverse)
-     '("," . meow-inner-of-thing)
-     '("." . meow-bounds-of-thing)
-     '("[" . meow-beginning-of-thing)
-     '("]" . meow-end-of-thing)
-     '("a" . meow-append)
-     '("A" . meow-open-below)
-     '("b" . meow-back-word)
-     '("B" . meow-back-symbol)
-     '("c" . meow-change)
-     '("d" . meow-delete)
-     '("D" . meow-backward-delete)
-     '("e" . meow-next-word)
-     '("E" . meow-next-symbol)
-     '("f" . meow-find)
-     '("g" . meow-cancel-selection)
-     '("G" . meow-grab)
-     '("h" . meow-left)
-     '("H" . meow-left-expand)
-     '("i" . meow-insert)
-     '("I" . meow-open-above)
-     '("j" . meow-next)
-     '("J" . meow-next-expand)
-     '("k" . meow-prev)
-     '("K" . meow-prev-expand)
-     '("l" . meow-right)
-     '("L" . meow-right-expand)
-     '("m" . meow-join)
-     '("n" . meow-search)
-     '("o" . meow-block)
-     '("O" . meow-to-block)
-     '("p" . meow-yank)
-     '("q" . meow-quit)
-     '("Q" . meow-goto-line)
-     '("r" . meow-replace)
-     '("R" . meow-swap-grab)
-     '("s" . meow-kill)
-     '("t" . meow-till)
-     '("u" . meow-undo)
-     '("U" . meow-undo-in-selection)
-     '("v" . meow-visit)
-     '("w" . meow-mark-word)
-     '("W" . meow-mark-symbol)
-     '("x" . meow-line)
-     '("X" . meow-goto-line)
-     '("y" . meow-save)
-     '("Y" . meow-sync-grab)
-     '("z" . meow-pop-selection)
-     '("'" . repeat)
-     '("<escape>" . ignore)))
-  ;; HACK: allows 'a' to work as expected
-  ;; https://github.com/meow-edit/meow/discussions/87
-  (setq meow-use-cursor-position-hack t
-      meow-use-enhanced-selection-effect t)
-  (meow-setup)
-  (meow-global-mode 1))
+  (evil-god-toggle-mode 1)
+
+  ;; from evil normal/insert to god mode
+  (evil-define-key '(normal insert)
+    evil-god-toggle-mode-map
+    (kbd "C-;") #'evil-god-toggle-execute-in-god-state)
+
+  ;; from god back to previous evil state
+  (evil-define-key 'god
+    evil-god-toggle-mode-map
+    (kbd "C-;") #'evil-change-to-previous-state)
+
+  ;; use escape in both god modes to normal
+  (evil-define-key '(god god-off)
+    evil-god-toggle-mode-map
+    [escape] (lambda ()
+               (interactive)
+               (evil-god-toggle-stop-choose-state 'normal)))
+
+    ;; flip-flop between on/of god mode in any state
+    (evil-define-key '(god god-off)
+      evil-god-toggle-mode-map
+      (kbd "C-M-;") #'evil-god-toggle-god-toggle)
+
+    ;; enter god mode for one command
+    (evil-define-key '(normal insert)
+      evil-god-toggle-mode-map
+      (kbd "C-,") #'evil-god-toggle-once)
+
+    ;; change cursor color by mode
+    ;; (setq evil-god-state-cursor  '(box    "Red")
+    ;;       evil-god-off-state-cursor '(bar    "Green")
+    ;;       evil-insert-state-cursor '(bar    "Red")
+    ;;       evil-visual-state-cursor '(hollow "Red")
+    ;;       evil-normal-state-cursor '(hollow "Blue"))
+    )
+
+;; (use-package meow
+;;   :ensure t
+;;   :demand t
+;;   :config
+;;   (defun meow-setup ()
+;;     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+;;     (meow-motion-define-key
+;;      '("j" . meow-next)
+;;      '("k" . meow-prev)
+;;      '("<escape>" . ignore))
+;;     (meow-leader-define-key
+;;      ;; Use SPC (0-9) for digit arguments.
+;;      '("1" . meow-digit-argument)
+;;      '("2" . meow-digit-argument)
+;;      '("3" . meow-digit-argument)
+;;      '("4" . meow-digit-argument)
+;;      '("5" . meow-digit-argument)
+;;      '("6" . meow-digit-argument)
+;;      '("7" . meow-digit-argument)
+;;      '("8" . meow-digit-argument)
+;;      '("9" . meow-digit-argument)
+;;      '("0" . meow-digit-argument)
+;;      '("/" . meow-keypad-describe-key)
+;;      '("?" . meow-cheatsheet))
+;;     (meow-normal-define-key
+;;      '("0" . meow-expand-0)
+;;      '("9" . meow-expand-9)
+;;      '("8" . meow-expand-8)
+;;      '("7" . meow-expand-7)
+;;      '("6" . meow-expand-6)
+;;      '("5" . meow-expand-5)
+;;      '("4" . meow-expand-4)
+;;      '("3" . meow-expand-3)
+;;      '("2" . meow-expand-2)
+;;      '("1" . meow-expand-1)
+;;      '("-" . negative-argument)
+;;      '(";" . meow-reverse)
+;;      '("," . meow-inner-of-thing)
+;;      '("." . meow-bounds-of-thing)
+;;      '("[" . meow-beginning-of-thing)
+;;      '("]" . meow-end-of-thing)
+;;      '("a" . meow-append)
+;;      '("A" . meow-open-below)
+;;      '("b" . meow-back-word)
+;;      '("B" . meow-back-symbol)
+;;      '("c" . meow-change)
+;;      '("d" . meow-delete)
+;;      '("D" . meow-backward-delete)
+;;      '("e" . meow-next-word)
+;;      '("E" . meow-next-symbol)
+;;      '("f" . meow-find)
+;;      '("g" . meow-cancel-selection)
+;;      '("G" . meow-grab)
+;;      '("h" . meow-left)
+;;      '("H" . meow-left-expand)
+;;      '("i" . meow-insert)
+;;      '("I" . meow-open-above)
+;;      '("j" . meow-next)
+;;      '("J" . meow-next-expand)
+;;      '("k" . meow-prev)
+;;      '("K" . meow-prev-expand)
+;;      '("l" . meow-right)
+;;      '("L" . meow-right-expand)
+;;      '("m" . meow-join)
+;;      '("n" . meow-search)
+;;      '("o" . meow-block)
+;;      '("O" . meow-to-block)
+;;      '("p" . meow-yank)
+;;      '("q" . meow-quit)
+;;      '("Q" . meow-goto-line)
+;;      '("r" . meow-replace)
+;;      '("R" . meow-swap-grab)
+;;      '("s" . meow-kill)
+;;      '("t" . meow-till)
+;;      '("u" . meow-undo)
+;;      '("U" . meow-undo-in-selection)
+;;      '("v" . meow-visit)
+;;      '("w" . meow-mark-word)
+;;      '("W" . meow-mark-symbol)
+;;      '("x" . meow-line)
+;;      '("X" . meow-goto-line)
+;;      '("y" . meow-save)
+;;      '("Y" . meow-sync-grab)
+;;      '("z" . meow-pop-selection)
+;;      '("'" . repeat)
+;;      '("<escape>" . ignore)))
+;;   ;; HACK: allows 'a' to work as expected
+;;   ;; https://github.com/meow-edit/meow/discussions/87
+;;   (setq meow-use-cursor-position-hack t
+;;       meow-use-enhanced-selection-effect t)
+;;   (meow-setup)
+;;   (meow-global-mode 1))
+
 
 ;; -- Server
 (server-start)
