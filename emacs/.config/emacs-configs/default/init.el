@@ -3,6 +3,14 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
 ;; general
+(use-package exec-path-from-shell
+  :ensure
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+  (when (daemonp)
+    (exec-path-shell-initialize)))
+
 (use-package emacs
   :ensure nil
 
