@@ -26,7 +26,7 @@ export SDKMAN_DIR="$HOME/.sdkman"
 if [[ "$OSTYPE" == "darwin"* ]]; then
   # MAC-ONLY
   eval "$(/opt/homebrew/bin/brew shellenv)"
-  export PATH=/opt/homebrew/bin/:$PATH
+  export PATH="/opt/homebrew/bin/:$HOME/.cargo/bin:$PATH"
 fi
 
 if [[ "$OSTYPE" != "darwin"* ]]; then
