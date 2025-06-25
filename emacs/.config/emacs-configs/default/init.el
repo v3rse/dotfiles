@@ -76,7 +76,8 @@
 )
 
 ;; usability
-(use-package eww)
+(use-package eww
+  :ensure nil)
 
 (use-package delsel
   :ensure nil
@@ -692,7 +693,10 @@
   ;; required for evil-collection
   (setq evil-want-keybinding nil)
   :config
-  (evil-mode 1))
+  (evil-mode 1)
+  (evil-set-initial-state 'newsticker-treeview-mode 'emacs)
+  (evil-set-initial-state 'newsticker-treeview-list-mode 'emacs)
+  (evil-set-initial-state 'newsticker-treeview-item-mode 'emacs))
 
 (use-package evil-collection
   :after evil
