@@ -558,6 +558,8 @@
   (global-diff-hl-mode 1)
   (diff-hl-margin-mode))
 
+;; ai
+
 (use-package aidermacs
   :bind (("C-c x" . aidermacs-transient-menu))
   :config
@@ -567,6 +569,53 @@
   :custom
   ; See the Configuration section below
   (aidermacs-default-model "ollama_chat/deepseek-r1:14b"))
+
+(use-package gptel
+  :ensure t
+  :config
+  (setq gptel-default-mode 'org-mode)
+  (setq gptel-default-input-format 'org)
+  (defvar v3rse/gptel-ollama-host "localhost"
+    "The ollama host server address for gptel")
+
+  (defun v3rse/gptel-use-claude ()
+    "Switch to a claude backend for gptel"
+    (interactive)
+    (setq gptel-model 'claude-3-sonnet-20240229
+	  gptel-backend (gptel-make-anthropic "Claude"
+			  :stream t
+			  :key (cadr (auth-source-user-and-password "api.anthropic.com" "apikey")))))
+
+  (defun v3rse/gptel-use-ollama ()
+    "Switch to a ollama backend for gptel"
+    (interactive)
+    (setq gptel-model 'gemma3:12b
+	  gptel-backend (gptel-make-ollama "Ollama"
+			  :host (format "%s:11434" v3rse/gptel-ollama-host)
+			  :stream t
+			  :models '(deepseek-r1:14b gemma3:12b))))
+
+  (defun v3rse/gptel-use-chatgpt ()
+    "Switch to a chatgpt backend for gptel"
+    (interactive)
+    (setq gptel-model (default-value 'gptel-model)
+	  gptel-backend (default-value 'gptel-backend)))
+
+  :init
+  (require 'gptel-integrations))
+
+(defun get-all-project-paths-from-projectel ()
+  "Gets all project paths from project.el and returns them as a list of strings."
+  (mapcar #'car project--list))
+
+(use-package mcp
+  :ensure t
+  :after gptel
+  :custom (mcp-hub-servers
+           `(("filesystem" . (:command "npx" :args ("-y" "@modelcontextprotocol/server-filesystem" "~/src/" "~/dotfiles")))
+             ("fetch" . (:command "uvx" :args ("mcp-server-fetch")))))
+  :config (require 'mcp-hub)
+  :hook (after-init . mcp-hub-start-all-server))
 
 (use-package org-modern
   :ensure t
