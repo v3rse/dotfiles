@@ -337,6 +337,10 @@
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode t))
 
+(use-package nix-ts-mode
+  :ensure t
+  :mode "\\.nix\\'")
+
 ;; completions
 
 (use-package vertico
