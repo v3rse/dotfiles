@@ -742,11 +742,83 @@ a project, call `multi-vterm-dedicated-toggle'."
   :init
   (solaire-global-mode))
 
+;; projects
 (use-package otpp
   :ensure t
   :after project
+  :bind (("C-x t D" . otpp-detach-buffer-to-tab)
+         ("C-x t C" . otpp-change-tab-root-dir)
+         ("C-x t P" . otpp-prefix))
+  :custom
+  (otpp-project-aware-commands-regexp (rx (seq bol (or "project-" "+project-" "projection-"))))
   :init
-  (otpp-mode 1))
+  (otpp-mode 1)
+  (otpp-override-mode 1))
+
+(use-package compile-multi
+  :ensure t
+  :bind (("<f9>" . compile-multi)))
+
+(use-package compile-multi-embark
+  :ensure t
+  :after embark
+  :init
+  (compile-multi-embark-mode 1))
+
+(use-package consult-compile-multi
+  :ensure t
+  :after consult
+  :init
+  (consult-compile-multi-mode 1))
+
+(use-package compile-multi-nerd-icons
+  :ensure t
+  :after compile-multi
+  :demand t)
+
+(use-package projection
+  :ensure t
+  :hook (ibuffer . ibuffer-projection-set-filter-groups)
+  :after project
+  :demand
+  :bind-keymap ("C-x P" . projection-map)
+  :init
+  ;; This ensures that `ibuffer-projection-set-filter-groups' takes effect
+  (add-hook 'ibuffer-hook (lambda () (run-at-time 0.1 nil (lambda () (call-interactively #'ibuffer-update)))))
+  ;; Mark compile commands as safe (customized in ".dir-locals.el")
+  (dolist (var '( projection-commands-configure-command projection-commands-build-command
+                  projection-commands-test-command projection-commands-run-command
+                  projection-commands-package-command projection-commands-install-command))
+    (put var 'safe-local-variable #'stringp))
+  ;; Enable `projection-hook', adds the possibility to run functions in per-project basis
+  (global-projection-hook-mode 1))
+
+
+;; Projection extension to jump between related files in a project
+(use-package projection-find
+  :config
+  ;; Add header/source mapping for Modula-2
+  (cl-callf2 append '(("mod" "def") ("def" "mod")) projection-find-other-file-suffix))
+
+
+;; Projection integration for `compile-multi'
+(use-package projection-multi
+  :ensure t
+  :bind (:map projection-map ("C" . #'projection-multi-compile)))
+
+
+;; Integration for `projection-multi' and `embark'
+(use-package projection-multi-embark
+  :ensure t
+  :after embark
+  :init
+  (projection-multi-embark-setup-command-map))
+
+
+;; Projection integration for `dape'
+(use-package projection-dape
+  :ensure t
+  :bind (:map projection-map ("D" . #'projection-dape)))
 
 (use-package helpful
   :ensure t
