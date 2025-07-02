@@ -48,6 +48,9 @@
   ;; tab for completion
   (setq tab-always-indent 'complete)
 
+  ;; short answers for prompts
+  (setq use-short-answers t)
+
   
   :init
   ;; gui bars
