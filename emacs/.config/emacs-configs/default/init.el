@@ -84,14 +84,20 @@
   :hook (after-init . delete-selection-mode))
 
 ;; lsp
+(defun v3rse/set-default-margins ()
+  (setq left-margin-width 3)
+  (set-window-buffer (selected-window) (current-buffer)))
+
 (use-package eglot
   :ensure nil
   :custom
   (eglot-sync-connect 0) ; async do not block
   (eglot-autoshutdown t) ; shutdown after closing last managed buffer
   (eglot-report-progress nil) ; disable messages
-  :hook ((prog-mode . eglot-ensure)
-	 (eglot--managed-mode . eldoc-mode))
+  :hook
+  ((prog-mode . eglot-ensure)
+   (eglot--managed-mode . eldoc-mode)
+   (eglot--managed-mode . v3rse/set-default-margins))
   :bind
   (:map eglot-mode-map
 	("C-c e r" . eglot-rename)
@@ -526,14 +532,13 @@
   :config
   ;; These are the defaults, but I keep it here for visiibility.
   (setq spacious-padding-widths
-        '( :internal-border-width 30
+        '( :internal-border-width 0
            :header-line-width 4
            :mode-line-width 6
            :tab-width 4
-           :right-divider-width 30
-           :scroll-bar-width 8
-           :left-fringe-width 10
-           :right-fringe-width 10))
+           :right-divider-width 10
+           :left-fringe-width 16
+           :right-fringe-width 16))
 
   ;; Read the doc string of `spacious-padding-subtle-mode-line' as
   ;; it is very flexible.
@@ -556,11 +561,13 @@
 
 (use-package diff-hl
   :ensure t
-  :hook ((dired-mode . diff-hl-dir-mode)
-	 (magit-post-refresh . diff-hl-magit-post-refresh))
+  :hook
+  ((dired-mode . diff-hl-dir-mode)
+   (magit-post-refresh . diff-hl-magit-post-refresh))
   :init
   (global-diff-hl-mode 1)
-  (diff-hl-margin-mode))
+  :config
+  (diff-hl-margin-mode 1))
 
 ;; ai
 
