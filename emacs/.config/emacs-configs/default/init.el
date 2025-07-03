@@ -1,10 +1,10 @@
 ;; -*- lexical-binding: t; -*-
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(setq use-package-always-ensure t)
 
 ;; general
 (use-package exec-path-from-shell
-  :ensure
   :config
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize))
@@ -109,7 +109,6 @@
 	("C-c e i" . eglot-find-implementation)))
 
 (use-package eglot-booster
-  :ensure t
   :after eglot
   :vc (eglot-booster :url "https://github.com/jdtsmith/eglot-booster.git"
 		     :branch "main")
@@ -117,7 +116,6 @@
 
 ;; debugger
 (use-package dape
-  :ensure t
   :hook ((kill-emacs . dape-breakpoint-save)
 	 (after-init . dape-breakpoint-load))
   :config
@@ -321,7 +319,6 @@
 
 ;; -- external --
 (use-package dired-subtree
-  :ensure t
   :after dired
   :bind
   ( :map dired-mode-map
@@ -333,7 +330,6 @@
   (setq dired-subtree-use-backgrounds nil))
 
 (use-package trashed
-  :ensure t
   :commands (trashed)
   :config
   (setq trashed-action-confirmer 'y-or-n-p)
@@ -342,7 +338,6 @@
   (setq trashed-date-format "%Y-%m-%d %H:%M:%S"))
 
 (use-package treesit-auto
-  :ensure t
   :after emacs
   :custom
   (treesit-auto-install 'prompt)
@@ -357,7 +352,6 @@
 ;; completions
 
 (use-package vertico
-  :ensure t
   :hook (after-init . vertico-mode)
   :config
   (setq vertico-cycle t)
@@ -366,19 +360,16 @@
   (setq vertico-scroll-margin 5))
 
 (use-package marginalia
-  :ensure t
   :hook (after-init . marginalia-mode)
   :config
   (setq marginalia-max-relative-age 0))
 
 (use-package orderless
-  :ensure t
   :config
   (setq completion-styles '(orderless basic))
         completion-category-overrides '((file (styles basic partial-completion))))
 
 (use-package consult
-  :ensure t
   :bind (
 	 ;; general
 	 ;; remaps
@@ -443,24 +434,20 @@
 	 ("M-g s" . consult-eglot-symbols)))
 
 (use-package consult-eglot
-  :ensure t
   :config
   (consult-customize
    consult-eglot-symbols
    :initial (or (thing-at-point 'region t) (thing-at-point 'symbol t))))
 
 (use-package embark
-  :ensure t
   :bind (("C-." . embark-act)
 	 :map minibuffer-local-map
 	 ("C-c C-c" . embark-collect)
 	 ("C-c C-e" . embark-export)))
 
-(use-package embark-consult
-  :ensure t)
+(use-package embark-consult)
 
 (use-package corfu
-  :ensure t
   :hook (after-init . global-corfu-mode)
   :bind (:map corfu-map
 	      ("<tab>" . corfu-complete))
@@ -479,35 +466,29 @@
     (add-to-list 'savehist-additional-variables 'corfu-history)))
 
 (use-package cape
-  :ensure t
   :bind ("C-c p" . cape-prefix-map)
   :init
   (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent))
 
 (use-package nerd-icons
-  :ensure t
   :defer t) ;; only load when needed
 
 (use-package nerd-icons-completion
-  :ensure t
   :defer t
   :after marginalia
   :hook (marginalia-mode . nerd-icons-completion-marginalia-setup))
 
 (use-package nerd-icons-corfu
-  :ensure t
   :after corfu
   :config
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 (use-package nerd-icons-dired
-  :ensure t
   :defer t
   :hook
   (dired-mode . nerd-icons-dired-mode))
 
 (use-package doom-themes
-  :ensure t
   :config
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
@@ -519,7 +500,6 @@
   (doom-themes-org-config))
 
 (use-package doom-modeline
-  :ensure t
   :defer t
   :custom
   (doom-modeline-buffer-file-name-style 'buffer-name)  
@@ -532,7 +512,6 @@
   (after-init . doom-modeline-mode))
 
 (use-package spacious-padding
-  :ensure t
   :if (display-graphic-p)
   :hook (after-init . spacious-padding-mode)
   :bind ("<f8>" . spacious-padding-mode)
@@ -556,18 +535,15 @@
   (spacious-padding-mode 1))
 
 (use-package keycast
-  :ensure t
   :init
   (keycast-mode-line-mode 1))
 
 ;; version control
 
 (use-package magit
-  :ensure t
   :bind (("C-c g" . magit)))
 
 (use-package diff-hl
-  :ensure t
   :hook
   ((dired-mode . diff-hl-dir-mode)
    (magit-post-refresh . diff-hl-magit-post-refresh))
@@ -589,7 +565,6 @@
   (aidermacs-default-model "ollama_chat/deepseek-r1:14b"))
 
 (use-package gptel
-  :ensure t
   :config
   (setq gptel-default-mode 'org-mode)
   (setq gptel-default-input-format 'org)
@@ -627,7 +602,6 @@
   (mapcar #'car project--list))
 
 (use-package mcp
-  :ensure t
   :after gptel
   :custom (mcp-hub-servers
            `(("filesystem" . (:command "npx" :args ("-y" "@modelcontextprotocol/server-filesystem" "~/src/" "~/dotfiles")))
@@ -636,20 +610,17 @@
   :hook (after-init . mcp-hub-start-all-server))
 
 (use-package org-modern
-  :ensure t
   :defer t
   :hook ((org-mode . org-modern-mode)
          (org-agenda-finalize . org-modern-agenda)))
 
 (use-package org-pomodoro
-  :ensure t
   :commands (org-pomodoro)
   :config
   (setq org-pomodoro-length 45
 	org-pomodoro-short-break-length 15))
 
 (use-package kubernetes
-  :ensure t
   :commands (kubernetes-overview)
   :config
   (setq kubernetes-poll-frequency 3600
@@ -663,13 +634,11 @@
   :hook (compilation-filter . v3rse/ansi-color-compilation-buffer-hook))
 
 (use-package vterm
-  :ensure t
   :hook
   (vterm-mode . compilation-shell-minor-mode)
   :bind (("C-c t" . vterm)))
 
 (use-package multi-vterm
-  :ensure t
   :when (and (not (featurep 'os/win)) (featurep 'feat/modules))
   :bind (([remap project-shell] . multi-vterm-project)
          ([f1] . +multi-vterm-toggle-dwim)
@@ -701,13 +670,11 @@ a project, call `multi-vterm-dedicated-toggle'."
       (multi-vterm-dedicated-toggle))))
 
 (use-package ace-window
-  :ensure t
   :bind (("M-o" . ace-window))
   :custom
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?i)))
 
 (use-package shackle
-  :ensure t
   :custom
   (shackle-default-size .33)
   (shackle-select-reused-windows t)
@@ -730,7 +697,6 @@ a project, call `multi-vterm-dedicated-toggle'."
    (shackle-mode))
 
 (use-package popper
-  :ensure t
   :functions popper-group-by-project
   :bind (("C-`"   . popper-toggle)
          ("C-M-`"   . popper-cycle)
@@ -756,13 +722,11 @@ a project, call `multi-vterm-dedicated-toggle'."
   (popper-echo-mode +1))                ; For echo area hints
 
 (use-package solaire-mode
-  :ensure t
   :init
   (solaire-global-mode))
 
 ;; projects
 (use-package otpp
-  :ensure t
   :after project
   :bind (("C-x t D" . otpp-detach-buffer-to-tab)
          ("C-x t C" . otpp-change-tab-root-dir)
@@ -774,28 +738,23 @@ a project, call `multi-vterm-dedicated-toggle'."
   (otpp-override-mode 1))
 
 (use-package compile-multi
-  :ensure t
   :bind (("<f9>" . compile-multi)))
 
 (use-package compile-multi-embark
-  :ensure t
   :after embark
   :init
   (compile-multi-embark-mode 1))
 
 (use-package consult-compile-multi
-  :ensure t
   :after consult
   :init
   (consult-compile-multi-mode 1))
 
 (use-package compile-multi-nerd-icons
-  :ensure t
   :after compile-multi
   :demand t)
 
 (use-package projection
-  :ensure t
   :hook (ibuffer . ibuffer-projection-set-filter-groups)
   :after project
   :demand
@@ -814,6 +773,8 @@ a project, call `multi-vterm-dedicated-toggle'."
 
 ;; Projection extension to jump between related files in a project
 (use-package projection-find
+  :after projection
+  :ensure nil
   :config
   ;; Add header/source mapping for Modula-2
   (cl-callf2 append '(("mod" "def") ("def" "mod")) projection-find-other-file-suffix))
@@ -821,25 +782,26 @@ a project, call `multi-vterm-dedicated-toggle'."
 
 ;; Projection integration for `compile-multi'
 (use-package projection-multi
-  :ensure t
+  :after compile-multi projection
+  :ensure nil
   :bind (:map projection-map ("C" . #'projection-multi-compile)))
 
 
 ;; Integration for `projection-multi' and `embark'
 (use-package projection-multi-embark
-  :ensure t
-  :after embark
+  :after embark compile-multi projection
+  :ensure nil
   :init
   (projection-multi-embark-setup-command-map))
 
 
 ;; Projection integration for `dape'
 (use-package projection-dape
-  :ensure t
+  :after dape projection
+  :ensure nil
   :bind (:map projection-map ("D" . #'projection-dape)))
 
 (use-package helpful
-  :ensure t
   :bind (("C-h f" . #'helpful-callable)
 	 ("C-h v" . #'helpful-variable)
 	 ("C-h k" . #'helpful-key)
@@ -855,13 +817,11 @@ a project, call `multi-vterm-dedicated-toggle'."
   (which-key-mode 1))
 
 (use-package god-mode
-  :ensure t
   :init
   ;; enable god-mode support
   (which-key-enable-god-mode-support))
 
 (use-package evil
-  :ensure t
   :config
   (defun v3rse/vterm-copy-mode-evil ()
     (if (bound-and-true-p vterm-copy-mode)
@@ -880,12 +840,10 @@ a project, call `multi-vterm-dedicated-toggle'."
 
 (use-package evil-collection
   :after evil
-  :ensure t
   :config
   (evil-collection-init))
 
 (use-package evil-god-toggle
-  :ensure t
   :after (evil god-mode which-key)
   :vc (evil-god-toggle :url "https://github.com/jam1015/evil-god-toggle.git"
 		       :branch "main")
