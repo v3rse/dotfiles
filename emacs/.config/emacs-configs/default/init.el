@@ -175,6 +175,10 @@
 	  ("PROJ" . (:inherit (bold font-lock-keyword-face org-modern-todo)))
 	  ("NEXT" . (:inherit (bold font-lock-constant-face org-modern-todo)))
 	  ("CNCL" . (:inherit (bold warning org-modern-todo)))))
+  ; priority A is already red
+  (setq org-modern-priority-faces
+	(quote ((?B (:inherit warning :inverse-video t))
+		(?C (:inherit org-todo :inverse-video t)))))
   ;; capture templates
   (setq org-capture-templates
         `(("t" "Task" entry (file+headline "inbox.org" "Tasks")
