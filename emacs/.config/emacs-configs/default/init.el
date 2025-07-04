@@ -559,7 +559,9 @@
   :config
   ; Set Ollama API endpoint (no API key needed)
   (setenv "OLLAMA_API_BASE" "http://localhost:11434")
-  (setq aidermacs-aider-command "~/.local/bin")
+  (if (eq system-type 'darwin)
+      (setq aidermacs-aider-command "/opt/homebrew/bin")
+      (setq aidermacs-aider-command "~/.local/bin"))
   :custom
   ; See the Configuration section below
   (aidermacs-default-model "ollama_chat/deepseek-r1:14b"))
