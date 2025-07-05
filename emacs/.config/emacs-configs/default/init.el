@@ -856,21 +856,6 @@ a project, call `multi-vterm-dedicated-toggle'."
   :config
   (evil-god-toggle-mode 1)
 
-  ;; from evil normal to god mode
-  (evil-define-key '(normal)
-    evil-god-toggle-mode-map
-    [escape] #'evil-god-toggle-execute-in-god-state)
-
-  ;; from evil insert to god
-  (evil-define-key '(insert)
-    evil-god-toggle-mode-map
-    (kbd "C-;") #'evil-god-toggle-execute-in-god-state)
-
-  ;; from god back to previous evil state (just press ; to switch)
-  (evil-define-key 'god
-    evil-god-toggle-mode-map
-    (kbd "C-;") #'evil-change-to-previous-state)
-
   ;; use escape in both god modes to normal
   (evil-define-key '(god god-off)
     evil-god-toggle-mode-map
