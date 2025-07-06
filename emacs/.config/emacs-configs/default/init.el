@@ -773,7 +773,6 @@ a project, call `multi-vterm-dedicated-toggle'."
   ;; Enable `projection-hook', adds the possibility to run functions in per-project basis
   (global-projection-hook-mode 1))
 
-
 ;; Projection extension to jump between related files in a project
 (use-package projection-find
   :after projection
@@ -782,26 +781,20 @@ a project, call `multi-vterm-dedicated-toggle'."
   ;; Add header/source mapping for Modula-2
   (cl-callf2 append '(("mod" "def") ("def" "mod")) projection-find-other-file-suffix))
 
-
 ;; Projection integration for `compile-multi'
 (use-package projection-multi
   :after compile-multi projection
-  :ensure nil
   :bind (:map projection-map ("C" . #'projection-multi-compile)))
-
 
 ;; Integration for `projection-multi' and `embark'
 (use-package projection-multi-embark
   :after embark compile-multi projection
-  :ensure nil
   :init
   (projection-multi-embark-setup-command-map))
-
 
 ;; Projection integration for `dape'
 (use-package projection-dape
   :after dape projection
-  :ensure nil
   :bind (:map projection-map ("D" . #'projection-dape)))
 
 (use-package helpful
