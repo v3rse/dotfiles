@@ -52,6 +52,9 @@
   ;; short answers for prompts
   (setq use-short-answers t)
 
+  ;; use emacs (loopback) for epg/epa (gpg) pinentry
+  (setq epg-pinentry-mode 'loopback)
+
   
   :init
   ;; gui bars
