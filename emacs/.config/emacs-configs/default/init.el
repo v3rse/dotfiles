@@ -357,7 +357,7 @@
   :config
   (setq vertico-cycle t)
   (setq vertico-resize t)
-  (setq vertico-count 5)
+  (setq vertico-count 15)
   (setq vertico-scroll-margin 5))
 
 (use-package marginalia
