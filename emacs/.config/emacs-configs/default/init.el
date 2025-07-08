@@ -435,7 +435,16 @@
 	 ;; select from imenu project wide
 	 ("M-g I" . consult-imenu-multi)
 	 ;; jump to symbol
-	 ("M-g s" . consult-eglot-symbols)))
+	 ("M-g s" . consult-eglot-symbols))
+  :init
+
+  ;; tweak register preview
+  (advice-add #'register-preview :override #'consult-register-window)
+  (setq register-preview-delay 0.5)
+
+  ;; use consult to select xref locations with preview
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref))
 
 (use-package consult-eglot
   :config
