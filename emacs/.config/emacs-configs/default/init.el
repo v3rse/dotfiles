@@ -890,5 +890,12 @@ a project, call `multi-vterm-dedicated-toggle'."
        evil-insert-state-cursor  '(bar "SkyBlue")
        evil-visual-state-cursor  '(bar "SkyBlue")))
 
+;; language
+(use-package hcl-mode
+  :ensure t)
+
+(use-package terraform-mode
+  :ensure t)
+
 ;; -- Server
 (server-start)
