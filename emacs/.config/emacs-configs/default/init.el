@@ -118,6 +118,15 @@
 		     :branch "main")
   :config (eglot-booster-mode))
 
+(use-package flyover
+  :vc (flyover :url "https://github.com/v3rse/flyover.git"
+	       :branch "main"
+	       :rev "77f5c7b3f758a671eeb887a20c7eeb4ad717529e")
+  :hook
+  (flymake-mode . flyover-mode)
+  :config
+  (setq flyover-use-theme-colors t))
+
 ;; debugger
 (use-package dape
   :hook ((kill-emacs . dape-breakpoint-save)
