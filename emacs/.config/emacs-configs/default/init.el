@@ -79,8 +79,7 @@
   (recentf-mode 1)
 
   :bind (("C-x C-r" . recentf-open-files)
-	 ("C-x C-b" . ibuffer))
-)
+	 ("C-x C-b" . ibuffer)))
 
 ;; usability
 (use-package eww
@@ -103,8 +102,8 @@
   (eglot-report-progress nil) ; disable messages
   :hook
   ((prog-mode . eglot-ensure)
-   (eglot--managed-mode . eldoc-mode)
-   (eglot--managed-mode . v3rse/set-default-margins))
+   (eglot-managed-mode . eldoc-mode)
+   (eglot-managed-mode . v3rse/set-default-margins))
   :bind
   (:map eglot-mode-map
 	("C-c e r" . eglot-rename)
@@ -306,6 +305,7 @@
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("q" . "quote")))
 
+;; news
 (use-package newst-reader
   :ensure nil
   :custom
@@ -327,7 +327,7 @@
           ("Planet Emacs" "https://planet.emacslife.com/atom.xml")
           ("Lobsters" "https://lobste.rs/rss")
 	)
-     ) 
+     )
   )
 
 ;; -- external --
@@ -515,7 +515,11 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-tomorrow-night t)
+
+  (if (eq system-type 'darwin)
+      (load-theme 'doom-opera t)
+    (load-theme 'doom-tomorrow-night t))
+
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
   ;; Corrects (and improves) org-mode's native fontification.
