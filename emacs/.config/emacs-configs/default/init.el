@@ -124,7 +124,11 @@
   :hook
   (flymake-mode . flyover-mode)
   :config
-  (setq flyover-use-theme-colors t))
+  (setq flyover-use-theme-colors t
+	flyover-debug t
+	flyover-checkers '(flymake)
+	flyover-text-tint 'darker
+	flyover-text-tint-percent 100))
 
 ;; debugger
 (use-package dape
