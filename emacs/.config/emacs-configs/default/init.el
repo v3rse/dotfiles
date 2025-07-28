@@ -78,6 +78,9 @@
   (savehist-mode 1)
   (recentf-mode 1)
 
+  :hook
+  ((prog-mode . display-line-numbers-mode))
+
   :bind (("C-x C-r" . recentf-open-files)
 	 ("C-x C-b" . ibuffer)))
 
