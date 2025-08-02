@@ -521,20 +521,30 @@
   :hook
   (dired-mode . nerd-icons-dired-mode))
 
+(defun set-theme-by-time ()
+  "Set a light theme for day and a dark theme for night."
+  (interactive)
+  (let ((hour (string-to-number (format-time-string "%H"))))
+    ;; Use light theme between 7 AM (7) and 7 PM (19)
+    (if (and (>= hour 7) (< hour 19))
+        (load-theme 'doom-tomorrow-day t)
+	(if (eq system-type 'darwin)
+	    (load-theme 'doom-opera t)
+	    (load-theme 'doom-tomorrow-night t)))))
+
 (use-package doom-themes
   :config
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-
-  (if (eq system-type 'darwin)
-      (load-theme 'doom-opera t)
-    (load-theme 'doom-tomorrow-night t))
-
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
   ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
+  (doom-themes-org-config)
+  ;; changes theme base on time
+  (set-theme-by-time)
+  ;; update every hour
+  (run-with-timer 0 3600 'set-theme-by-time))
 
 (use-package doom-modeline
   :defer t
