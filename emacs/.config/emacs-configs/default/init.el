@@ -176,7 +176,8 @@
 		org-refile-use-outline-path t
 		org-outline-path-complete-in-steps nil
 		org-M-RET-may-split-line '((default . nil))
-		org-insert-heading-respect-content t)
+		org-insert-heading-respect-content t
+		org-indent-mode t)
   ;; keywords
   (setq org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "PROJ(p)" "|" "DONE(d)" "CNCL(c)")))
   (setq org-todo-keyword-faces
