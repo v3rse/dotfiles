@@ -470,6 +470,8 @@
 
 (use-package embark
   :bind (("C-." . embark-act)
+	 ("M-." . embark-dwim)
+	 ("C-h B" . embark-bindings)
 	 :map minibuffer-local-map
 	 ("C-c C-c" . embark-collect)
 	 ("C-c C-e" . embark-export)))
