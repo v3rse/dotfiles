@@ -675,26 +675,11 @@
 (use-package vterm
   :hook
   (vterm-mode . compilation-shell-minor-mode)
+  ;; full screen terminal instead of the 1/3 screen one
+  ;; shackle rule applies to multi-vterm(vterminal) window
   :bind (("C-c t" . vterm)))
 
-(use-package multi-vterm
-  :when (and (not (featurep 'os/win)) (featurep 'feat/modules))
-  :bind (([remap project-shell] . multi-vterm-project)
-         ([f1] . +multi-vterm-toggle-dwim)
-         :map vterm-mode-map ([f1] . +multi-vterm-toggle-dwim))
-  :custom
-  (multi-vterm-dedicated-window-height-percent 20)
-  :config
-  ;; If a dedicated terminal is run on a remote machine, it seems that
-  ;; `multi-vterm' don't get the working directory right, lets fix it!
-  (advice-add
-   'multi-vterm-dedicated-open :after
-   (satch-defun +multi-vterm--remote-change-working-directory:after-a (&rest _)
-     (when-let* ((dir (file-remote-p default-directory 'localname)))
-       (vterm-send-string (format "cd " (shell-quote-argument dir)))
-       (vterm-send-return))))
-
-  (defun +multi-vterm-toggle-dwim ()
+(defun v3rse/multi-vterm-toggle-dwim ()
     "Toggle the vterm window.
 When in a project, toggle a `multi-vterm-project' terminal. When outside
 a project, call `multi-vterm-dedicated-toggle'."
@@ -706,7 +691,12 @@ a project, call `multi-vterm-dedicated-toggle'."
                 (delete-window win)
               (pop-to-buffer buf))
           (multi-vterm-project))
-      (multi-vterm-dedicated-toggle))))
+      (multi-vterm-dedicated-toggle)))
+
+(use-package multi-vterm
+  :bind (([remap project-shell] . multi-vterm-project)
+         ([f1] . v3rse/multi-vterm-toggle-dwim)
+         :map vterm-mode-map ([f1] . v3rse/multi-vterm-toggle-dwim)))
 
 (use-package ace-window
   :bind (("M-o" . ace-window))
@@ -725,11 +715,11 @@ a project, call `multi-vterm-dedicated-toggle'."
      ("*Async-native-compile-log*"    :align below :popup t)
      ("*Messages*"                    :align below :popup t)
      ("*eldoc*"                       :align below :popup t)
+     (vterm-mode                      :align below :popup t :select t)
      ("*Process List*"                :align below :popup t :select t)
      ("*Warnings*"                    :align below :popup t :select t)
      ("*dired-check-process output*"  :align below :popup t :select t)
      ("*eshell*"                      :align below :popup t :select t)
-     ("*vterm*"                       :align below :popup t :select t)
      (help-mode                       :align right  :popup t :select t :size 82)
      (helpful-mode                    :align right :popup t :select t :size 82)))
   :init
