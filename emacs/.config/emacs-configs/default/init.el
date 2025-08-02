@@ -79,7 +79,8 @@
   (recentf-mode 1)
 
   :hook
-  ((prog-mode . display-line-numbers-mode))
+  ((prog-mode . display-line-numbers-mode)
+   (text-mode . visual-line-mode))
 
   :bind (("C-x C-r" . recentf-open-files)
 	 ("C-x C-b" . ibuffer)))
