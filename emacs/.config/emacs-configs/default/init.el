@@ -17,8 +17,8 @@
 
   :config
   ;; font selection
-  (let ((mono-spaced-font "Iosevka")
-        (proportionately-spaced-font "Iosevka Etoile"))
+  (let ((mono-spaced-font "Aporetic Serif Mono")
+        (proportionately-spaced-font "Aporetic Sans"))
 
     (set-face-attribute 'default nil :family mono-spaced-font :height 120 :weight 'medium)
     (when (eq system-type 'darwin)
