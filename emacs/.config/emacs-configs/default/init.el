@@ -521,16 +521,22 @@
   :hook
   (dired-mode . nerd-icons-dired-mode))
 
+(defun clean-load-theme (nt)
+  (unless (seq-empty-p custom-enabled-themes) 
+    (dolist (ot custom-enabled-themes)
+	(disable-theme ot)))
+  (load-theme nt t))
+
 (defun set-theme-by-time ()
   "Set a light theme for day and a dark theme for night."
   (interactive)
   (let ((hour (string-to-number (format-time-string "%H"))))
     ;; Use light theme between 7 AM (7) and 7 PM (19)
     (if (and (>= hour 7) (< hour 19))
-        (load-theme 'doom-tomorrow-day t)
+        (clean-load-theme 'doom-tomorrow-day)
 	(if (eq system-type 'darwin)
-	    (load-theme 'doom-opera t)
-	    (load-theme 'doom-tomorrow-night t)))))
+	    (clean-load-theme 'doom-opera)
+	    (clean-load-theme 'doom-tomorrow-night)))))
 
 (use-package doom-themes
   :config
