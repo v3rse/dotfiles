@@ -280,11 +280,11 @@
 	  ))
   
  ;; habits
-  (add-to-list 'org-modules 'org-habit)
-  
-  (setq org-habit-completed-glyph ?✅)
-  (setq org-habit-incompleted-glyph ?❌)
-  (setq org-habit-skipped-glyph ?➖)
+ (add-to-list 'org-modules 'org-habit)
+ 
+ (setq org-habit-completed-glyph ?✅)
+ (setq org-habit-incompleted-glyph ?❌)
+ (setq org-habit-skipped-glyph ?➖)
 
  ;; refile
  (setq v3rse/org-refile-target-files '("agenda.org"
@@ -937,6 +937,18 @@ a project, call `multi-vterm-dedicated-toggle'."
 
 (use-package terraform-mode
   :ensure t)
+
+(use-package dashboard
+  :ensure t
+  :config
+  (setq dashboard-center-content t
+	dashboard-items '((recents   . 5)
+                          (projects  . 5))
+	dashboard-display-icons-p t
+	dashboard-icon-type 'nerd-icons
+	dashboard-set-heading-icons t
+	dashboard-set-file-icons t)
+  (dashboard-setup-startup-hook))
 
 ;; -- Server
 (server-start)
