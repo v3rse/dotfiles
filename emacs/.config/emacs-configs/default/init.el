@@ -10,7 +10,7 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize))
   (when (daemonp)
-    (exec-path-shell-initialize)))
+    (exec-path-from-shell-initialize)))
 
 (use-package emacs
   :ensure nil
