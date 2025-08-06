@@ -160,7 +160,6 @@
   (setq delete-by-moving-to-trash t)
   (setq dired-dwim-target t))
 
-
 (use-package org
   :config (setq org-directory "~/org/"
                 org-default-notes-file "~/org/inbox.org"
@@ -172,7 +171,7 @@
                 org-hide-emphasis-markers t
                 org-agenda-start-day nil
                 org-log-done 'time
-		org-agenda-include-diary t
+		org-agenda-include-diary nil
 		org-refile-use-outline-path t
 		org-outline-path-complete-in-steps nil
 		org-M-RET-may-split-line '((default . nil))
@@ -251,29 +250,41 @@
                           '(org-agenda-skip-entry-if 'deadline))
                           (org-deadline-warning-days 0)))
                  (todo "TODO"
-                        ((org-agenda-overriding-header "Refile")
-                        (org-agenda-files '("inbox.org"))))
+                        ((org-agenda-overriding-header "📥 Refile")
+                         (org-agenda-files '("inbox.org"))))
+		 (tags "EFFORT>\"0:00\"+EFFORT<\"0:20\""
+			((org-agenda-overriding-header "⚡ Quick Hits")
+			 (org-agenda-files '("agenda.org"))
+			 (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("DONE")))))
                 (todo "NEXT"
-                        ((org-agenda-overriding-header "In Progress")
-                                (org-agenda-files '("someday-maybe.org"
-                                                "projects.org"
-                                                "agenda.org"))))
-                (todo "PROJ"
-                        ((org-agenda-overriding-header "Projects")
+                        ((org-agenda-overriding-header "🚧 Projects (In Progress)")
                                 (org-agenda-files '("projects.org"))))
                 (todo "TODO"
-                      ((org-agenda-overriding-header "One-off Tasks")
+                      ((org-agenda-overriding-header "✅ One-offs")
                        (org-agenda-files '("agenda.org"))
                        (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
                  (agenda nil
                          ((org-agenda-entry-types '(:deadline))
                           (org-deadline-warning-days 7)
-                          (org-agenda-overriding-header "\nDeadlines\n")))
+                          (org-agenda-overriding-header "\n❗Deadlines\n")))
                  (tags "CLOSED>=\"<today>\""
-                       ((org-agenda-overriding-header "\nCompleted today\n")))
-                 ))))
- ;; module
- (add-to-list 'org-modules 'org-habit)
+                       ((org-agenda-overriding-header "\n🎉 Completed today\n")))
+                 ))
+
+	  ("p" "Projects"
+	   ((todo "PROJ"
+                        ((org-agenda-overriding-header "🚀 Projects")
+                                (org-agenda-files '("projects.org"))))
+
+	    ))
+	  ))
+  
+ ;; habits
+  (add-to-list 'org-modules 'org-habit)
+  
+  (setq org-habit-completed-glyph ?✅)
+  (setq org-habit-incompleted-glyph ?❌)
+  (setq org-habit-skipped-glyph ?➖)
 
  ;; refile
  (setq v3rse/org-refile-target-files '("agenda.org"
