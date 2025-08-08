@@ -581,7 +581,7 @@
   :config
   ;; These are the defaults, but I keep it here for visiibility.
   (setq spacious-padding-widths
-        '( :internal-border-width 0
+        '( :internal-border-width 1
            :header-line-width 4
            :mode-line-width 6
            :tab-width 4
