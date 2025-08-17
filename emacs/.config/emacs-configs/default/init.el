@@ -160,6 +160,8 @@
   (setq dired-dwim-target t))
 
 (use-package org
+  :ensure nil
+  :demand t
   :config (setq org-directory "~/org/"
                 org-default-notes-file "~/org/inbox.org"
                 org-agenda-files '("inbox.org" "agenda.org" "projects.org" "notes.org")
@@ -177,21 +179,25 @@
 		org-insert-heading-respect-content t
 		org-indent-mode t)
   ;; keywords
-  (setq org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "PROJ(p)" "|" "DONE(d)" "CNCL(c)")))
+  (setq org-todo-keywords '((sequence "TODO(t)" "STRT(s!)" "NEXT(n!)" "HOLD(h@)" "LOOP(l)" "PROJ(p)" "|" "DONE(d!)" "CNCL(c@)")))
   (setq org-todo-keyword-faces
 	'(("TODO" . (:inherit (bold font-lock-builtin-face org-todo)))
 	  ("HOLD" . (:inherit (bold warning org-todo)))
 	  ("DONE" . (:inherit (bold org-todo)))
 	  ("PROJ" . (:inherit (bold font-lock-keyword-face org-todo)))
+	  ("LOOP" . (:inherit (bold font-lock-keyword-face org-todo)))
 	  ("NEXT" . (:inherit (bold font-lock-constant-face org-todo)))
-	  ("CNCL" . (:inherit (bold warning org-todo)))))
+	  ("STRT" . (:inherit (bold font-lock-property-name-face org-todo)))
+	  ("CNCL" . (:inherit (bold font-lock-doc-face org-todo)))))
   (setq org-modern-todo-faces
 	'(("TODO" . (:inherit (bold font-lock-builtin-face org-modern-todo)))
 	  ("HOLD" . (:inherit (bold warning org-modern-todo)))
 	  ("DONE" . (:inherit (bold org-modern-todo)))
 	  ("PROJ" . (:inherit (bold font-lock-keyword-face org-modern-todo)))
+	  ("LOOP" . (:inherit (bold font-lock-keyword-face org-modern-todo)))
 	  ("NEXT" . (:inherit (bold font-lock-constant-face org-modern-todo)))
-	  ("CNCL" . (:inherit (bold warning org-modern-todo)))))
+	  ("STRT" . (:inherit (bold font-lock-property-name-face org-modern-todo)))
+	  ("CNCL" . (:inherit (bold font-lock-doc-face org-modern-todo)))))
   ; priority A is already red
   (setq org-modern-priority-faces
 	(quote ((?B (:inherit warning :inverse-video t))
@@ -255,9 +261,9 @@
 			((org-agenda-overriding-header "⚡ Quick Hits")
 			 (org-agenda-files '("agenda.org"))
 			 (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("DONE")))))
-                (todo "NEXT"
-                        ((org-agenda-overriding-header "🚧 Projects (In Progress)")
-                                (org-agenda-files '("projects.org"))))
+                (todo "NEXT|STRT"
+                        ((org-agenda-overriding-header "🚧 In Progress")
+                                (org-agenda-files '("projects.org" "agenda.org"))))
                 (todo "TODO"
                       ((org-agenda-overriding-header "✅ One-offs")
                        (org-agenda-files '("agenda.org"))
