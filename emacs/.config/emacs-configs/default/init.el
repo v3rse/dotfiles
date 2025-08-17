@@ -876,6 +876,11 @@ a project, call `multi-vterm-dedicated-toggle'."
   (which-key-enable-god-mode-support))
 
 (use-package evil
+  :init
+  ;; required for evil-collection
+  (setq evil-want-keybinding nil)
+  :custom
+  (evil-undo-system 'undo-redo)
   :config
   (defun v3rse/vterm-copy-mode-evil ()
     (if (bound-and-true-p vterm-copy-mode)
@@ -883,10 +888,6 @@ a project, call `multi-vterm-dedicated-toggle'."
       ;; because evil-emacs-state doesn't work well with god-mode
       (evil-god-toggle-execute-in-god-off-state)))
   (add-hook 'vterm-copy-mode-hook #'my/vterm-copy-mode-evil)
-  :init
-  ;; required for evil-collection
-  (setq evil-want-keybinding nil)
-  :config
   (evil-mode 1)
   (evil-set-initial-state 'newsticker-treeview-mode 'emacs)
   (evil-set-initial-state 'newsticker-treeview-list-mode 'emacs)
