@@ -957,4 +957,7 @@ a project, call `multi-vterm-dedicated-toggle'."
   (dashboard-setup-startup-hook))
 
 ;; -- Server
-(server-start)
+(use-package server
+  :config
+  (unless (server-running-p)
+    (server-start)))
