@@ -895,7 +895,8 @@ a project, call `multi-vterm-dedicated-toggle'."
   (evil-mode 1)
   (evil-set-initial-state 'newsticker-treeview-mode 'emacs)
   (evil-set-initial-state 'newsticker-treeview-list-mode 'emacs)
-  (evil-set-initial-state 'newsticker-treeview-item-mode 'emacs))
+  (evil-set-initial-state 'newsticker-treeview-item-mode 'emacs)
+  (evil-set-initial-state 'kubernetes-mode 'emacs))
 
 (use-package evil-collection
   :after evil
