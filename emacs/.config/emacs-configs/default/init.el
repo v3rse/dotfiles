@@ -451,6 +451,9 @@
 	 ("M-s u" . consult-focus-lines)
 	 ;; isearch integration
 	 ("M-s e" . consult-isearch-history)
+	 ;; registers
+	 ("M-'" . consult-register-store)
+	 ("M-#" . consult-register-load)
 
 	 ;; goto
 	 ;; remaps
@@ -470,6 +473,7 @@
 	 ("M-g I" . consult-imenu-multi)
 	 ;; jump to symbol
 	 ("M-g s" . consult-eglot-symbols))
+
   :init
 
   ;; tweak register preview
