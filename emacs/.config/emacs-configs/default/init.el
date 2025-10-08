@@ -705,12 +705,10 @@
   (setq kubernetes-poll-frequency 3600
         kubernetes-redraw-frequency 3600))
 
-(defun v3rse/ansi-color-compilation-buffer-hook ()
-  (let ((inhibit-read-only t))
-    (ansi-color-apply-on-region compilation-filter-start (point))))
-
 (use-package ansi-color
-  :hook (compilation-filter . v3rse/ansi-color-compilation-buffer-hook))
+  :demand t
+  :hook
+  (compilation-filter . ansi-color-compilation-filter))
 
 (use-package vterm
   :hook
