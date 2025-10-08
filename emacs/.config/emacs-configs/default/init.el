@@ -963,6 +963,17 @@ a project, call `multi-vterm-dedicated-toggle'."
 	dashboard-set-file-icons t)
   (dashboard-setup-startup-hook))
 
+(use-package shell-maker
+  :ensure t)
+
+(use-package acp
+  :vc (:url "https://github.com/xenodium/acp.el"))
+
+(use-package agent-shell
+  :vc (:url "https://github.com/xenodium/agent-shell")
+  (setq agent-shell-google-authentication
+      (agent-shell-google-make-authentication :login t)))
+
 ;; -- Server
 (use-package server
   :config
