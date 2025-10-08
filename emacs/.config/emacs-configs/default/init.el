@@ -181,7 +181,8 @@
 		org-outline-path-complete-in-steps nil
 		org-M-RET-may-split-line '((default . nil))
 		org-insert-heading-respect-content t
-		org-indent-mode t)
+		org-indent-mode t
+		org-agenda-sticky t)
   ;; keywords
   (setq org-todo-keywords '((sequence "TODO(t)" "STRT(s!)" "NEXT(n!)" "HOLD(h@)" "LOOP(l)" "PROJ(p)" "|" "DONE(d!)" "CNCL(c@)")))
   (setq org-todo-keyword-faces
