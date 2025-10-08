@@ -552,16 +552,32 @@
 	(disable-theme ot)))
   (load-theme nt t))
 
+(defun set-light-theme ()
+  "set the light theme"
+  (interactive)
+  ;; (clean-load-theme 'doom-tomorrow-day)
+  (setq catppuccin-flavor 'latte)
+  (catppuccin-reload))
+
+(defun set-dark-theme ()
+  "set the dark theme"
+  (interactive)
+   ;; (if (eq system-type 'darwin)
+   ;; 	(clean-load-theme 'doom-opera)
+   ;;   (clean-load-theme 'doom-tomorrow-night))
+   (setq catppuccin-flavor 'frappe)
+   (catppuccin-reload))
+
 (defun set-theme-by-time ()
   "Set a light theme for day and a dark theme for night."
   (interactive)
   (let ((hour (string-to-number (format-time-string "%H"))))
     ;; Use light theme between 7 AM (7) and 7 PM (19)
     (if (and (>= hour 7) (< hour 19))
-        (clean-load-theme 'doom-tomorrow-day)
-	(if (eq system-type 'darwin)
-	    (clean-load-theme 'doom-opera)
-	    (clean-load-theme 'doom-tomorrow-night)))))
+	(set-light-theme)
+	(set-dark-theme))))
+
+(use-package catppuccin-theme)
 
 (use-package doom-themes
   :config
