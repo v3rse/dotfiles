@@ -648,18 +648,6 @@
 
 ;; ai
 
-(use-package aidermacs
-  :bind (("C-c x" . aidermacs-transient-menu))
-  :config
-  ; Set Ollama API endpoint (no API key needed)
-  (setenv "OLLAMA_API_BASE" "http://localhost:11434")
-  (if (eq system-type 'darwin)
-      (setq aidermacs-aider-command "/opt/homebrew/bin")
-      (setq aidermacs-aider-command "~/.local/bin"))
-  :custom
-  ; See the Configuration section below
-  (aidermacs-default-model "ollama_chat/deepseek-r1:14b"))
-
 (use-package gptel
   :config
   (setq gptel-default-mode 'org-mode)
@@ -693,17 +681,17 @@
   :init
   (require 'gptel-integrations))
 
-(defun get-all-project-paths-from-projectel ()
-  "Gets all project paths from project.el and returns them as a list of strings."
-  (mapcar #'car project--list))
+;; required by acp
+(use-package shell-maker
+  :ensure t)
 
-(use-package mcp
-  :after gptel
-  :custom (mcp-hub-servers
-           `(("filesystem" . (:command "npx" :args ("-y" "@modelcontextprotocol/server-filesystem" "~/src/" "~/dotfiles")))
-             ("fetch" . (:command "uvx" :args ("mcp-server-fetch")))))
-  :config (require 'mcp-hub)
-  :hook (after-init . mcp-hub-start-all-server))
+(use-package acp
+  :vc (:url "https://github.com/xenodium/acp.el"))
+
+(use-package agent-shell
+  :vc (:url "https://github.com/xenodium/agent-shell")
+  (setq agent-shell-google-authentication
+      (agent-shell-google-make-authentication :login t)))
 
 (use-package org-modern
   :defer t
@@ -979,17 +967,6 @@ a project, call `multi-vterm-dedicated-toggle'."
 	dashboard-set-heading-icons t
 	dashboard-set-file-icons t)
   (dashboard-setup-startup-hook))
-
-(use-package shell-maker
-  :ensure t)
-
-(use-package acp
-  :vc (:url "https://github.com/xenodium/acp.el"))
-
-(use-package agent-shell
-  :vc (:url "https://github.com/xenodium/agent-shell")
-  (setq agent-shell-google-authentication
-      (agent-shell-google-make-authentication :login t)))
 
 ;; -- Server
 (use-package server
