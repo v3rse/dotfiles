@@ -18,7 +18,7 @@
 (setq-hook! '+doom-dashboard-mode-hook evil-normal-state-cursor (list nil))
 
 (setq doom-font (font-spec :family "Iosevka" :size 15 :weight 'medium)
-     doom-variable-pitch-font (font-spec :family "ETBembo" :size 20))
+     doom-variable-pitch-font (font-spec :family "Aporetic Sans" :size 20))
 
 (setq doom-theme 'doom-tomorrow-night)
 
