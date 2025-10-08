@@ -55,6 +55,10 @@
   ;; use emacs (loopback) for epg/epa (gpg) pinentry
   (setq epg-pinentry-mode 'loopback)
 
+  ;; browser
+  (when (eq system-type 'darwin)
+    (setq browse-url-browser-function 'browse-url-generic
+	    browse-url-generic-program "/Applications/Firefox.app/Contents/MacOS/firefox"))
   
   :init
   ;; gui bars
