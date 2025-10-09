@@ -556,7 +556,7 @@
   "set the light theme"
   (interactive)
   ;; (clean-load-theme 'doom-tomorrow-day)
-  (setq catppuccin-flavor 'latte)
+  (setq catppuccin-flavor 'frappe)
   (catppuccin-reload))
 
 (defun set-dark-theme ()
@@ -565,7 +565,7 @@
    ;; (if (eq system-type 'darwin)
    ;; 	(clean-load-theme 'doom-opera)
    ;;   (clean-load-theme 'doom-tomorrow-night))
-   (setq catppuccin-flavor 'frappe)
+  (setq catppuccin-flavor 'mocha)
    (catppuccin-reload))
 
 (defun set-theme-by-time ()
