@@ -295,6 +295,7 @@
  (setq org-habit-completed-glyph ?✅)
  (setq org-habit-incompleted-glyph ?❌)
  (setq org-habit-skipped-glyph ?➖)
+ (setq org-habit-today-glyph ?👇)
 
  ;; refile
  (setq v3rse/org-refile-target-files '("agenda.org"
