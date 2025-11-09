@@ -10,8 +10,8 @@
 
 (setq fancy-splash-image (concat doom-private-dir "splash.svg"))
 
-(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu)
-(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-footer)
+;; (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu)
+;; (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-footer)
 
 (add-hook! '+doom-dashboard-mode-hook (hl-line-mode -1))
 
@@ -20,7 +20,7 @@
 (setq doom-font (font-spec :family "Iosevka" :size 15 :weight 'medium)
      doom-variable-pitch-font (font-spec :family "Aporetic Sans" :size 20))
 
-(setq doom-theme 'doom-tomorrow-night)
+(setq doom-theme 'doom-tokyo-night)
 
 (setq projectile-project-search-path '("~/src/personal" "~/src/other" "~/src/lab"))
 
