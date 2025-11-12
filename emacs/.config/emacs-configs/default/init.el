@@ -89,6 +89,11 @@
   :bind (("C-x C-r" . recentf-open-files)
 	 ("C-x C-b" . ibuffer)))
 
+;; terminal copying
+(use-package xclip
+  :hook
+  (after-init . xclip-mode))
+
 ;; usability
 (use-package eww
   :ensure nil)
