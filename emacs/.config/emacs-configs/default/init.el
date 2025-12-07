@@ -130,17 +130,34 @@
 		     :branch "main")
   :config (eglot-booster-mode))
 
+;; flymake overlays
 (use-package flyover
-  :vc (flyover :url "https://github.com/v3rse/flyover.git"
-	       :branch "main"
-	       :rev "77f5c7b3f758a671eeb887a20c7eeb4ad717529e")
-  :hook
-  (flymake-mode . flyover-mode)
-  :config
-  (setq flyover-use-theme-colors t
-	flyover-checkers '(flymake)
-	flyover-text-tint 'darker
-	flyover-text-tint-percent 100))
+  :ensure t
+  :hook ((flymake-mode . flyover-mode))
+  :custom
+  ;; Checker settings
+  (flyover-checkers '(flymake))
+  (flyover-levels '(error warning info))
+
+  ;; Appearance
+  (flyover-use-theme-colors t)
+  (flyover-background-lightness 45)
+  (flyover-percent-darker 40)
+  (flyover-text-tint 'lighter)
+  (flyover-text-tint-percent 50)
+
+  ;; Display settings
+  (flyover-hide-checker-name t)
+  (flyover-show-virtual-line t)
+  (flyover-virtual-line-type 'curved-dotted-arrow)
+  (flyover-line-position-offset 1)
+
+  ;; Message wrapping
+  (flyover-wrap-messages t)
+  (flyover-max-line-length 80)
+
+  ;; Performance
+  (flyover-debounce-interval 0.2))
 
 ;; debugger
 (use-package dape
