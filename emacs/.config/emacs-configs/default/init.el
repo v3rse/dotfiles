@@ -1043,14 +1043,26 @@ a project, call `multi-vterm-dedicated-toggle'."
        evil-visual-state-cursor  '(bar "SkyBlue")))
 
 ;; language
-(use-package hcl-mode
-  :ensure t)
+;; terraform
+(use-package hcl-mode)
 
-(use-package terraform-mode
-  :ensure t)
+(use-package terraform-mode)
 
+;; markdown
+(use-package edit-indirectly)
+
+(use-package markdown-mode
+  :mode "\\.md\\'"
+  :custom
+  (markdown-enable-html t)
+  (markdown-enable-math t)
+  (markdown-fontify-code-blocks-natively t)
+  (markdown-enable-highlighting-syntax t))
+
+(use-package markdown-toc)
+
+;; dashboard
 (use-package dashboard
-  :ensure t
   :config
   (setq dashboard-center-content t
 	dashboard-items '((recents   . 5)
