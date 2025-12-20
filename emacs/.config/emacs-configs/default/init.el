@@ -1074,7 +1074,7 @@ a project, call `multi-vterm-dedicated-toggle'."
 (use-package terraform-mode)
 
 ;; markdown
-(use-package edit-indirectly)
+(use-package edit-indirect)
 
 (use-package markdown-mode
   :mode "\\.md\\'"
