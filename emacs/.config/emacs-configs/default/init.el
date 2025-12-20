@@ -102,6 +102,11 @@
   :ensure nil
   :hook (after-init . delete-selection-mode))
 
+;; development environment
+(use-package mise
+  :ensure t
+  :hook (after-init . global-mise-mode))
+
 ;; lsp
 (defun v3rse/set-default-margins ()
   (setq left-margin-width 3)
@@ -113,6 +118,10 @@
   (eglot-sync-connect 0) ; async do not block
   (eglot-autoshutdown t) ; shutdown after closing last managed buffer
   (eglot-report-progress nil) ; disable messages
+  ;; (eglot-server-programs
+  ;;   `(;; Append your custom mapping to the existing list
+  ;; 	(lua-ts-mode . ("lua-language-server"))
+  ;; 	,@eglot-server-programs))
   :hook
   ((prog-mode . eglot-ensure)
    (eglot-managed-mode . eldoc-mode)
@@ -122,7 +131,13 @@
 	("C-c e r" . eglot-rename)
 	("C-c e a" . eglot-code-actions)
 	("C-c e f" . eglot-format-buffer)
-	("C-c e i" . eglot-find-implementation)))
+	("C-c e i" . eglot-find-implementation))
+  :config
+  ;; Tell lua-language-server to recognize LÖVE globals and library
+  (setq-default eglot-workspace-configuration
+	    '((:Lua . (:runtime (:version "LuaJIT")
+			:workspace (:library ["${3rd}/love2d/library"])
+			:diagnostics (:globals ["love"]))))))
 
 (use-package eglot-booster
   :after eglot
@@ -854,6 +869,16 @@ a project, call `multi-vterm-dedicated-toggle'."
   :after project
   :demand
   :bind-keymap ("C-x P" . projection-map)
+  :config
+  ;; LOVE2D project type
+  (defvar projection-project-type-love2d
+    (projection-type
+     :name 'love2d
+     :predicate "config.lua"
+     :run "love ."              
+     :package "love-release ." 
+     :test "busted"))         
+  (add-to-list 'projection-project-types projection-project-type-love2d)
   :init
   ;; This ensures that `ibuffer-projection-set-filter-groups' takes effect
   (add-hook 'ibuffer-hook (lambda () (run-at-time 0.1 nil (lambda () (call-interactively #'ibuffer-update)))))
