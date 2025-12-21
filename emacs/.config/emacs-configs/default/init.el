@@ -83,7 +83,7 @@ a project, call `multi-vterm-dedicated-toggle'."
     ;; because evil-emacs-state doesn't work well with god-mode
     (evil-god-toggle-execute-in-god-off-state)))
 
-;; general
+;;; General Settings
 (use-package exec-path-from-shell
   :config
   (when (memq window-system '(mac ns x))
@@ -168,12 +168,11 @@ a project, call `multi-vterm-dedicated-toggle'."
   :bind (("C-x C-r" . recentf-open-files)
 	 ("C-x C-b" . ibuffer)))
 
-;; terminal copying
+;;; Usability
 (use-package xclip
   :hook
   (after-init . xclip-mode))
 
-;; usability
 (use-package eww
   :ensure nil)
 
@@ -181,12 +180,12 @@ a project, call `multi-vterm-dedicated-toggle'."
   :ensure nil
   :hook (after-init . delete-selection-mode))
 
-;; development environment
+;;; Development
 (use-package mise
   :ensure t
   :hook (after-init . global-mise-mode))
 
-;; lsp
+;;; Programming & LSP
 (use-package eglot
   :ensure nil
   :custom
@@ -220,7 +219,6 @@ a project, call `multi-vterm-dedicated-toggle'."
 		     :branch "main")
   :config (eglot-booster-mode))
 
-;; flymake overlays
 (use-package flyover
   :ensure t
   :hook ((flymake-mode . flyover-mode))
@@ -249,7 +247,6 @@ a project, call `multi-vterm-dedicated-toggle'."
   ;; Performance
   (flyover-debounce-interval 0.2))
 
-;; debugger
 (use-package dape
   :hook ((kill-emacs . dape-breakpoint-save)
 	 (after-init . dape-breakpoint-load))
@@ -275,6 +272,7 @@ a project, call `multi-vterm-dedicated-toggle'."
   (setq delete-by-moving-to-trash t)
   (setq dired-dwim-target t))
 
+;;; Org Mode
 (use-package org
   :ensure nil
   :demand t
@@ -448,71 +446,134 @@ a project, call `multi-vterm-dedicated-toggle'."
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("q" . "quote")))
 
-;; news
+;;; News
+
 (use-package newst-reader
+
   :ensure nil
+
   :custom
+
   (custom-set-faces
+
    '(newsticker-feed-face ((t (:inherit ef-themes-heading-1 :height 1.4))))
+
    '(newsticker-new-item-face ((t (:inherit ef-themes-heading-4 :height 1.2)))))
+
   :hook ((newsticker-mode-hook . variable-pitch-mode))
+
   :config
+
   (setq newsticker-frontend 'newsticket-plainview)
+
   (setq newsticker-use-full-width nil)
+
   (setq newsticker-url-list
+
       '(
+
           ("Euronews" "https://www.euronews.com/rss")
+
           ("Allsides News" "https://www.allsides.com/rss/news")
+
 	  ("arstechnica" "https://feeds.arstechnica.com/arstechnica/index")
+
           ("Polygon" "https://www.polygon.com/rss/index.xml")
+
           ("Recurse" "https://blaggregator.recurse.com/atom.xml?token=561d4f124fc342d78c6e25da65dfd69a")
+
           ("Hacker News" "https://news.ycombinator.com/rss")
+
           ("Planet Emacs" "https://planet.emacslife.com/atom.xml")
+
           ("Lobsters" "https://lobste.rs/rss")
+
 	)
+
      )
+
   )
 
-;; -- external --
+
+
+;;; External Packages
+
 (use-package dired-subtree
+
   :after dired
+
   :bind
+
   ( :map dired-mode-map
+
     ("<tab>" . dired-subtree-toggle)
+
     ("TAB" . dired-subtree-toggle)
+
     ("<backtab>" . dired-subtree-remove)
+
     ("S-TAB" . dired-subtree-remove))
+
   :config
+
   (setq dired-subtree-use-backgrounds nil))
 
+
+
 (use-package trashed
+
   :commands (trashed)
+
   :config
+
   (setq trashed-action-confirmer 'y-or-n-p)
+
   (setq trashed-use-header-line t)
+
   (setq trashed-sort-key '("Date deleted" . t))
+
   (setq trashed-date-format "%Y-%m-%d %H:%M:%S"))
 
+
+
 (use-package treesit-auto
+
   :after emacs
+
   :custom
+
   (treesit-auto-install 'prompt)
+
   :config
+
   (treesit-auto-add-to-auto-mode-alist 'all)
+
   (global-treesit-auto-mode t))
 
+
+
 (use-package nix-ts-mode
+
   :ensure t
+
   :mode "\\.nix\\'")
 
-;; completions
+
+
+;;; Completion
 
 (use-package vertico
+
   :hook (after-init . vertico-mode)
+
   :config
+
   (setq vertico-cycle t)
+
   (setq vertico-resize t)
+
   (setq vertico-count 15)
+
   (setq vertico-scroll-margin 5))
 
 (use-package marginalia
@@ -659,6 +720,7 @@ a project, call `multi-vterm-dedicated-toggle'."
   :hook
   (dired-mode . nerd-icons-dired-mode))
 
+;;; UI Configuration
 (use-package catppuccin-theme)
 
 (use-package doom-themes
@@ -714,7 +776,7 @@ a project, call `multi-vterm-dedicated-toggle'."
   :init
   (keycast-mode-line-mode 1))
 
-;; version control
+;;; Version Control
 
 (use-package magit
   :bind (("C-c g" . magit)))
@@ -728,7 +790,7 @@ a project, call `multi-vterm-dedicated-toggle'."
   :config
   (diff-hl-margin-mode 1))
 
-;; ai
+;;; AI
 
 (use-package gptel
   :config
@@ -763,6 +825,7 @@ a project, call `multi-vterm-dedicated-toggle'."
   (setq org-pomodoro-length 45
 	org-pomodoro-short-break-length 15))
 
+;;; Kubernetes
 (use-package kubernetes
   :commands (kubernetes-overview)
   :config
@@ -774,6 +837,7 @@ a project, call `multi-vterm-dedicated-toggle'."
   :hook
   (compilation-filter . ansi-color-compilation-filter))
 
+;;; Terminal Emulators
 (use-package vterm
   :hook
   (vterm-mode . compilation-shell-minor-mode)
@@ -786,6 +850,7 @@ a project, call `multi-vterm-dedicated-toggle'."
          ([f1] . v3rse/multi-vterm-toggle-dwim)
          :map vterm-mode-map ([f1] . v3rse/multi-vterm-toggle-dwim)))
 
+;;; Window Management
 (use-package ace-window
   :bind (("M-o" . ace-window))
   :custom
@@ -842,7 +907,7 @@ a project, call `multi-vterm-dedicated-toggle'."
   :init
   (solaire-global-mode))
 
-;; projects
+;;; Projects
 (use-package otpp
   :after project
   :bind (("C-x t D" . otpp-detach-buffer-to-tab)
@@ -929,7 +994,7 @@ a project, call `multi-vterm-dedicated-toggle'."
 	 ("C-h F" . #'helpful-function)
          ("C-c C-d" . #'helpful-at-point)))
 
-;; keybindings
+;;; Keybindings
 
 (use-package which-key
   :ensure nil
@@ -1069,7 +1134,7 @@ a project, call `multi-vterm-dedicated-toggle'."
        evil-insert-state-cursor  '(bar "SkyBlue")
        evil-visual-state-cursor  '(bar "SkyBlue")))
 
-;; language
+;;; Languages
 ;; terraform
 (use-package hcl-mode)
 
@@ -1088,7 +1153,7 @@ a project, call `multi-vterm-dedicated-toggle'."
 
 (use-package markdown-toc)
 
-;; dashboard
+;;; Dashboard
 (use-package dashboard
   :config
   (setq dashboard-center-content t
@@ -1100,7 +1165,7 @@ a project, call `multi-vterm-dedicated-toggle'."
 	dashboard-set-file-icons t)
   (dashboard-setup-startup-hook))
 
-;; -- Server
+;;; Server
 (use-package server
   :config
   (unless (server-running-p)
