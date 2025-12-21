@@ -431,7 +431,18 @@ a project, call `multi-vterm-dedicated-toggle'."
 (use-package which-key
   :ensure nil
   :init
-  (which-key-mode 1))
+  (which-key-mode 1)
+  :config
+  (which-key-add-key-based-replacements
+    "SPC s" "Search"
+    "SPC a" "Applications"
+    "SPC c" "Code"
+    "SPC t" "Tabs"
+    "SPC x" "Execute"
+    "SPC g" "Git"
+    "SPC b" "Buffers"
+    "SPC p" "Projects"
+    "SPC h" "Help"))
 
 (use-package god-mode
   :init
@@ -923,7 +934,7 @@ a project, call `multi-vterm-dedicated-toggle'."
                    ((org-agenda-entry-types '(:deadline))
                     (org-deadline-warning-days 7)
                     (org-agenda-overriding-header "\n❗Deadlines\n")))
-           (tags "CLOSED>=\"<today>\""
+           (tags "CLOSED>=<today>"
                  ((org-agenda-overriding-header "\n🎉 Completed today\n"))))))
     (setq org-agenda-custom-commands
           `(("g" "Get Things Done (GTD)" ,gtd-agenda-blocks)
