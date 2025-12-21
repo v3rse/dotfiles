@@ -98,7 +98,19 @@ a project, call `multi-vterm-dedicated-toggle'."
 ;;; Core Emacs & UI
 (use-package emacs
   :ensure nil
-
+  :custom
+  (recentf-max-menu-items 25)
+  (diary-file "~/org/emacs-diary")
+  (make-backup-files nil)
+  (create-lockfiles nil)
+  (auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory))
+  (auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
+  (custom-file (locate-user-emacs-file "custom.el"))
+  (tab-always-indent 'complete)
+  (use-short-answers t)
+  (epg-pinentry-mode 'loopback)
+  (browse-url-browser-function 'browse-url-generic)
+  (browse-url-generic-program "/Applications/Firefox.app/Contents/MacOS/firefox")
   :config
   ;; font selection
   (let ((mono-spaced-font "Aporetic Serif Mono")
@@ -110,40 +122,9 @@ a project, call `multi-vterm-dedicated-toggle'."
   
     (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
     (set-face-attribute 'variable-pitch nil :family proportionately-spaced-font :height 1.0))
-
-  ;; recent files list size
-  (setq recentf-max-menu-items 25)
-  
-  ;;diary
-  (setq diary-file "~/org/emacs-diary")
-  
-  ;; locks, autosave and backup
-  (setq make-backup-files nil)
-  (setq create-lockfiles nil)
   (make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
-  (setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
-      auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
-
-  ;; custom files location
-  (setq custom-file (locate-user-emacs-file "custom.el"))
   (load custom-file 'noerror 'nomessage)
-
   (setq-default fill-column 90)
-
-  ;; tab for completion
-  (setq tab-always-indent 'complete)
-
-  ;; short answers for prompts
-  (setq use-short-answers t)
-
-  ;; use emacs (loopback) for epg/epa (gpg) pinentry
-  (setq epg-pinentry-mode 'loopback)
-
-  ;; browser
-  (when (eq system-type 'darwin)
-    (setq browse-url-browser-function 'browse-url-generic
-	    browse-url-generic-program "/Applications/Firefox.app/Contents/MacOS/firefox"))
-  
   :init
   ;; gui bars
   (tool-bar-mode -1)
@@ -176,10 +157,10 @@ a project, call `multi-vterm-dedicated-toggle'."
 (use-package catppuccin-theme)
 
 (use-package doom-themes
+  :custom
+  (doom-themes-enable-bold t)
+  (doom-themes-enable-italic t)
   :config
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
   ;; Corrects (and improves) org-mode's native fontification.
@@ -195,9 +176,8 @@ a project, call `multi-vterm-dedicated-toggle'."
   (doom-modeline-buffer-file-name-style 'buffer-name)  
   (doom-modeline-project-detection 'project)           
   (doom-modeline-buffer-name t)                        
-  (doom-modeline-vcs-max-length 25)                    
-  :config
-  (setq doom-modeline-icon t)                        
+  (doom-modeline-vcs-max-length 25)
+  (doom-modeline-icon t)
   :hook
   (after-init . doom-modeline-mode))
 
@@ -209,9 +189,8 @@ a project, call `multi-vterm-dedicated-toggle'."
   :if (display-graphic-p)
   :hook (after-init . spacious-padding-mode)
   :bind ("<f8>" . spacious-padding-mode)
-  :config
-  ;; These are the defaults, but I keep it here for visiibility.
-  (setq spacious-padding-widths
+  :custom
+  (spacious-padding-widths
         '( :internal-border-width 1
            :header-line-width 4
            :mode-line-width 6
@@ -219,10 +198,7 @@ a project, call `multi-vterm-dedicated-toggle'."
            :right-divider-width 10
            :left-fringe-width 16
            :right-fringe-width 16))
-
-  ;; Read the doc string of `spacious-padding-subtle-mode-line' as
-  ;; it is very flexible.
-  (setq spacious-padding-subtle-mode-line
+  (spacious-padding-subtle-mode-line
         '( :mode-line-active spacious-padding-subtle-mode-line
            :mode-line-inactive spacious-padding-subtle-mode-line-inactive))
   :init
@@ -232,14 +208,15 @@ a project, call `multi-vterm-dedicated-toggle'."
   :defer t) ;; only load when needed
 
 (use-package dashboard
+  :custom
+  (dashboard-center-content t)
+  (dashboard-items '((recents   . 5)
+                          (projects  . 5)))
+  (dashboard-display-icons-p t)
+  (dashboard-icon-type 'nerd-icons)
+  (dashboard-set-heading-icons t)
+  (dashboard-set-file-icons t)
   :config
-  (setq dashboard-center-content t
-	dashboard-items '((recents   . 5)
-                          (projects  . 5))
-	dashboard-display-icons-p t
-	dashboard-icon-type 'nerd-icons
-	dashboard-set-heading-icons t
-	dashboard-set-file-icons t)
   (dashboard-setup-startup-hook))
 
 (use-package keycast
@@ -310,21 +287,21 @@ a project, call `multi-vterm-dedicated-toggle'."
 ;;; Completion Framework
 (use-package vertico
   :hook (after-init . vertico-mode)
-  :config
-  (setq vertico-cycle t)
-  (setq vertico-resize t)
-  (setq vertico-count 15)
-  (setq vertico-scroll-margin 5))
+  :custom
+  (vertico-cycle t)
+  (vertico-resize t)
+  (vertico-count 15)
+  (vertico-scroll-margin 5))
 
 (use-package marginalia
   :hook (after-init . marginalia-mode)
-  :config
-  (setq marginalia-max-relative-age 0))
+  :custom
+  (marginalia-max-relative-age 0))
 
 (use-package orderless
-  :config
-  (setq completion-styles '(orderless basic))
-        completion-category-overrides '((file (styles basic partial-completion))))
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
 
 (use-package consult
   :bind (
@@ -393,15 +370,13 @@ a project, call `multi-vterm-dedicated-toggle'."
 	 ;; jump to symbol
 	 ("M-g s" . consult-eglot-symbols))
 
+  :custom
+  (register-preview-delay 0.5)
+  (xref-show-xrefs-function #'consult-xref)
+  (xref-show-definitions-function #'consult-xref)
   :init
-
   ;; tweak register preview
-  (advice-add #'register-preview :override #'consult-register-window)
-  (setq register-preview-delay 0.5)
-
-  ;; use consult to select xref locations with preview
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref))
+  (advice-add #'register-preview :override #'consult-register-window))
 
 (use-package consult-eglot
   :config
@@ -428,9 +403,9 @@ a project, call `multi-vterm-dedicated-toggle'."
   (corfu-cycle t)
   (corfu-preview-current nil)
   (corfu-min-width 20)
+  (tab-always-indent 'complete)
+  (corfu-popupinfo-delay '(1.25 . 0.5))
   :config
-  (setq tab-always-indent 'complete)
-  (setq corfu-popupinfo-delay '(1.25 . 0.5))
   (corfu-popupinfo-mode 1) ; shows documentation after `corfu-popupinfo-delay'
 
   ;; Sort by input history (no need to modify `corfu-sort-function').
@@ -598,11 +573,11 @@ a project, call `multi-vterm-dedicated-toggle'."
   :hook
   ((dired-mode . dired-hide-details-mode)
    (dired-mode . hl-line-mode))
-  :config
-  (setq dired-recursive-copies 'always)
-  (setq dired-recursive-deletes 'always)
-  (setq delete-by-moving-to-trash t)
-  (setq dired-dwim-target t))
+  :custom
+  (dired-recursive-copies 'always)
+  (dired-recursive-deletes 'always)
+  (delete-by-moving-to-trash t)
+  (dired-dwim-target t))
 
 (use-package dired-subtree
   :after dired
@@ -617,11 +592,11 @@ a project, call `multi-vterm-dedicated-toggle'."
 
 (use-package trashed
   :commands (trashed)
-  :config
-  (setq trashed-action-confirmer 'y-or-n-p)
-  (setq trashed-use-header-line t)
-  (setq trashed-sort-key '("Date deleted" . t))
-  (setq trashed-date-format "%Y-%m-%d %H:%M:%S"))
+  :custom
+  (trashed-action-confirmer 'y-or-n-p)
+  (trashed-use-header-line t)
+  (trashed-sort-key '("Date deleted" . t))
+  (trashed-date-format "%Y-%m-%d %H:%M:%S"))
 
 (use-package nerd-icons-dired
   :defer t
@@ -703,10 +678,11 @@ a project, call `multi-vterm-dedicated-toggle'."
 (use-package dape
   :hook ((kill-emacs . dape-breakpoint-save)
 	 (after-init . dape-breakpoint-load))
+  :custom
+  (dape-buffer-window-arrangment 'right)
+  (dape-inlay-hints t)
   :config
   (dape-breakpoint-global-mode)
-  (setq dape-buffer-window-arrangment 'right
-	dape-inlay-hints t)
   (add-hook 'dape-display-source-hook 'pulse-momentary-highlight-one-line))
 
 (use-package treesit-auto
@@ -828,26 +804,26 @@ a project, call `multi-vterm-dedicated-toggle'."
 (use-package org
   :ensure nil
   :demand t
-  :config (setq org-directory "~/org/"
-                org-default-notes-file "~/org/inbox.org"
-                org-agenda-files '("inbox.org" "agenda.org" "projects.org" "notes.org")
-		org-archive-location "~/org/archive/%s_archive::datetree/"
-                org-ellipsis " ... "
-                org-tags-column -80
-                org-log-into-drawer t
-                org-hide-emphasis-markers t
-                org-agenda-start-day nil
-                org-log-done 'time
-		org-agenda-include-diary nil
-		org-refile-use-outline-path t
-		org-outline-path-complete-in-steps nil
-		org-M-RET-may-split-line '((default . nil))
-		org-insert-heading-respect-content t
-		org-indent-mode t
-		org-agenda-sticky t)
-  ;; keywords
-  (setq org-todo-keywords '((sequence "TODO(t)" "STRT(s!)" "NEXT(n!)" "HOLD(h@)" "LOOP(l)" "PROJ(p)" "|" "DONE(d!)" "CNCL(c@)")))
-  (setq org-todo-keyword-faces
+  :custom
+  (org-directory "~/org/")
+  (org-default-notes-file "~/org/inbox.org")
+  (org-agenda-files '("inbox.org" "agenda.org" "projects.org" "notes.org"))
+  (org-archive-location "~/org/archive/%s_archive::datetree/")
+  (org-ellipsis " ... ")
+  (org-tags-column -80)
+  (org-log-into-drawer t)
+  (org-hide-emphasis-markers t)
+  (org-agenda-start-day nil)
+  (org-log-done 'time)
+  (org-agenda-include-diary nil)
+  (org-refile-use-outline-path t)
+  (org-outline-path-complete-in-steps nil)
+  (org-M-RET-may-split-line '((default . nil)))
+  (org-insert-heading-respect-content t)
+  (org-indent-mode t)
+  (org-agenda-sticky t)
+  (org-todo-keywords '((sequence "TODO(t)" "STRT(s!)" "NEXT(n!)" "HOLD(h@)" "LOOP(l)" "PROJ(p)" "|" "DONE(d!)" "CNCL(c@)")))
+  (org-todo-keyword-faces
 	'(("TODO" . (:inherit (bold font-lock-builtin-face org-todo)))
 	  ("HOLD" . (:inherit (bold warning org-todo)))
 	  ("DONE" . (:inherit (bold org-todo)))
@@ -856,7 +832,7 @@ a project, call `multi-vterm-dedicated-toggle'."
 	  ("NEXT" . (:inherit (bold font-lock-constant-face org-todo)))
 	  ("STRT" . (:inherit (bold font-lock-property-name-face org-todo)))
 	  ("CNCL" . (:inherit (bold font-lock-doc-face org-todo)))))
-  (setq org-modern-todo-faces
+  (org-modern-todo-faces
 	'(("TODO" . (:inherit (bold font-lock-builtin-face org-modern-todo)))
 	  ("HOLD" . (:inherit (bold warning org-modern-todo)))
 	  ("DONE" . (:inherit (bold org-modern-todo)))
@@ -865,10 +841,18 @@ a project, call `multi-vterm-dedicated-toggle'."
 	  ("NEXT" . (:inherit (bold font-lock-constant-face org-modern-todo)))
 	  ("STRT" . (:inherit (bold font-lock-property-name-face org-modern-todo)))
 	  ("CNCL" . (:inherit (bold font-lock-doc-face org-modern-todo)))))
-  ; priority A is already red
-  (setq org-modern-priority-faces
+  (org-modern-priority-faces
 	(quote ((?B (:inherit warning :inverse-video t))
 		(?C (:inherit org-todo :inverse-video t)))))
+  (org-agenda-prefix-format '((agenda . "  %i %?-12t")
+                                   (todo . "  %i")
+                                   (tags . "  %i %-12:c")
+                                   (search . "  %i %-12:c")))
+  (org-habit-completed-glyph ?✅)
+  (org-habit-incompleted-glyph ?❌)
+  (org-habit-skipped-glyph ?➖)
+  (org-habit-today-glyph ?👇)
+  :config
   ;; capture templates
   (setq org-capture-templates
         `(("t" "Task" entry (file+headline "inbox.org" "Tasks")
@@ -893,27 +877,21 @@ a project, call `multi-vterm-dedicated-toggle'."
                          "\n"))
 	  ("b" "Bookmark" entry (file+headline "inbox.org" "Bookmarks")
 	   ,(string-join '("* %:description"
-			":PROPERTIES:"
-			":CREATED: %U"
-			":CATEGORY: Bookmark"
-			":END:"
-			"%:link"
-			""
-			"%i"
-			""
-			"%?")
-			"\n")
+			 ":PROPERTIES:"
+			 ":CREATED: %U"
+			 ":CATEGORY: Bookmark"
+			 ":END:"
+			 "%:link"
+			 ""
+			 "%i"
+			 ""
+			 "%?")
+			 "\n")
 	   :empty-lines 1)
 	  ("j" "Journal" entry (file+datetree "journal.org")
 	   "* %?\nEntered on %U\n %i\n %a")
 	  ))
 
-  ;; agenda
-  (setq org-agenda-prefix-format '((agenda . "  %i %?-12t")
-                                   (todo . "  %i")
-                                   (tags . "  %i %-12:c")
-                                   (search . "  %i %-12:c")))
-	
   (setq org-agenda-custom-commands
         '(("g" "Get Things Done (GTD)"
                 ((agenda ""
@@ -950,35 +928,23 @@ a project, call `multi-vterm-dedicated-toggle'."
 
 	    ))
 	  ))
-  
- ;; habits
  (add-to-list 'org-modules 'org-habit)
- 
- (setq org-habit-completed-glyph ?✅)
- (setq org-habit-incompleted-glyph ?❌)
- (setq org-habit-skipped-glyph ?➖)
- (setq org-habit-today-glyph ?👇)
-
  ;; refile
- (setq v3rse/org-refile-target-files '("agenda.org"
+ (defvar v3rse/org-refile-target-files '("agenda.org"
                                       "projects.org"
                                       "someday-maybe.org"
                                       "notes.org"))
-
- (setq v3rse/org-refile-file-paths
+ (defvar v3rse/org-refile-file-paths
       (let (result)
         (dolist (file v3rse/org-refile-target-files result)
           (push (expand-file-name file org-directory) result))))
-
  (setq org-refile-targets
       '((nil :maxlevel . 9)
         (v3rse/org-refile-file-paths :maxlevel . 9)))
-
  :hook ((org-mode-hook . visual-line-mode))
  :bind (("C-c a" . org-agenda)
 	("C-c c" . org-capture)
 	("C-c l" . org-store-link)))
-
 (use-package org-attach
   :after org
   :ensure nil)
@@ -1057,15 +1023,16 @@ a project, call `multi-vterm-dedicated-toggle'."
 
 (use-package kubernetes
   :commands (kubernetes-overview)
-  :config
-  (setq kubernetes-poll-frequency 3600
-        kubernetes-redraw-frequency 3600))
+  :custom
+  (kubernetes-poll-frequency 3600)
+  (kubernetes-redraw-frequency 3600))
 
 ;;; AI Integration
 (use-package gptel
+  :custom
+  (gptel-default-mode 'org-mode)
+  (gptel-default-input-format 'org)
   :config
-  (setq gptel-default-mode 'org-mode)
-  (setq gptel-default-input-format 'org)
   (defvar v3rse/gptel-ollama-host "localhost"
     "The ollama host server address for gptel")
 
