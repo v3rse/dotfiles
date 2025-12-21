@@ -892,57 +892,54 @@ a project, call `multi-vterm-dedicated-toggle'."
 	   "* %?\nEntered on %U\n %i\n %a")
 	  ))
 
-  (setq org-agenda-custom-commands
-        '(("g" "Get Things Done (GTD)"
-                ((agenda ""
-                         ((org-agenda-span 'day)
-                          (org-agenda-skip-function
-                          '(org-agenda-skip-entry-if 'deadline))
-                          (org-deadline-warning-days 0)))
-                 (todo "TODO"
-                        ((org-agenda-overriding-header "📥 Refile")
-                         (org-agenda-files '("inbox.org"))))
-		 (tags "EFFORT>\"0:00\"+EFFORT<\"0:20\""
-			((org-agenda-overriding-header "⚡ Quick Hits")
-			 (org-agenda-files '("agenda.org"))
-			 (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("DONE")))))
-                (todo "NEXT|STRT"
-                      ((org-agenda-overriding-header "🚧 In Progress")
-                                (org-agenda-files '("projects.org" "agenda.org"))))
-                (todo "TODO"
-                      ((org-agenda-overriding-header "✅ One-offs")
-                       (org-agenda-files '("agenda.org"))
-                       (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
-                 (agenda nil
-                         ((org-agenda-entry-types '(:deadline))
-                          (org-deadline-warning-days 7)
-                          (org-agenda-overriding-header "\n❗Deadlines\n")))
-                 (tags "CLOSED>=\\"<today>\\""
-                       ((org-agenda-overriding-header "\n🎉 Completed today\n"))) 
-                 ))
+  (let ((gtd-agenda-blocks
+         `((agenda ""
+                   ((org-agenda-span 'day)
+                    (org-agenda-skip-function
+                     '(org-agenda-skip-entry-if 'deadline))
+                    (org-deadline-warning-days 0)))
+           (todo "TODO"
+                 ((org-agenda-overriding-header "📥 Refile")
+                  (org-agenda-files '("inbox.org"))))
+           (tags "EFFORT>\"0:00\"+EFFORT<\"0:20\""
+                 ((org-agenda-overriding-header "⚡ Quick Hits")
+                  (org-agenda-files '("agenda.org"))
+                  (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("DONE")))))
+           (todo "NEXT|STRT"
+                 ((org-agenda-overriding-header "🚧 In Progress")
+                  (org-agenda-files '("projects.org" "agenda.org"))))
+           (todo "TODO"
+                 ((org-agenda-overriding-header "✅ One-offs")
+                  (org-agenda-files '("agenda.org"))
+                  (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
+           (agenda nil
+                   ((org-agenda-entry-types '(:deadline))
+                    (org-deadline-warning-days 7)
+                    (org-agenda-overriding-header "\n❗Deadlines\n")))
+           (tags "CLOSED>=\"<today>\""
+                 ((org-agenda-overriding-header "\n🎉 Completed today\n"))))))
+    (setq org-agenda-custom-commands
+          `(("g" "Get Things Done (GTD)" ,gtd-agenda-blocks)
+            ("p" "Projects"
+             ((todo "PROJ"
+                    ((org-agenda-overriding-header "🚀 Projects")
+                     (org-agenda-files '("projects.org")))))))))
 
-	  ("p" "Projects"
-	   ((todo "PROJ"
-                        ((org-agenda-overriding-header "🚀 Projects")
-                                (org-agenda-files '("projects.org"))))
-
-	    ))
-	  ))
  (add-to-list 'org-modules 'org-habit)
  ;; refile
  (defvar v3rse/org-refile-target-files '("agenda.org"
                                       "projects.org"
                                       "someday-maybe.org"
                                       "notes.org"))
- (defvar v3rse/org-refile-file-paths
+ (setq v3rse/org-refile-file-paths
       (let (result)
         (dolist (file v3rse/org-refile-target-files result)
           (push (expand-file-name file org-directory) result))))
  (setq org-refile-targets
       '((nil :maxlevel . 9)
         (v3rse/org-refile-file-paths :maxlevel . 9)))
- :hook ((org-mode-hook . visual-line-mode))
- :bind (("C-c a" . org-agenda)
+  :hook ((org-mode-hook . visual-line-mode))
+  :bind (("C-c a" . org-agenda)
 	("C-c c" . org-capture)
 	("C-c l" . org-store-link)))
 (use-package org-attach
