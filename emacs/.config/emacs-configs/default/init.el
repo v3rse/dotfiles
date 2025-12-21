@@ -438,89 +438,96 @@ a project, call `multi-vterm-dedicated-toggle'."
   ;; enable god-mode support
   (which-key-enable-god-mode-support))
 
+;;; Keybindings & Evil Mode
 (use-package evil
   :init
-  ;; required for evil-collection
   (setq evil-want-keybinding nil)
   :custom
   (evil-undo-system 'undo-redo)
   :config
+  ;; vterm hook
   (add-hook 'vterm-copy-mode-hook #'v3rse/vterm-copy-mode-evil)
   (evil-mode 1)
-  (evil-set-initial-state 'newsticker-treeview-mode 'emacs)
-  (evil-set-initial-state 'newsticker-treeview-list-mode 'emacs)
-  (evil-set-initial-state 'newsticker-treeview-item-mode 'emacs)
-  (evil-set-initial-state 'kubernetes-mode 'emacs)
+  
+  ;; Set Initial States
+  (dolist (mode '(newsticker-treeview-mode newsticker-treeview-list-mode
+                  newsticker-treeview-item-mode kubernetes-mode))
+    (evil-set-initial-state mode 'emacs))
 
-  ;; keybindings
+  ;; Set Leader Keys
   (evil-set-leader 'normal (kbd "SPC"))
   (evil-set-leader 'visual (kbd "SPC"))
 
-  (evil-define-key 'normal 'global (kbd "<leader> s f") 'consult-find)
-  (evil-define-key 'normal 'global (kbd "<leader> s g") 'consult-grep)
-  (evil-define-key 'normal 'global (kbd "<leader> s G") 'consult-git-grep)
-  (evil-define-key 'normal 'global (kbd "<leader> s r") 'consult-ripgrep)
-  (evil-define-key 'normal 'global (kbd "<leader> s h") 'consult-info)
-  (evil-define-key 'normal 'global (kbd "<leader> /") 'consult-line)
+  ;; --- LEADER MAPPINGS ---
+  (evil-define-key 'normal 'global
+    ;; [.] Contextual Actions
+    (kbd "<leader> .") 'embark-act
 
-  ;; Flymake navigation
-  (evil-define-key 'normal 'global (kbd "<leader> x x") 'consult-flymake) ;; Gives you something like `trouble.nvim'
-  (evil-define-key 'normal 'global (kbd "] d") 'flymake-goto-next-error) ;; Go to next Flymake error
-  (evil-define-key 'normal 'global (kbd "[ d") 'flymake-goto-prev-error) ;; Go to previous Flymake error
+    ;; [a] Applications (Migrated from C-c)
+    (kbd "<leader> a a") 'org-agenda       ; was C-c a
+    (kbd "<leader> a c") 'org-capture      ; was C-c c
+    (kbd "<leader> a l") 'org-store-link   ; was C-c l
+    (kbd "<leader> a w") 'eww              ; Web browser
+    (kbd "<leader> a t") 'vterm            ; was C-c t
 
-  ;; Dired commands for file management
-  (evil-define-key 'normal 'global (kbd "<leader> x d") 'dired)
-  (evil-define-key 'normal 'global (kbd "<leader> x j") 'dired-jump)
-  (evil-define-key 'normal 'global (kbd "<leader> x f") 'find-file)
+    ;; [b] Buffers
+    (kbd "<leader> b b") 'ibuffer
+    (kbd "<leader> b k") 'kill-current-buffer
+    (kbd "<leader> b i") 'consult-buffer
+    (kbd "<leader> b n") 'next-buffer
+    (kbd "<leader> b p") 'previous-buffer
+    (kbd "<leader> b s") 'save-buffer
+    (kbd "<leader> SPC") 'consult-buffer   ; Quick switch
 
-  ;; Diff-HL navigation for version control
-  (evil-define-key 'normal 'global (kbd "] c") 'diff-hl-next-hunk) ;; Next diff hunk
-  (evil-define-key 'normal 'global (kbd "[ c") 'diff-hl-previous-hunk) ;; Previous diff hunk
+    ;; [c] Code & Compile
+    (kbd "<leader> c c") 'compile-multi
+    (kbd "<leader> c r") 'recompile
+    (kbd "<leader> c e") 'consult-flymake  ; Errors
+    (kbd "<leader> c a") 'eglot-code-actions
+    (kbd "<leader> c R") 'eglot-rename
 
-  ;; Magit keybindings for Git integration
-  (evil-define-key 'normal 'global (kbd "<leader> g g") 'magit-status)      ;; Open Magit status
-  (evil-define-key 'normal 'global (kbd "<leader> g l") 'magit-log-current) ;; Show current log
-  (evil-define-key 'normal 'global (kbd "<leader> g d") 'magit-diff-buffer-file) ;; Show diff for the current file
-  (evil-define-key 'normal 'global (kbd "<leader> g D") 'diff-hl-show-hunk) ;; Show diff for a hunk
-  (evil-define-key 'normal 'global (kbd "<leader> g b") 'vc-annotate)       ;; Annotate buffer with version control info
+    ;; [g] Git & Version Control
+    (kbd "<leader> g g") 'magit-status     ; was C-c g
+    (kbd "<leader> g l") 'magit-log-current
+    (kbd "<leader> g d") 'magit-diff-buffer-file
+    (kbd "<leader> g b") 'vc-annotate
 
-  ;; Buffer management keybindings
-  (evil-define-key 'normal 'global (kbd "] b") 'switch-to-next-buffer) ;; Switch to next buffer
-  (evil-define-key 'normal 'global (kbd "[ b") 'switch-to-prev-buffer) ;; Switch to previous buffer
-  (evil-define-key 'normal 'global (kbd "<leader> b i") 'consult-buffer) ;; Open consult buffer list
-  (evil-define-key 'normal 'global (kbd "<leader> b b") 'ibuffer) ;; Open Ibuffer
-  (evil-define-key 'normal 'global (kbd "<leader> b d") 'kill-current-buffer) ;; Kill current buffer
-  (evil-define-key 'normal 'global (kbd "<leader> b k") 'kill-current-buffer) ;; Kill current buffer
-  (evil-define-key 'normal 'global (kbd "<leader> b x") 'kill-current-buffer) ;; Kill current buffer
-  (evil-define-key 'normal 'global (kbd "<leader> b s") 'save-buffer) ;; Save buffer
-  (evil-define-key 'normal 'global (kbd "<leader> b l") 'consult-buffer) ;; Consult buffer
-  (evil-define-key 'normal 'global (kbd "<leader>SPC") 'consult-buffer) ;; Consult buffer
+    ;; [h] Help
+    (kbd "<leader> h e") 'view-echo-area-messages ; View messages
+    (kbd "<leader> h f") 'helpful-callable
+    (kbd "<leader> h v") 'helpful-variable
+    (kbd "<leader> h k") 'helpful-key
+    (kbd "<leader> h m") 'describe-mode
+    (kbd "<leader> h o") 'consult-outline
 
-  ;; Project management keybindings
-  (evil-define-key 'normal 'global (kbd "<leader> p b") 'consult-project-buffer) ;; Consult project buffer
-  (evil-define-key 'normal 'global (kbd "<leader> p p") 'project-switch-project) ;; Switch project
-  (evil-define-key 'normal 'global (kbd "<leader> p f") 'project-find-file) ;; Find file in project
-  (evil-define-key 'normal 'global (kbd "<leader> p g") 'project-find-regexp) ;; Find regexp in project
-  (evil-define-key 'normal 'global (kbd "<leader> p k") 'project-kill-buffers) ;; Kill project buffers
-  (evil-define-key 'normal 'global (kbd "<leader> p D") 'project-dired) ;; Dired for project
+    ;; [p] Projects
+    (kbd "<leader> p f") 'project-find-file
+    (kbd "<leader> p p") 'project-switch-project
+    (kbd "<leader> p b") 'consult-project-buffer
+    (kbd "<leader> p g") 'project-find-regexp
+    (kbd "<leader> p D") 'project-dired
+    (kbd "<leader> p c") 'projection-multi-compile
+    (kbd "<leader> p P") projection-map    ; Projection dispatch menu
 
-  ;; Yank from kill ring
-  (evil-define-key 'normal 'global (kbd "P") 'consult-yank-from-kill-ring)
-  (evil-define-key 'normal 'global (kbd "<leader> P") 'consult-yank-from-kill-ring)
+    ;; [s] Search
+    (kbd "<leader> s f") 'consult-find
+    (kbd "<leader> s g") 'consult-grep
+    (kbd "<leader> s r") 'consult-ripgrep
+    (kbd "<leader> s h") 'consult-info
+    (kbd "<leader> /")   'consult-line
 
-  ;; Embark actions for contextual commands
-  (evil-define-key 'normal 'global (kbd "<leader> .") 'embark-act)
+    ;; [t] Tabs & OTPP
+    (kbd "<leader> t n") 'tab-new
+    (kbd "<leader> t c") 'tab-close
+    (kbd "<leader> t ]") 'tab-next
+    (kbd "<leader> t [") 'tab-previous
+    (kbd "<leader> t r") 'tab-rename
+    (kbd "<leader> t t") 'otpp-detach-buffer-to-tab
 
-  ;; Help keybindings
-  (evil-define-key 'normal 'global (kbd "<leader> h m") 'describe-mode) ;; Describe current mode
-  (evil-define-key 'normal 'global (kbd "<leader> h f") 'describe-function) ;; Describe function
-  (evil-define-key 'normal 'global (kbd "<leader> h v") 'describe-variable) ;; Describe variable
-  (evil-define-key 'normal 'global (kbd "<leader> h k") 'describe-key) ;; Describe key
-
-  ;; Tab navigation
-  (evil-define-key 'normal 'global (kbd "] t") 'tab-next) ;; Go to next tab
-  (evil-define-key 'normal 'global (kbd "[ t") 'tab-previous) ;; Go to previous tab
-)
+    ;; [x] Files & Dired
+    (kbd "<leader> x d") 'dired
+    (kbd "<leader> x j") 'dired-jump
+    (kbd "<leader> x f") 'find-file))
 
 (use-package evil-collection
   :after evil
