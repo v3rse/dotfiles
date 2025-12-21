@@ -427,29 +427,17 @@ a project, call `multi-vterm-dedicated-toggle'."
   :config
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
-;;; Modal Editing (Evil)
+;;; Keybindings & Evil Mode
 (use-package which-key
   :ensure nil
   :init
-  (which-key-mode 1)
-  :config
-  (which-key-add-key-based-replacements
-    "SPC s" "Search"
-    "SPC a" "Applications"
-    "SPC c" "Code"
-    "SPC t" "Tabs"
-    "SPC x" "Execute"
-    "SPC g" "Git"
-    "SPC b" "Buffers"
-    "SPC p" "Projects"
-    "SPC h" "Help"))
+  (which-key-mode 1))
 
 (use-package god-mode
   :init
   ;; enable god-mode support
   (which-key-enable-god-mode-support))
 
-;;; Keybindings & Evil Mode
 (use-package evil
   :init
   (setq evil-want-keybinding nil)
@@ -467,78 +455,84 @@ a project, call `multi-vterm-dedicated-toggle'."
 
   ;; Set Leader Keys
   (evil-set-leader 'normal (kbd "SPC"))
-  (evil-set-leader 'visual (kbd "SPC"))
+  (evil-set-leader 'visual (kbd "SPC")))
 
-  ;; --- LEADER MAPPINGS ---
-  (evil-define-key 'normal 'global
-    ;; [.] Contextual Actions
-    (kbd "<leader> .") 'embark-act
+(use-package general
+  :config
+  (general-define-key
+   :keymaps 'evil-normal-state-map
+   :prefix "SPC"
 
-    ;; [a] Applications (Migrated from C-c)
-    (kbd "<leader> a a") 'org-agenda       ; was C-c a
-    (kbd "<leader> a c") 'org-capture      ; was C-c c
-    (kbd "<leader> a l") 'org-store-link   ; was C-c l
-    (kbd "<leader> a w") 'eww              ; Web browser
-    (kbd "<leader> a t") 'vterm            ; was C-c t
+   "SPC" 'consult-buffer
+   
+   "." '(embark-act :which-key "Contextual Actions")
 
-    ;; [b] Buffers
-    (kbd "<leader> b b") 'ibuffer
-    (kbd "<leader> b k") 'kill-current-buffer
-    (kbd "<leader> b i") 'consult-buffer
-    (kbd "<leader> b n") 'next-buffer
-    (kbd "<leader> b p") 'previous-buffer
-    (kbd "<leader> b s") 'save-buffer
-    (kbd "<leader> SPC") 'consult-buffer   ; Quick switch
+   "a" '(:ignore t :which-key "Applications")
+   "aa" 'org-agenda
+   "ac" 'org-capture
+   "al" 'org-store-link
+   "aw" 'eww
+   "at" 'vterm
 
-    ;; [c] Code & Compile
-    (kbd "<leader> c c") 'compile-multi
-    (kbd "<leader> c r") 'recompile
-    (kbd "<leader> c e") 'consult-flymake  ; Errors
-    (kbd "<leader> c a") 'eglot-code-actions
-    (kbd "<leader> c R") 'eglot-rename
+   "b" '(:ignore t :which-key "Buffers")
+   "bb" 'ibuffer
+   "bk" 'kill-current-buffer
+   "bi" 'consult-buffer
+   "bn" 'next-buffer
+   "bp" 'previous-buffer
+   "bs" 'save-buffer
+   "b SPC" 'consult-buffer
 
-    ;; [g] Git & Version Control
-    (kbd "<leader> g g") 'magit-status     ; was C-c g
-    (kbd "<leader> g l") 'magit-log-current
-    (kbd "<leader> g d") 'magit-diff-buffer-file
-    (kbd "<leader> g b") 'vc-annotate
+   "c" '(:ignore t :which-key "Code")
+   "cc" 'compile-multi
+   "cr" 'recompile
+   "ce" 'consult-flymake
+   "ca" 'eglot-code-actions
+   "cR" 'eglot-rename
 
-    ;; [h] Help
-    (kbd "<leader> h e") 'view-echo-area-messages ; View messages
-    (kbd "<leader> h f") 'helpful-callable
-    (kbd "<leader> h v") 'helpful-variable
-    (kbd "<leader> h k") 'helpful-key
-    (kbd "<leader> h m") 'describe-mode
-    (kbd "<leader> h o") 'consult-outline
+   "g" '(:ignore t :which-key "Git")
+   "gg" 'magit-status
+   "gl" 'magit-log-current
+   "gd" 'magit-diff-buffer-file
+   "gb" 'vc-annotate
 
-    ;; [p] Projects
-    (kbd "<leader> p f") 'project-find-file
-    (kbd "<leader> p p") 'project-switch-project
-    (kbd "<leader> p b") 'consult-project-buffer
-    (kbd "<leader> p g") 'project-find-regexp
-    (kbd "<leader> p D") 'project-dired
-    (kbd "<leader> p c") 'projection-multi-compile
-    (kbd "<leader> p P") projection-map    ; Projection dispatch menu
+   "h" '(:ignore t :which-key "Help")
+   "he" 'view-echo-area-messages
+   "hf" 'helpful-callable
+   "hv" 'helpful-variable
+   "hk" 'helpful-key
+   "hm" 'describe-mode
+   "ho" 'consult-outline
 
-    ;; [s] Search
-    (kbd "<leader> s f") 'consult-find
-    (kbd "<leader> s g") 'consult-grep
-    (kbd "<leader> s r") 'consult-ripgrep
-    (kbd "<leader> s h") 'consult-info
-    (kbd "<leader> /")   'consult-line
+   "p" '(:ignore t :which-key "Projects")
+   "pf" 'project-find-file
+   "pp" 'project-switch-project
+   "pb" 'consult-project-buffer
+   "pg" 'project-find-regexp
+   "pD" 'project-dired
+   "pc" 'projection-multi-compile
+   "pP" '(:keymap projection-map :which-key "Projection")
 
-    ;; [t] Tabs & OTPP
-    (kbd "<leader> t n") 'tab-new
-    (kbd "<leader> t c") 'tab-close
-    (kbd "<leader> t ]") 'tab-next
-    (kbd "<leader> t [") 'tab-previous
-    (kbd "<leader> t r") 'tab-rename
-    (kbd "<leader> t t") 'otpp-detach-buffer-to-tab
+   "s" '(:ignore t :which-key "Search")
+   "sf" 'consult-find
+   "sg" 'consult-grep
+   "sr" 'consult-ripgrep
+   "sh" 'consult-info
+   "/"  'consult-line
 
-    ;; [x] Files & Dired
-    (kbd "<leader> x d") 'dired
-    (kbd "<leader> x j") 'dired-jump
-    (kbd "<leader> x f") 'find-file))
+   "t" '(:ignore t :which-key "Tabs")
+   "tn" 'tab-new
+   "tc" 'tab-close
+   "t]" 'tab-next
+   "t[" 'tab-previous
+   "tr" 'tab-rename
+   "ts" 'tab-switch
+   "tt" 'otpp-detach-buffer-to-tab
+
+   "x" '(:ignore t :which-key "Files")
+   "xd" 'dired
+   "xj" 'dired-jump
+   "xf" 'find-file))
 
 (use-package evil-collection
   :after evil
