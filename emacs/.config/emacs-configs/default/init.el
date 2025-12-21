@@ -4,6 +4,85 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (setq use-package-always-ensure t)
 
+;;; Custom Helper Functions
+(defun v3rse/set-default-margins ()
+  (setq left-margin-width 3)
+  (set-window-buffer (selected-window) (current-buffer)))
+
+(defun clean-load-theme (nt)
+  (unless (seq-empty-p custom-enabled-themes)
+    (dolist (ot custom-enabled-themes)
+      (disable-theme ot)))
+  (load-theme nt t))
+
+(defun set-light-theme ()
+  "set the light theme"
+  (interactive)
+  ;; (clean-load-theme 'doom-tomorrow-day)
+  (setq catppuccin-flavor 'frappe)
+  (catppuccin-reload))
+
+(defun set-dark-theme ()
+  "set the dark theme"
+  (interactive)
+  ;; (if (eq system-type 'darwin)
+  ;;     (clean-load-theme 'doom-opera)
+  ;;   (clean-load-theme 'doom-tomorrow-night))
+  (setq catppuccin-flavor 'mocha)
+  (catppuccin-reload))
+
+(defun set-theme-by-time ()
+  "Set a light theme for day and a dark theme for night."
+  (interactive)
+  (let ((hour (string-to-number (format-time-string "%H"))))
+    ;; Use light theme between 7 AM (7) and 7 PM (19)
+    (if (and (>= hour 7) (< hour 19))
+        (set-light-theme)
+      (set-dark-theme))))
+
+(defun v3rse/gptel-use-claude ()
+  "Switch to a claude backend for gptel"
+  (interactive)
+  (setq gptel-model 'claude-3-sonnet-20240229
+        gptel-backend (gptel-make-anthropic "Claude"
+                        :stream t
+                        :key (cadr (auth-source-user-and-password "api.anthropic.com" "apikey")))))
+
+(defun v3rse/gptel-use-ollama ()
+  "Switch to a ollama backend for gptel"
+  (interactive)
+  (setq gptel-model 'gemma3:12b
+        gptel-backend (gptel-make-ollama "Ollama"
+                        :host (format "%s:11434" v3rse/gptel-ollama-host)
+                        :stream t
+                        :models '(deepseek-r1:14b gemma3:12b))))
+
+(defun v3rse/gptel-use-chatgpt ()
+  "Switch to a chatgpt backend for gptel"
+  (interactive)
+  (setq gptel-model (default-value 'gptel-model)
+        gptel-backend (default-value 'gptel-backend)))
+
+(defun v3rse/multi-vterm-toggle-dwim ()
+  "Toggle the vterm window.
+When in a project, toggle a `multi-vterm-project' terminal. When outside
+a project, call `multi-vterm-dedicated-toggle'."
+  (interactive)
+  (if-let* ((buf-name (and (multi-vterm-project-root) (multi-vterm-project-get-buffer-name))))
+      (if-let* ((buf (get-buffer buf-name))
+                ((buffer-live-p buf)))
+          (if-let* ((win (get-buffer-window buf))) ; The project's vterm already exists, toggle it's window
+              (delete-window win)
+            (pop-to-buffer buf))
+        (multi-vterm-project))
+    (multi-vterm-dedicated-toggle)))
+
+(defun v3rse/vterm-copy-mode-evil ()
+  (if (bound-and-true-p vterm-copy-mode)
+      (evil-normal-state)
+    ;; because evil-emacs-state doesn't work well with god-mode
+    (evil-god-toggle-execute-in-god-off-state)))
+
 ;; general
 (use-package exec-path-from-shell
   :config
@@ -108,10 +187,6 @@
   :hook (after-init . global-mise-mode))
 
 ;; lsp
-(defun v3rse/set-default-margins ()
-  (setq left-margin-width 3)
-  (set-window-buffer (selected-window) (current-buffer)))
-
 (use-package eglot
   :ensure nil
   :custom
@@ -584,37 +659,6 @@
   :hook
   (dired-mode . nerd-icons-dired-mode))
 
-(defun clean-load-theme (nt)
-  (unless (seq-empty-p custom-enabled-themes) 
-    (dolist (ot custom-enabled-themes)
-	(disable-theme ot)))
-  (load-theme nt t))
-
-(defun set-light-theme ()
-  "set the light theme"
-  (interactive)
-  ;; (clean-load-theme 'doom-tomorrow-day)
-  (setq catppuccin-flavor 'frappe)
-  (catppuccin-reload))
-
-(defun set-dark-theme ()
-  "set the dark theme"
-  (interactive)
-   ;; (if (eq system-type 'darwin)
-   ;; 	(clean-load-theme 'doom-opera)
-   ;;   (clean-load-theme 'doom-tomorrow-night))
-  (setq catppuccin-flavor 'mocha)
-   (catppuccin-reload))
-
-(defun set-theme-by-time ()
-  "Set a light theme for day and a dark theme for night."
-  (interactive)
-  (let ((hour (string-to-number (format-time-string "%H"))))
-    ;; Use light theme between 7 AM (7) and 7 PM (19)
-    (if (and (>= hour 7) (< hour 19))
-	(set-light-theme)
-	(set-dark-theme))))
-
 (use-package catppuccin-theme)
 
 (use-package doom-themes
@@ -693,29 +737,6 @@
   (defvar v3rse/gptel-ollama-host "localhost"
     "The ollama host server address for gptel")
 
-  (defun v3rse/gptel-use-claude ()
-    "Switch to a claude backend for gptel"
-    (interactive)
-    (setq gptel-model 'claude-3-sonnet-20240229
-	  gptel-backend (gptel-make-anthropic "Claude"
-			  :stream t
-			  :key (cadr (auth-source-user-and-password "api.anthropic.com" "apikey")))))
-
-  (defun v3rse/gptel-use-ollama ()
-    "Switch to a ollama backend for gptel"
-    (interactive)
-    (setq gptel-model 'gemma3:12b
-	  gptel-backend (gptel-make-ollama "Ollama"
-			  :host (format "%s:11434" v3rse/gptel-ollama-host)
-			  :stream t
-			  :models '(deepseek-r1:14b gemma3:12b))))
-
-  (defun v3rse/gptel-use-chatgpt ()
-    "Switch to a chatgpt backend for gptel"
-    (interactive)
-    (setq gptel-model (default-value 'gptel-model)
-	  gptel-backend (default-value 'gptel-backend)))
-
   :init
   (require 'gptel-integrations))
 
@@ -759,20 +780,6 @@
   ;; full screen terminal instead of the 1/3 screen one
   ;; shackle rule applies to multi-vterm(vterminal) window
   :bind (("C-c t" . vterm)))
-
-(defun v3rse/multi-vterm-toggle-dwim ()
-    "Toggle the vterm window.
-When in a project, toggle a `multi-vterm-project' terminal. When outside
-a project, call `multi-vterm-dedicated-toggle'."
-    (interactive)
-    (if-let* ((buf-name (and (multi-vterm-project-root) (multi-vterm-project-get-buffer-name))))
-        (if-let* ((buf (get-buffer buf-name))
-                  ((buffer-live-p buf)))
-            (if-let* ((win (get-buffer-window buf))) ; The project's vterm already exists, toggle it's window
-                (delete-window win)
-              (pop-to-buffer buf))
-          (multi-vterm-project))
-      (multi-vterm-dedicated-toggle)))
 
 (use-package multi-vterm
   :bind (([remap project-shell] . multi-vterm-project)
@@ -941,12 +948,7 @@ a project, call `multi-vterm-dedicated-toggle'."
   :custom
   (evil-undo-system 'undo-redo)
   :config
-  (defun v3rse/vterm-copy-mode-evil ()
-    (if (bound-and-true-p vterm-copy-mode)
-	(evil-normal-state)
-      ;; because evil-emacs-state doesn't work well with god-mode
-      (evil-god-toggle-execute-in-god-off-state)))
-  (add-hook 'vterm-copy-mode-hook #'my/vterm-copy-mode-evil)
+  (add-hook 'vterm-copy-mode-hook #'v3rse/vterm-copy-mode-evil)
   (evil-mode 1)
   (evil-set-initial-state 'newsticker-treeview-mode 'emacs)
   (evil-set-initial-state 'newsticker-treeview-list-mode 'emacs)
