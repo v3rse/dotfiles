@@ -461,14 +461,15 @@ a project, call `multi-vterm-dedicated-toggle'."
   (evil-set-leader 'visual (kbd "SPC")))
 
 (use-package general
+  :after evil
   :config
-  (general-define-key
-   :keymaps 'evil-normal-state-map
-   :prefix "SPC"
+  (general-create-definer v3rse/leader-def
+   :prefix-map 'v3rse/command-menu)
 
+  (v3rse/leader-def
    "SPC" 'consult-buffer
-   
    "." '(embark-act :which-key "Contextual Actions")
+   "/"  'consult-line
 
    "a" '(:ignore t :which-key "Applications")
    "aw" 'eww
@@ -478,11 +479,9 @@ a project, call `multi-vterm-dedicated-toggle'."
    "b" '(:ignore t :which-key "Buffers")
    "bb" 'ibuffer
    "bk" 'kill-current-buffer
-   "bi" 'consult-buffer
    "bn" 'next-buffer
    "bp" 'previous-buffer
    "bs" 'save-buffer
-   "b SPC" 'consult-buffer
 
    "c" '(:ignore t :which-key "Code")
    "cc" 'compile-multi
@@ -534,7 +533,6 @@ a project, call `multi-vterm-dedicated-toggle'."
    "sh" 'consult-isearch-history
    "si" 'consult-imenu-multi
    "sl" 'consult-goto-line
-   "/"  'consult-line
 
    "t" '(:ignore t :which-key "Tabs")
    "tn" 'tab-new
@@ -558,7 +556,18 @@ a project, call `multi-vterm-dedicated-toggle'."
    "f" '(:ignore t :which-key "Files")
    "fd" 'dired
    "fj" 'dired-jump
-   "ff" 'find-file))
+   "ff" 'find-file)
+
+  ;; for evil mode
+  (general-define-key
+   :states '(normal visual motion)
+   :keymaps 'override
+   "SPC" v3rse/command-menu)
+
+  ;; for every other mode
+  (general-define-key
+   :keymaps 'override
+   "M-SPC" v3rse/command-menu))
 
 (use-package evil-collection
   :after evil
