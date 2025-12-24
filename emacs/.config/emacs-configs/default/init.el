@@ -471,11 +471,9 @@ a project, call `multi-vterm-dedicated-toggle'."
    "." '(embark-act :which-key "Contextual Actions")
 
    "a" '(:ignore t :which-key "Applications")
-   "aa" 'org-agenda
-   "ac" 'org-capture
-   "al" 'org-store-link
    "aw" 'eww
    "at" 'vterm
+   "an" 'newsticker-treeview
 
    "b" '(:ignore t :which-key "Buffers")
    "bb" 'ibuffer
@@ -492,6 +490,10 @@ a project, call `multi-vterm-dedicated-toggle'."
    "ce" 'consult-flymake
    "ca" 'eglot-code-actions
    "cR" 'eglot-rename
+   "ce" 'consult-compile-error
+   "cf" 'consult-flymake
+   "co" 'consult-outline
+   "cs" 'consult-eglot-symbols
 
    "g" '(:ignore t :which-key "Git")
    "gg" 'magit-status
@@ -505,7 +507,12 @@ a project, call `multi-vterm-dedicated-toggle'."
    "hv" 'helpful-variable
    "hk" 'helpful-key
    "hm" 'describe-mode
-   "ho" 'consult-outline
+   "hi" 'consult-info
+
+   "o" '(:ignore t :which-key "Org")
+   "oa" 'org-agenda
+   "oc" 'org-capture
+   "ol" 'org-store-link
 
    "p" '(:ignore t :which-key "Projects")
    "pf" 'project-find-file
@@ -515,12 +522,18 @@ a project, call `multi-vterm-dedicated-toggle'."
    "pD" 'project-dired
    "pc" 'projection-multi-compile
    "pP" '(:keymap projection-map :which-key "Projection")
-
+   
    "s" '(:ignore t :which-key "Search")
    "sf" 'consult-find
+   "sF" 'consult-fd
    "sg" 'consult-grep
+   "sG" 'consult-git-grep
    "sr" 'consult-ripgrep
-   "sh" 'consult-info
+   "sk" 'consult-keep-lines
+   "su" 'consult-focus-lines
+   "sh" 'consult-isearch-history
+   "si" 'consult-imenu-multi
+   "sl" 'consult-goto-line
    "/"  'consult-line
 
    "t" '(:ignore t :which-key "Tabs")
@@ -531,11 +544,21 @@ a project, call `multi-vterm-dedicated-toggle'."
    "tr" 'tab-rename
    "ts" 'tab-switch
    "tt" 'otpp-detach-buffer-to-tab
+   
+   "x" '(:ignore t :which-key "System")
+   "xt" 'consult-theme
+   "xx" 'consult-mode-command
 
-   "x" '(:ignore t :which-key "Files")
-   "xd" 'dired
-   "xj" 'dired-jump
-   "xf" 'find-file))
+   "r" '(:ignore t :which-key "Registers")
+   "rs" 'consult-register-store
+   "rl" 'consult-register-load
+   "rm" 'consult-mark
+   "rg" 'consult-global-mark
+
+   "f" '(:ignore t :which-key "Files")
+   "fd" 'dired
+   "fj" 'dired-jump
+   "ff" 'find-file))
 
 (use-package evil-collection
   :after evil
