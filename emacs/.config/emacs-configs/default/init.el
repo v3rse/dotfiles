@@ -474,7 +474,8 @@ a project, call `multi-vterm-dedicated-toggle'."
     "/"   '(consult-line :which-key "Search Buffer")
     ";"   '(consult-complex-command :which-key "M-x History")
     ":"   '(execute-extended-command :which-key "M-x")
-    "o"   '(ace-window :which-key "Ace Window") 
+    "u"   '(universal-argument :which-key "Universal Arg")
+    "o"   '(ace-window :which-key "Ace Window")
 
     ;; --- [a] Applications ---
     "a"   '(:ignore t :which-key "Applications")
@@ -537,7 +538,7 @@ a project, call `multi-vterm-dedicated-toggle'."
     "nc"  'org-capture
     "nl"  'org-store-link
     "nt"  'org-todo
-    "nn"  'org-node-find       ; If using denote/org-roam later, this is perfect
+    "nn"  'org-node-find
     "ni"  'org-id-get-create
 
     ;; --- [p] Projects ---
@@ -567,6 +568,15 @@ a project, call `multi-vterm-dedicated-toggle'."
     "sk"  'consult-keep-lines
     "sh"  'consult-isearch-history
 
+    ;; --- [T] Toggles ---
+    "T"   '(:ignore t :which-key "Toggle UI")
+    "Tn"  '(display-line-numbers-mode :which-key "Line Numbers")
+    "Tw"  '(visual-line-mode :which-key "Word Wrap")
+    "To"  '(visual-line-mode :which-key "Show Whitespaces")
+    "Tt"  '(toggle-truncate-lines :which-key "Truncate Lines")
+    "Ts"  '(flyspell-mode :which-key "Flyspell")
+    "Tr"  '(read-only-mode :which-key "Read Only")
+
     ;; --- [t] Tabs ---
     "t"   '(:ignore t :which-key "Tabs")
     "tn"  'tab-new
@@ -574,7 +584,6 @@ a project, call `multi-vterm-dedicated-toggle'."
     "t]"  'tab-next
     "t["  'tab-previous
     "tr"  'tab-rename
-    "ts"  'tab-switch
     "tt"  'otpp-detach-buffer-to-tab
 
     ;; --- [w] Windows ---
