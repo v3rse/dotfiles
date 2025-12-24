@@ -110,8 +110,11 @@ a project, call `multi-vterm-dedicated-toggle'."
   (use-short-answers t)
   (epg-pinentry-mode 'loopback)
   (browse-url-browser-function 'browse-url-generic)
-  (browse-url-generic-program "/Applications/Firefox.app/Contents/MacOS/firefox")
   :config
+  ;; browser
+  (if (eq system-type 'darwin)
+    (setq browse-url-generic-program "/Applications/Firefox.app/Contents/MacOS/firefox")
+    (setq browse-url-generic-program "/usr/bin/zen-browser"))
   ;; font selection
   (let ((mono-spaced-font "Aporetic Serif Mono")
         (proportionately-spaced-font "Aporetic Sans"))
