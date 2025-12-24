@@ -466,97 +466,134 @@ a project, call `multi-vterm-dedicated-toggle'."
   (general-create-definer v3rse/leader-def
    :prefix-map 'v3rse/command-menu)
 
-  (v3rse/leader-def
-   "SPC" 'consult-buffer
-   "." '(embark-act :which-key "Contextual Actions")
-   "/"  'consult-line
+(v3rse/leader-def
+    ;; --- High Frequency / Top Level ---
+    "SPC" '(consult-buffer :which-key "Switch Buffer")
+    "TAB" '(mode-line-other-buffer :which-key "Last Buffer")
+    "."   '(embark-act :which-key "Context Action")
+    "/"   '(consult-line :which-key "Search Buffer")
+    ";"   '(consult-complex-command :which-key "M-x History")
+    ":"   '(execute-extended-command :which-key "M-x")
+    "o"   '(ace-window :which-key "Ace Window") 
 
-   "a" '(:ignore t :which-key "Applications")
-   "aw" 'eww
-   "at" 'vterm
-   "an" 'newsticker-treeview
+    ;; --- [a] Applications ---
+    "a"   '(:ignore t :which-key "Applications")
+    "aw"  'eww
+    "at"  'vterm
+    "an"  'newsticker-treeview
+    "ad"  'dired
 
-   "b" '(:ignore t :which-key "Buffers")
-   "bb" 'ibuffer
-   "bk" 'kill-current-buffer
-   "bn" 'next-buffer
-   "bp" 'previous-buffer
-   "bs" 'save-buffer
+    ;; --- [b] Buffers ---
+    "b"   '(:ignore t :which-key "Buffers")
+    "bb"  'ibuffer
+    "bd"  'kill-current-buffer
+    "bk"  'kill-current-buffer
+    "bn"  'next-buffer
+    "bp"  'previous-buffer
+    "bs"  'save-buffer
+    "br"  'revert-buffer
+    "bM"  'view-echo-area-messages
 
-   "c" '(:ignore t :which-key "Code")
-   "cc" 'compile-multi
-   "cr" 'recompile
-   "ce" 'consult-flymake
-   "ca" 'eglot-code-actions
-   "cR" 'eglot-rename
-   "ce" 'consult-compile-error
-   "cf" 'consult-flymake
-   "co" 'consult-outline
-   "cs" 'consult-eglot-symbols
+    ;; --- [c] Code ---
+    "c"   '(:ignore t :which-key "Code")
+    "cc"  'compile-multi
+    "cr"  'recompile
+    "ca"  'eglot-code-actions
+    "cR"  'eglot-rename
+    "cf"  'eglot-format-buffer
+    "cx"  'consult-flymake
+    "cE"  'consult-compile-error
+    "cs"  'consult-eglot-symbols
+    "co"  'consult-outline
 
-   "g" '(:ignore t :which-key "Git")
-   "gg" 'magit-status
-   "gl" 'magit-log-current
-   "gd" 'magit-diff-buffer-file
-   "gb" 'vc-annotate
+    ;; --- [f] Files ---
+    "f"   '(:ignore t :which-key "Files")
+    "ff"  'find-file
+    "fr"  'consult-recent-file
+    "fs"  'save-buffer
+    "fj"  'dired-jump
+    "fd"  'dired
+    "fC"  '(lambda () (interactive) (find-file user-init-file))
 
-   "h" '(:ignore t :which-key "Help")
-   "he" 'view-echo-area-messages
-   "hf" 'helpful-callable
-   "hv" 'helpful-variable
-   "hk" 'helpful-key
-   "hm" 'describe-mode
-   "hi" 'consult-info
+    ;; --- [g] Git ---
+    "g"   '(:ignore t :which-key "Git")
+    "gg"  'magit-status
+    "gl"  'magit-log-current
+    "gd"  'magit-diff-buffer-file
+    "gb"  'vc-annotate
+    "gB"  'magit-blame
 
-   "o" '(:ignore t :which-key "Org")
-   "oa" 'org-agenda
-   "oc" 'org-capture
-   "ol" 'org-store-link
+    ;; --- [h] Help ---
+    "h"   '(:ignore t :which-key "Help")
+    "hf"  'helpful-callable
+    "hv"  'helpful-variable
+    "hk"  'helpful-key
+    "hm"  'describe-mode
+    "hi"  'consult-info
 
-   "p" '(:ignore t :which-key "Projects")
-   "pf" 'project-find-file
-   "pp" 'project-switch-project
-   "pb" 'consult-project-buffer
-   "pg" 'project-find-regexp
-   "pD" 'project-dired
-   "pc" 'projection-multi-compile
-   "pP" '(:keymap projection-map :which-key "Projection")
-   
-   "s" '(:ignore t :which-key "Search")
-   "sf" 'consult-find
-   "sF" 'consult-fd
-   "sg" 'consult-grep
-   "sG" 'consult-git-grep
-   "sr" 'consult-ripgrep
-   "sk" 'consult-keep-lines
-   "su" 'consult-focus-lines
-   "sh" 'consult-isearch-history
-   "si" 'consult-imenu-multi
-   "sl" 'consult-goto-line
+    ;; --- [n] Notes (Org Mode) ---
+    "n"   '(:ignore t :which-key "Notes/Org")
+    "na"  'org-agenda
+    "nc"  'org-capture
+    "nl"  'org-store-link
+    "nt"  'org-todo
+    "nn"  'org-node-find       ; If using denote/org-roam later, this is perfect
+    "ni"  'org-id-get-create
 
-   "t" '(:ignore t :which-key "Tabs")
-   "tn" 'tab-new
-   "tc" 'tab-close
-   "t]" 'tab-next
-   "t[" 'tab-previous
-   "tr" 'tab-rename
-   "ts" 'tab-switch
-   "tt" 'otpp-detach-buffer-to-tab
-   
-   "x" '(:ignore t :which-key "System")
-   "xt" 'consult-theme
-   "xx" 'consult-mode-command
+    ;; --- [p] Projects ---
+    "p"   '(:ignore t :which-key "Projects")
+    "pf"  'project-find-file
+    "pp"  'project-switch-project
+    "pb"  'consult-project-buffer
+    "pg"  'project-find-regexp
+    "pD"  'project-dired
+    "pc"  'projection-multi-compile
+    "pP"  '(:keymap projection-map :which-key "Projection")
 
-   "r" '(:ignore t :which-key "Registers")
-   "rs" 'consult-register-store
-   "rl" 'consult-register-load
-   "rm" 'consult-mark
-   "rg" 'consult-global-mark
+    ;; --- [q] Quit / Session ---
+    "q"   '(:ignore t :which-key "Quit/Session")
+    "qq"  'save-buffers-kill-terminal
+    "qr"  'restart-emacs
+    "qt"  'consult-theme
 
-   "f" '(:ignore t :which-key "Files")
-   "fd" 'dired
-   "fj" 'dired-jump
-   "ff" 'find-file)
+    ;; --- [s] Search ---
+    "s"   '(:ignore t :which-key "Search")
+    "sf"  'consult-find
+    "sF"  'consult-fd
+    "sg"  'consult-grep
+    "sr"  'consult-ripgrep
+    "sl"  'consult-line
+    "si"  'consult-imenu
+    "sk"  'consult-keep-lines
+    "sh"  'consult-isearch-history
+
+    ;; --- [t] Tabs ---
+    "t"   '(:ignore t :which-key "Tabs")
+    "tn"  'tab-new
+    "tc"  'tab-close
+    "t]"  'tab-next
+    "t["  'tab-previous
+    "tr"  'tab-rename
+    "ts"  'tab-switch
+    "tt"  'otpp-detach-buffer-to-tab
+
+    ;; --- [w] Windows ---
+    "w"   '(:ignore t :which-key "Windows")
+    "ww"  'ace-window
+    "wd"  'delete-window
+    "wo"  'delete-other-windows
+    "ws"  'split-window-below
+    "wv"  'split-window-right
+    "w="  'balance-windows
+    "wH"  'evil-window-move-far-left
+    "wL"  'evil-window-move-far-right
+
+    ;; --- [r] Registers ---
+    "r"   '(:ignore t :which-key "Registers")
+    "rs"  'consult-register-store
+    "rl"  'consult-register-load
+    "rm"  'consult-mark
+    "rg"  'consult-global-mark)
 
   ;; for evil mode
   (general-define-key
