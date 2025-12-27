@@ -903,7 +903,7 @@ a project, call `multi-vterm-dedicated-toggle'."
   (org-agenda-files '("inbox.org" "agenda.org" "projects.org" "notes.org"))
   (org-archive-location "~/org/archive/%s_archive::datetree/")
   (org-ellipsis " ... ")
-  (org-tags-column -80)
+  (org-tags-column 60)
   (org-log-into-drawer t)
   (org-hide-emphasis-markers t)
   (org-agenda-start-day nil)
@@ -915,6 +915,7 @@ a project, call `multi-vterm-dedicated-toggle'."
   (org-insert-heading-respect-content t)
   (org-indent-mode t)
   (org-agenda-sticky t)
+  (org-habit-graph-column 60)
   (org-todo-keywords '((sequence "TODO(t)" "STRT(s!)" "NEXT(n!)" "HOLD(h@)" "LOOP(l)" "PROJ(p)" "|" "DONE(d!)" "CNCL(c@)")))
   (org-todo-keyword-faces
 	'(("TODO" . (:inherit (bold font-lock-builtin-face org-todo)))
@@ -985,38 +986,110 @@ a project, call `multi-vterm-dedicated-toggle'."
 	   "* %?\nEntered on %U\n %i\n %a")
 	  ))
 
-  (let ((gtd-agenda-blocks
-         `((agenda ""
-                   ((org-agenda-span 'day)
-                    (org-agenda-skip-function
-                     '(org-agenda-skip-entry-if 'deadline))
-                    (org-deadline-warning-days 0)))
-           (todo "TODO"
-                 ((org-agenda-overriding-header "📥 Refile")
-                  (org-agenda-files '("inbox.org"))))
-           (tags "EFFORT>\"0:00\"+EFFORT<\"0:20\""
-                 ((org-agenda-overriding-header "⚡ Quick Hits")
-                  (org-agenda-files '("agenda.org"))
-                  (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("DONE")))))
-           (todo "NEXT|STRT"
-                 ((org-agenda-overriding-header "🚧 In Progress")
-                  (org-agenda-files '("projects.org" "agenda.org"))))
-           (todo "TODO"
-                 ((org-agenda-overriding-header "✅ One-offs")
-                  (org-agenda-files '("agenda.org"))
-                  (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
-           (agenda nil
-                   ((org-agenda-entry-types '(:deadline))
-                    (org-deadline-warning-days 7)
-                    (org-agenda-overriding-header "\n❗Deadlines\n")))
-           (tags "CLOSED>=<today>"
-                 ((org-agenda-overriding-header "\n🎉 Completed today\n"))))))
-    (setq org-agenda-custom-commands
-          `(("g" "Get Things Done (GTD)" ,gtd-agenda-blocks)
-            ("p" "Projects"
-             ((todo "PROJ"
-                    ((org-agenda-overriding-header "🚀 Projects")
-                     (org-agenda-files '("projects.org")))))))))
+;;; GTD & Agenda Configuration
+(setq org-agenda-custom-commands
+      '(
+        ;; --- 1. DAILY FOCUS (The "Do" View) ---
+        ("g" "Get Things Done (Daily Focus)"
+         (
+          ;; A. The Hard Landscape (Calendar)
+          (agenda ""
+                  ((org-agenda-span 'day)
+                   (org-agenda-start-day nil)
+                   (org-super-agenda-groups
+                    '((:name "Today's Schedule"
+                             :time-grid t
+                             :date nil
+                             :todo "TODAY"
+                             :scheduled nil
+                             :order 1)))))
+
+          ;; B. The Soft Landscape (Active Tasks)
+          (alltodo ""
+                   ((org-agenda-overriding-header "⚡ Active Tasks")
+                    (org-super-agenda-groups
+                     '((:name "📥 Inbox (Process me!)"
+                              :file-path "inbox.org"
+                              :order 1)
+                       (:name "🚧 In Progress"
+                              :todo "STRT"
+                              :order 2)
+                       (:name "⚠️ Important / Next"
+                              :priority "A"
+                              :todo "NEXT"
+                              :order 3)
+                       (:name "🏃 Next Actions"
+                              :todo "NEXT"
+                              :order 4)
+                       ;; DISCARD RULE: Hides everything not listed above
+                       (:discard (:anything t))))))))
+
+        ;; --- 2. BACKLOG (The "Shopping" View) ---
+        ("b" "Backlog (Task Shopping)"
+         ((alltodo ""
+                   ((org-agenda-overriding-header "🛒 Backlog: Pick tasks and mark them NEXT")
+                    (org-agenda-files '("~/org/projects.org" "~/org/agenda.org"))
+                    (org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'deadline))
+                    (org-super-agenda-groups
+                     '((:name "By Project"
+                              :auto-parent t  ; Groups tasks by their parent heading (Project Name)
+                              :order 1)
+                       ;; Fallback for loose tasks
+                       (:name "Standalone Tasks"
+                              :file-path "agenda.org"
+                              :order 2)
+                       (:discard (:todo ("STRT" "NEXT" "HOLD" "WAITING" "DONE" "CNCL")))))))))
+
+	;; --- 3. REVIEW DASHBOARD (Workflow Driven) ---
+        ("r" "Weekly Review Dashboard"
+         (
+          ;; STEP 1: Look Back (For "Daily entries" & "Brag Log")
+          ;; Shows what you finished in the last 7 days
+          (agenda ""
+                  ((org-agenda-span 7)
+                   (org-agenda-start-day "-7d")
+                   (org-agenda-start-on-weekday 1) ; Start on Monday (optional)
+                   (org-agenda-show-log t)         ; Show the actual log
+                   (org-agenda-log-mode-items '(closed clock)) ; Show closed items & clocking
+                   (org-agenda-skip-function '(org-agenda-skip-entry-if 'nottodo '("DONE")))
+                   (org-agenda-overriding-header "📜 Step 1: Look Back (Completed Last 7 Days)")))
+
+          ;; STEP 2: Projects (For "Review progress of projects")
+          ;; First: Stuck Projects (Fix these first)
+          (todo "PROJ"
+                ((org-agenda-overriding-header "🚧 Step 2a: Stuck Projects (No Active Next Action)")
+                 (org-agenda-skip-function
+                  '(org-agenda-skip-entry-if 'nottodo '("PROJ") 'subtree))))
+          ;; Second: All Active Projects (Quick Scan)
+          (todo "PROJ"
+                ((org-agenda-overriding-header "🔭 Step 2b: Active Projects Overview")
+                 (org-super-agenda-groups
+                  '((:auto-category t)))))
+
+          ;; STEP 3: Habits (For "Review progress of habits")
+          ;; Isolates habits so you can check your streaks
+          (agenda ""
+                  ((org-agenda-span 'day)
+                   (org-agenda-start-day nil)
+                   (org-agenda-overriding-header "🔄 Step 3: Habits Check-in")
+                   (org-agenda-skip-function
+                    '(org-agenda-skip-entry-if 'notregexp ":HABIT:"))))
+
+          ;; STEP 4: Prune Notes (For "Organize and prune notes")
+          ;; Shows items in inbox/notes that aren't TODOs yet
+          (alltodo ""
+                   ((org-agenda-overriding-header "🧹 Step 4: Clean Up Inbox & Notes")
+                    (org-agenda-files '("~/org/inbox.org" "~/org/notes.org"))
+                    (org-super-agenda-groups
+                     '((:name "Inbox" :file-path "inbox")
+                       (:name "Notes" :file-path "notes")))))
+
+          ;; STEP 5: Someday (For "Review someday-maybe")
+          (todo "TODO"
+                ((org-agenda-overriding-header "🌱 Step 5: Someday / Maybe (Incubator)")
+                 (org-agenda-files '("~/org/someday-maybe.org"))
+                 (org-super-agenda-groups
+                  '((:auto-category t)))))))))
 
  (add-to-list 'org-modules 'org-habit)
  ;; refile
@@ -1035,6 +1108,24 @@ a project, call `multi-vterm-dedicated-toggle'."
   :bind (("C-c a" . org-agenda)
 	("C-c c" . org-capture)
 	("C-c l" . org-store-link)))
+
+(use-package ob-plantuml
+  :ensure nil
+  :after org
+  :config
+  ;; Assumes you moved the jar to your home directory
+  (setq org-plantuml-exec-mode 'plantuml)
+  
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   (append org-babel-load-languages
+           '((plantuml . t)))))
+
+(use-package org-super-agenda
+  :after org
+  :config
+  (org-super-agenda-mode))
+
 (use-package org-attach
   :after org
   :ensure nil)
