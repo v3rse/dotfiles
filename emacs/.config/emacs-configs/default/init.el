@@ -91,9 +91,7 @@ a project, call `multi-vterm-dedicated-toggle'."
 
 (defun v3rse/vterm-copy-mode-evil ()
   (if (bound-and-true-p vterm-copy-mode)
-      (evil-normal-state)
-    ;; because evil-emacs-state doesn't work well with god-mode
-    (evil-god-toggle-execute-in-god-off-state)))
+      (evil-normal-state)))
 
 ;;; Core Emacs & UI
 (use-package emacs
@@ -436,11 +434,6 @@ a project, call `multi-vterm-dedicated-toggle'."
   :init
   (which-key-mode 1))
 
-(use-package god-mode
-  :init
-  ;; enable god-mode support
-  (which-key-enable-god-mode-support))
-
 (use-package evil
   :init
   (setq evil-want-keybinding nil)
@@ -450,15 +443,24 @@ a project, call `multi-vterm-dedicated-toggle'."
   ;; vterm hook
   (add-hook 'vterm-copy-mode-hook #'v3rse/vterm-copy-mode-evil)
   (evil-mode 1)
-  
   ;; Set Initial States
   (dolist (mode '(newsticker-treeview-mode newsticker-treeview-list-mode
                   newsticker-treeview-item-mode kubernetes-mode))
-    (evil-set-initial-state mode 'emacs))
+    (evil-set-initial-state mode 'emacs)))
+  
+(use-package evil-collection
+  :after evil
+  :config
+  (evil-collection-init))
 
-  ;; Set Leader Keys
-  (evil-set-leader 'normal (kbd "SPC"))
-  (evil-set-leader 'visual (kbd "SPC")))
+(use-package evil-org
+  :after org
+  :config
+  (add-hook 'org-mode-hook 'evil-org-mode)
+  (add-hook 'evil-org-mode-hook
+            (lambda () (evil-org-set-key-theme)))
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
 
 (use-package general
   :after evil
@@ -538,7 +540,7 @@ a project, call `multi-vterm-dedicated-toggle'."
     "nc"  'org-capture
     "nl"  'org-store-link
     "nt"  'org-todo
-    "nn"  'org-node-find
+    "nn"  'consult-org-agenda
     "ni"  'org-id-get-create
 
     ;; --- [p] Projects ---
@@ -614,50 +616,6 @@ a project, call `multi-vterm-dedicated-toggle'."
   (general-define-key
    :keymaps 'override
    "M-SPC" v3rse/command-menu))
-
-(use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init))
-
-(use-package evil-god-toggle
-  :after (evil god-mode which-key)
-  :vc (evil-god-toggle :url "https://github.com/jam1015/evil-god-toggle.git"
-		       :branch "main")
-  :init
-  (setq evil-god-toggle-persist-visual 'always
-        ;; Make god-mode global (applies to all buffers) instead of buffer-local:
-        evil-god-toggle-global t)
-  :config
-  (evil-god-toggle-mode 1)
-
- ;; enter god mode for one command
- (evil-define-key '(normal insert)
-    evil-god-toggle-mode-map
-    (kbd "C-;") #'evil-god-toggle-execute-in-god-state)
-
- ;; use escape in both god modes to normal
- (evil-define-key '(god god-off)
-   evil-god-toggle-mode-map
-   [escape] (lambda () 
-              (interactive)
-              (evil-god-toggle-stop-choose-state 'normal)))
-
- ;; enter god mode for one command
- (evil-define-key '(normal insert)
-    evil-god-toggle-mode-map
-    (kbd "C-,") #'evil-god-toggle-once)
-
- ;; flip-flop between on/of god mode in any state
- (evil-define-key '(god god-off)
-    evil-god-toggle-mode-map
-    (kbd "C-M-;") #'evil-god-toggle-god-toggle)
-   
- (setq evil-god-state-cursor     '(box    "IndianRed3")
-       evil-god-off-state-cursor '(bar    "IndianRed3")
-       evil-normal-state-cursor  '(box "SkyBlue")
-       evil-insert-state-cursor  '(bar "SkyBlue")
-       evil-visual-state-cursor  '(bar "SkyBlue")))
 
 ;;; File Management
 (use-package dired
