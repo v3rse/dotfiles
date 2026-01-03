@@ -894,220 +894,297 @@ a project, call `multi-vterm-dedicated-toggle'."
   :demand t)
 
 ;;; Org Mode
+;;; 1. SUPER AGENDA (Visual Grouping)
+(use-package org-super-agenda
+  :ensure t
+  :after org
+  :config
+  (org-super-agenda-mode))
+
+;;; 2. CORE ORG CONFIGURATION
 (use-package org
   :ensure nil
   :demand t
   :custom
+  ;; --- Directories & Files ---
   (org-directory "~/org/")
   (org-default-notes-file "~/org/inbox.org")
-  (org-agenda-files '("inbox.org" "agenda.org" "projects.org" "notes.org"))
+  (org-agenda-files '("inbox.org" "agenda.org" "projects.org" "someday-maybe.org" "notes.org"))
   (org-archive-location "~/org/archive/%s_archive::datetree/")
-  (org-ellipsis " ... ")
-  (org-tags-column 60)
+  
+  ;; --- Appearance & Logging ---
+  (org-ellipsis " ▾ ")
+  (org-tags-column -80)
   (org-log-into-drawer t)
   (org-hide-emphasis-markers t)
   (org-agenda-start-day nil)
-  (org-log-done 'time)
+  (org-log-done 'time)            ; Timestamp when done
+  (org-log-reschedule 'time)      ; Timestamp when rescheduled
+  (org-log-redeadline 'note)      ; Force note when deadline changes (Accountability)
   (org-agenda-include-diary nil)
+  (org-agenda-block-separator nil) ; Cleaner super-agenda look
+  
+  ;; --- Navigation & Editing ---
   (org-refile-use-outline-path t)
   (org-outline-path-complete-in-steps nil)
   (org-M-RET-may-split-line '((default . nil)))
   (org-insert-heading-respect-content t)
   (org-indent-mode t)
   (org-agenda-sticky t)
+  
+  ;; --- Habits ---
   (org-habit-graph-column 60)
-  (org-todo-keywords '((sequence "TODO(t)" "STRT(s!)" "NEXT(n!)" "HOLD(h@)" "LOOP(l)" "PROJ(p)" "|" "DONE(d!)" "CNCL(c@)")))
-  (org-todo-keyword-faces
-	'(("TODO" . (:inherit (bold font-lock-builtin-face org-todo)))
-	  ("HOLD" . (:inherit (bold warning org-todo)))
-	  ("DONE" . (:inherit (bold org-todo)))
-	  ("PROJ" . (:inherit (bold font-lock-keyword-face org-todo)))
-	  ("LOOP" . (:inherit (bold font-lock-keyword-face org-todo)))
-	  ("NEXT" . (:inherit (bold font-lock-constant-face org-todo)))
-	  ("STRT" . (:inherit (bold font-lock-property-name-face org-todo)))
-	  ("CNCL" . (:inherit (bold font-lock-doc-face org-todo)))))
-  (org-modern-todo-faces
-	'(("TODO" . (:inherit (bold font-lock-builtin-face org-modern-todo)))
-	  ("HOLD" . (:inherit (bold warning org-modern-todo)))
-	  ("DONE" . (:inherit (bold org-modern-todo)))
-	  ("PROJ" . (:inherit (bold font-lock-keyword-face org-modern-todo)))
-	  ("LOOP" . (:inherit (bold font-lock-keyword-face org-modern-todo)))
-	  ("NEXT" . (:inherit (bold font-lock-constant-face org-modern-todo)))
-	  ("STRT" . (:inherit (bold font-lock-property-name-face org-modern-todo)))
-	  ("CNCL" . (:inherit (bold font-lock-doc-face org-modern-todo)))))
-  (org-modern-priority-faces
-	(quote ((?B (:inherit warning :inverse-video t))
-		(?C (:inherit org-todo :inverse-video t)))))
-  (org-agenda-prefix-format '((agenda . "  %i %?-12t")
-                                   (todo . "  %i")
-                                   (tags . "  %i %-12:c")
-                                   (search . "  %i %-12:c")))
   (org-habit-completed-glyph ?✅)
   (org-habit-incompleted-glyph ?❌)
   (org-habit-skipped-glyph ?➖)
   (org-habit-today-glyph ?👇)
+
+  ;; --- TODO Keywords & Faces ---
+  (org-todo-keywords 
+   '((sequence "TODO(t)" "STRT(s!)" "NEXT(n!)" "WAIT(w@/!)" "HOLD(h@)" "LOOP(l)" "PROJ(p)" "|" "DONE(d!)" "CNCL(c@)")))
+
+  (org-todo-keyword-faces
+   '(("TODO" . (:inherit (bold font-lock-builtin-face org-todo)))
+     ("STRT" . (:inherit (bold font-lock-constant-face org-todo)))
+     ("NEXT" . (:inherit (bold font-lock-keyword-face org-todo)))
+     ("WAIT" . (:inherit (bold error org-todo)))
+     ("HOLD" . (:inherit (bold warning org-todo)))
+     ("LOOP" . (:inherit (bold font-lock-keyword-face org-todo)))
+     ("PROJ" . (:inherit (bold font-lock-doc-face org-todo)))
+     ("DONE" . (:inherit (bold success org-todo)))
+     ("CNCL" . (:inherit (bold shadow org-todo)))))
+
+  ;; Keep your modern faces if you use org-modern
+  (org-modern-todo-faces
+   '(("TODO" . (:inherit (bold font-lock-builtin-face org-modern-todo)))
+     ("STRT" . (:inherit (bold font-lock-constant-face org-modern-todo)))
+     ("NEXT" . (:inherit (bold font-lock-keyword-face org-modern-todo)))
+     ("WAIT" . (:inherit (bold error org-modern-todo)))
+     ("HOLD" . (:inherit (bold warning org-modern-todo)))
+     ("LOOP" . (:inherit (bold font-lock-keyword-face org-modern-todo)))
+     ("PROJ" . (:inherit (bold font-lock-doc-face org-modern-todo)))
+     ("DONE" . (:inherit (bold success org-modern-todo)))
+     ("CNCL" . (:inherit (bold shadow org-modern-todo)))))
+
   :config
-  ;; capture templates
+  ;; --- CAPTURE TEMPLATES ---
   (setq org-capture-templates
         `(("t" "Task" entry (file+headline "inbox.org" "Tasks")
            ,(string-join '("* TODO %?"
                            ":PROPERTIES:"
                            ":CREATED: %U"
                            ":CATEGORY: Task"
-                           ":END:")
-                         "\n"))
+                           ":END:") "\n"))
+          
+          ;; 1. INTERRUPTION (New): Quick capture to stop context switching
+          ("i" "Interruption" entry (file+headline "inbox.org" "Interruptions")
+           "* TODO %? :INTERRUPT:\n:PROPERTIES:\n:CREATED: %U\n:END:\nReference: %a\n")
+
           ("n" "Note" entry (file+headline "inbox.org" "Notes")
            ,(string-join '("* %?"
                            ":PROPERTIES:"
                            ":CREATED: %U"
                            ":CATEGORY: Note"
-                           ":END:")
-                         "\n"))
+                           ":END:") "\n"))
+
           ("m" "Meeting" entry (file+headline "inbox.org" "Meetings")
            ,(string-join '("* %? :MEETING"
                            "<%<%Y-%m-%d %a %H:00>>"
                            ""
-                           "/Met with: /")
-                         "\n"))
-	  ("b" "Bookmark" entry (file+headline "inbox.org" "Bookmarks")
-	   ,(string-join '("* %:description"
-			 ":PROPERTIES:"
-			 ":CREATED: %U"
-			 ":CATEGORY: Bookmark"
-			 ":END:"
-			 "%:link"
-			 ""
-			 "%i"
-			 ""
-			 "%?")
-			 "\n")
-	   :empty-lines 1)
-	  ("j" "Journal" entry (file+datetree "journal.org")
-	   "* %?\nEntered on %U\n %i\n %a")
-	  ))
+                           "/Met with: /"
+                           "/Goal: /") "\n"))
+          
+          ;; 2. BOOKMARK (Restored)
+          ("b" "Bookmark" entry (file+headline "inbox.org" "Bookmarks")
+           ,(string-join '("* %:description"
+                           ":PROPERTIES:"
+                           ":CREATED: %U"
+                           ":CATEGORY: Bookmark"
+                           ":END:"
+                           "%:link"
+                           ""
+                           "%i"
+                           ""
+                           "%?") "\n")
+           :empty-lines 1)
 
-;;; GTD & Agenda Configuration
-(setq org-agenda-custom-commands
-      '(
-        ;; --- 1. DAILY FOCUS (The "Do" View) ---
-        ("g" "Get Things Done (Daily Focus)"
-         (
-          ;; A. The Hard Landscape (Calendar)
-          (agenda ""
-                  ((org-agenda-span 'day)
-                   (org-agenda-start-day nil)
-                   (org-super-agenda-groups
-                    '((:name "Today's Schedule"
-                             :time-grid t
-                             :date nil
-                             :todo "TODAY"
-                             :scheduled nil
-                             :order 1)))))
+          ;; 3. JOURNAL (Restored)
+          ("j" "Journal" entry (file+datetree "journal.org")
+           "* %?\nEntered on %U\n %i\n %a")
 
-          ;; B. The Soft Landscape (Active Tasks)
-          (alltodo ""
-                   ((org-agenda-overriding-header "⚡ Active Tasks")
-                    (org-super-agenda-groups
-                     '((:name "📥 Inbox (Process me!)"
-                              :file-path "inbox.org"
-                              :order 1)
-                       (:name "🚧 In Progress"
-                              :todo "STRT"
-                              :order 2)
-                       (:name "⚠️ Important / Next"
-                              :priority "A"
-                              :todo "NEXT"
-                              :order 3)
-                       (:name "🏃 Next Actions"
-                              :todo "NEXT"
-                              :order 4)
-                       ;; DISCARD RULE: Hides everything not listed above
-                       (:discard (:anything t))))))))
+;; --- WORKFLOW TEMPLATES ---
 
-        ;; --- 2. BACKLOG (The "Shopping" View) ---
-        ("b" "Backlog (Task Shopping)"
-         ((alltodo ""
-                   ((org-agenda-overriding-header "🛒 Backlog: Pick tasks and mark them NEXT")
-                    (org-agenda-files '("~/org/projects.org" "~/org/agenda.org"))
-                    (org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'deadline))
-                    (org-super-agenda-groups
-                     '((:name "By Project"
-                              :auto-parent t  ; Groups tasks by their parent heading (Project Name)
-                              :order 1)
-                       ;; Fallback for loose tasks
-                       (:name "Standalone Tasks"
-                              :file-path "agenda.org"
-                              :order 2)
-                       (:discard (:todo ("STRT" "NEXT" "HOLD" "WAITING" "DONE" "CNCL")))))))))
+        ;; 1. STAKEHOLDER UPDATE (The "Status Report")
+        ;; Use this on Friday mornings or before team syncs.
+        ("S" "Stakeholder Update" entry (file+datetree "journal.org")
+         ,(string-join '("* Weekly Update for: %? :WORK:UPDATE:"
+                         ":PROPERTIES:"
+                         ":CREATED: %U"
+                         ":END:"
+                         "** 🚦 Status: [GREEN | YELLOW | RED]"
+                         "   /Green = On track. Yellow = Risks. Red = Missed deadline./"
+                         "** ✅ Done (The Past)"
+                         "   - "
+                         "** 🔮 Next (The Future)"
+                         "   - "
+                         "** 🛑 Blockers & Risks (The Ask)"
+                         "   - /Items marked HOLD or potential delays/"
+                         "") "\n"))
 
-	;; --- 3. REVIEW DASHBOARD (Workflow Driven) ---
-        ("r" "Weekly Review Dashboard"
-         (
-          ;; STEP 1: Look Back (For "Daily entries" & "Brag Log")
-          ;; Shows what you finished in the last 7 days
-          (agenda ""
-                  ((org-agenda-span 7)
-                   (org-agenda-start-day "-7d")
-                   (org-agenda-start-on-weekday 1) ; Start on Monday (optional)
-                   (org-agenda-show-log t)         ; Show the actual log
-                   (org-agenda-log-mode-items '(closed clock)) ; Show closed items & clocking
-                   (org-agenda-skip-function '(org-agenda-skip-entry-if 'nottodo '("DONE")))
-                   (org-agenda-overriding-header "📜 Step 1: Look Back (Completed Last 7 Days)")))
+        ;; 2. BRAG LOG (The "Promo Packet")
+        ;; Use this immediately when you solve a hard problem.
+        ("B" "Brag Log Entry" entry (file+datetree "journal.org")
+         ,(string-join '("* WIN: %? :WORK:BRAG:"
+                         ":PROPERTIES:"
+                         ":CREATED: %U"
+                         ":END:"
+                         "** Situation"
+                         "   /What was the problem?/"
+                         "** Action"
+                         "   /What did I technically do?/"
+                         "** Result"
+                         "   /What was the business impact? (Speed, Cost, Stability)/"
+                         "") "\n"))
 
-          ;; STEP 2: Projects (For "Review progress of projects")
-          ;; First: Stuck Projects (Fix these first)
-          (todo "PROJ"
-                ((org-agenda-overriding-header "🚧 Step 2a: Stuck Projects (No Active Next Action)")
-                 (org-agenda-skip-function
-                  '(org-agenda-skip-entry-if 'nottodo '("PROJ") 'subtree))))
-          ;; Second: All Active Projects (Quick Scan)
-          (todo "PROJ"
-                ((org-agenda-overriding-header "🔭 Step 2b: Active Projects Overview")
-                 (org-super-agenda-groups
-                  '((:auto-category t)))))
+        ;; 3. DAILY WRAP (The "Sanity Check")
+        ;; Use this at 5:00 PM to close your loops.
+        ("d" "Daily Review" entry (file+datetree "journal.org")
+         ,(string-join '("* Daily Review: %U"
+                         "** Wrap-up Checklist [0/5]"
+                         "- [ ] Clear Inbox (Refile/Delete)"
+                         "- [ ] Update status of active tasks (Log delays!)"
+                         "- [ ] Check HOLD tasks (Ping stakeholders?)"
+                         "- [ ] Journal: Wins, Blockers, Mood, Brag Log"
+                         "- [ ] PLAN TOMORROW: Tag one item :FOCUS:"
+                         "** Journal"
+                         "%?") "\n"))
 
-          ;; STEP 3: Habits (For "Review progress of habits")
-          ;; Isolates habits so you can check your streaks
-          (agenda ""
-                  ((org-agenda-span 'day)
-                   (org-agenda-start-day nil)
-                   (org-agenda-overriding-header "🔄 Step 3: Habits Check-in")
+        ;; 4. WEEKLY REVIEW
+        ("w" "Weekly Review" entry (file+datetree "journal.org")
+         ,(string-join '("* Weekly Review: %U"
+                         "** Checklist [0/6]"
+                         "- [ ] Review Projects (Stuck? Risks?)"
+                         "- [ ] Review Habits"
+                         "- [ ] Process Notes -> Tasks"
+                         "- [ ] Clean up Someday/Maybe"
+                         "- [ ] Brag Log (Copy wins to separate doc)"
+                         "- [ ] Give stakeholder update"
+			 "- [ ] Plan next week's Major Goals"
+                         "** Summary"
+                         "%?") "\n"))
+          ))
+
+  ;; --- AGENDA CUSTOM COMMANDS (The Engine) ---
+  (setq org-agenda-custom-commands
+        '(
+          ;; COMMAND 'g': The "Get Things Done" Dashboard
+          ;; This is what you look at 90% of the day.
+          ("g" "Get Things Done (Dashboard)"
+           ((agenda "" 
+                    ((org-agenda-span 'day)
+                     (org-agenda-start-day nil)
+                     (org-super-agenda-groups
+                      '(
+                        ;; 1. MORNING BOOST: The single task you tagged :FOCUS: last night
+                        (:name "🚀 The One Thing (Focus)"
+                               :tag "FOCUS"
+                               :order 1)
+                        
+                        ;; 2. CALENDAR: Hard commitments
+                        (:name "⏰ Schedule"
+                               :time-grid t
+                               :order 2)
+                        
+                        ;; 3. RISKS: Items blocked by others (HOLD). 
+                        ;; Keeps stakeholder issues visible daily.
+                        (:name "⏳ Waiting on Stakeholders (Follow Up!)"
+                               :todo "WAIT"
+                               :order 3)
+                        
+                        ;; 4. EXECUTION: Active work
+                        (:name "⚡ In Progress"
+                               :todo "STRT"
+                               :order 4)
+                        
+                        (:name "🏃 Next Actions"
+                               :todo "NEXT"
+                               :order 5)
+                        
+                        ;; 5. LOW ENERGY: Easy wins
+                        (:name "☕ Quick Hits (Low Effort)"
+                               :effort< "0:15"
+                               :order 6)
+                        
+                        ;; Discard other stuff to keep the view clean
+                        (:discard (:anything t))))))))
+
+          ;; COMMAND 'p': Project & Backlog Planning
+          ;; Use this to move things from TODO -> NEXT
+          ("p" "Workflow Planning"
+           ((alltodo ""
+                     ((org-agenda-overriding-header "Workflow Board")
+                      (org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'deadline))
+                      (org-super-agenda-groups
+                       '((:name "📥 Inbox"
+                                :file-path "inbox"
+                                :order 1)
+                         (:name "🌱 Someday / Maybe (Incubator)"
+                                :file-path "someday-maybe.org"
+				:auto-parent t
+                                :order 2)
+                         (:name "🚧 Active Projects"
+                                :todo "PROJ"
+                                :order 3)
+                         (:name "📅 Backlog (Select tasks to move to NEXT)"
+				:auto-parent t
+                                :todo ("TODO" "HOLD")
+                                :order 4)
+                         (:discard (:todo ("STRT" "NEXT" "DONE" "CNCL")))))))))
+
+          ;; COMMAND 'r': The Review Dashboard
+          ;; This runs your Weekly Review checklist
+          ("r" "Weekly Review Dashboard"
+           (
+            ;; A. LOOK BACK: What did I actually do? (For Brag Log)
+            (agenda ""
+                    ((org-agenda-span 7)
+                     (org-agenda-start-day "-7d")
+                     (org-agenda-show-log t)
+                     (org-agenda-log-mode-items '(closed clock))
+                     (org-agenda-skip-function '(org-agenda-skip-entry-if 'nottodo '("DONE")))
+                     (org-agenda-overriding-header "📜 Completed Last 7 Days")))
+
+            ;; B. STUCK PROJECTS: Projects with no Next Action defined
+            (todo "PROJ"
+                  ((org-agenda-overriding-header "🚨 Stuck Projects (No Next Action)")
                    (org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'notregexp ":HABIT:"))))
+                    '(org-agenda-skip-entry-if 'subtree-marked)))) 
+            
+            ;; C. HABITS: Check streaks
+            (agenda "" 
+                    ((org-agenda-span 'day)
+                     (org-agenda-overriding-header "🔄 Habits")
+                     (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp ":HABIT:"))))
+            ))))
 
-          ;; STEP 4: Prune Notes (For "Organize and prune notes")
-          ;; Shows items in inbox/notes that aren't TODOs yet
-          (alltodo ""
-                   ((org-agenda-overriding-header "🧹 Step 4: Clean Up Inbox & Notes")
-                    (org-agenda-files '("~/org/inbox.org" "~/org/notes.org"))
-                    (org-super-agenda-groups
-                     '((:name "Inbox" :file-path "inbox")
-                       (:name "Notes" :file-path "notes")))))
+  (add-to-list 'org-modules 'org-habit)
+  
+  ;; --- REFILE SETTINGS ---
+  (defvar v3rse/org-refile-target-files '("agenda.org" "projects.org" "someday-maybe.org" "notes.org"))
+  (setq v3rse/org-refile-file-paths
+        (let (result)
+          (dolist (file v3rse/org-refile-target-files result)
+            (push (expand-file-name file org-directory) result))))
+  
+  ;; NOTE: I reduced maxlevel to 3. Level 9 is too deep and causes cognitive load when refiling.
+  (setq org-refile-targets
+        '((nil :maxlevel . 3)
+          (v3rse/org-refile-file-paths :maxlevel . 3)))
 
-          ;; STEP 5: Someday (For "Review someday-maybe")
-          (todo "TODO"
-                ((org-agenda-overriding-header "🌱 Step 5: Someday / Maybe (Incubator)")
-                 (org-agenda-files '("~/org/someday-maybe.org"))
-                 (org-super-agenda-groups
-                  '((:auto-category t)))))))))
-
- (add-to-list 'org-modules 'org-habit)
- ;; refile
- (defvar v3rse/org-refile-target-files '("agenda.org"
-                                      "projects.org"
-                                      "someday-maybe.org"
-                                      "notes.org"))
- (setq v3rse/org-refile-file-paths
-      (let (result)
-        (dolist (file v3rse/org-refile-target-files result)
-          (push (expand-file-name file org-directory) result))))
- (setq org-refile-targets
-      '((nil :maxlevel . 9)
-        (v3rse/org-refile-file-paths :maxlevel . 9)))
-  :hook ((org-mode-hook . visual-line-mode))
+  :hook ((org-mode . visual-line-mode))
   :bind (("C-c a" . org-agenda)
-	("C-c c" . org-capture)
-	("C-c l" . org-store-link)))
+         ("C-c c" . org-capture)
+         ("C-c l" . org-store-link)))
 
 (use-package ob-plantuml
   :ensure nil
