@@ -292,7 +292,8 @@ a project, call `multi-vterm-dedicated-toggle'."
   (vertico-cycle t)
   (vertico-resize t)
   (vertico-count 15)
-  (vertico-scroll-margin 5))
+  (vertico-scroll-margin 5)
+  :hook (minibuffer-setup . vertico-repeat-save))
 
 (use-package marginalia
   :hook (after-init . marginalia-mode)
@@ -472,7 +473,9 @@ a project, call `multi-vterm-dedicated-toggle'."
     ;; --- High Frequency / Top Level ---
     "SPC" '(consult-buffer :which-key "Switch Buffer")
     "TAB" '(mode-line-other-buffer :which-key "Last Buffer")
+    "*"   '(consult-ripgrep :which-key "Search Project")
     "."   '(embark-act :which-key "Context Action")
+    "'"   '(vertico-repeat :which-key "Repeat Last Search")
     "/"   '(consult-line :which-key "Search Buffer")
     ";"   '(consult-complex-command :which-key "M-x History")
     ":"   '(execute-extended-command :which-key "M-x")
@@ -569,6 +572,7 @@ a project, call `multi-vterm-dedicated-toggle'."
     "si"  'consult-imenu
     "sk"  'consult-keep-lines
     "sh"  'consult-isearch-history
+    "sR"  'vertico-repeat
 
     ;; --- [T] Toggles ---
     "T"   '(:ignore t :which-key "Toggle UI")
