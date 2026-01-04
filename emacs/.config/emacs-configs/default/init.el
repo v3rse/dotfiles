@@ -157,6 +157,9 @@ a project, call `multi-vterm-dedicated-toggle'."
 
 (use-package catppuccin-theme)
 
+(use-package all-the-icons
+  :if (display-graphic-p))
+
 (use-package doom-themes
   :custom
   (doom-themes-enable-bold t)
@@ -223,6 +226,12 @@ a project, call `multi-vterm-dedicated-toggle'."
 (use-package keycast
   :init
   (keycast-mode-line-mode 1))
+
+(use-package olivetti
+  :hook (org-mode . olivetti-mode)
+  :custom
+  (olivetti-body-width 100)  ;; Text takes up 100 chars width
+  (olivetti-minimum-body-width 80))
 
 ;;; Editing & Navigation
 (use-package delsel
@@ -856,14 +865,22 @@ a project, call `multi-vterm-dedicated-toggle'."
   :demand t)
 
 ;;; Org Mode
-;;; 1. SUPER AGENDA (Visual Grouping)
 (use-package org-super-agenda
   :ensure t
   :after org
+  :custom
+  (org-agenda-prefix-format '((agenda . " %i %?-12t")
+                                   (todo . " %i ")
+                                   (tags . " %i ")
+                                   (search . " %i ")))
+  (org-agenda-category-icon-alist
+        `(("Work" ,(list (all-the-icons-faicon "briefcase" :height 0.8)) nil nil :ascent center)
+          ("Personal" ,(list (all-the-icons-faicon "home" :height 0.8)) nil nil :ascent center)
+          ("Task" ,(list (all-the-icons-faicon "check-square-o" :height 0.8)) nil nil :ascent center)
+          ("Meeting" ,(list (all-the-icons-faicon "calendar" :height 0.8)) nil nil :ascent center)))
   :config
   (org-super-agenda-mode))
 
-;;; 2. CORE ORG CONFIGURATION
 (use-package org
   :ensure nil
   :demand t
@@ -876,7 +893,7 @@ a project, call `multi-vterm-dedicated-toggle'."
   
   ;; --- Appearance & Logging ---
   (org-ellipsis " ▾ ")
-  (org-tags-column -80)
+  (org-tags-column 50)
   (org-log-into-drawer t)
   (org-hide-emphasis-markers t)
   (org-agenda-start-day nil)
@@ -929,6 +946,52 @@ a project, call `multi-vterm-dedicated-toggle'."
      ("CNCL" . (:inherit (bold shadow org-modern-todo)))))
 
   :config
+ 
+  ;; --- Org File Heading Size ---
+  (custom-set-faces
+   ;; Make Level 1 headings 1.3x larger and bold
+   '(org-level-1 ((t (:inherit outline-1 :height 1.3 :weight extra-bold))))
+   ;; Make Level 2 headings 1.15x larger
+   '(org-level-2 ((t (:inherit outline-2 :height 1.15 :weight bold))))
+   '(org-level-3 ((t (:inherit outline-3 :height 1.1 :weight bold))))
+   '(org-level-4 ((t (:inherit outline-4 :height 1.0 :weight semi-bold))))
+   ;; Ensure title is distinct
+   '(org-document-title ((t (:inherit outline-1 :height 1.5 :underline nil)))))
+
+  ;; --- Org Agenda Heading Size ---
+  (custom-set-faces
+   ;; 1. The Main View Title (e.g., "Get Things Done (Master)")
+   ;; 1.5 = 150% of your normal font size
+   '(org-agenda-structure ((t (:inherit default :height 1.5 :weight extra-bold))))
+
+   ;; 2. The Group Headers (e.g., "🚀 The One Thing", "⚡ In Progress")
+   ;; 1.3 = 130% size
+   '(org-super-agenda-header ((t (:inherit default :height 1.3 :weight bold))))
+
+   ;; 3. The Date Headers (e.g., "Sunday 4 January 2026")
+   ;; 1.2 = 120% size
+   '(org-agenda-date ((t (:inherit default :height 1.2 :weight bold))))
+   '(org-agenda-date-today ((t (:inherit default :height 1.2 :weight bold :underline t)))))
+
+  ;; --- Org Habit Colors ---
+  (custom-set-faces
+   ;; 1. OVERDUE -> Inherit 'error' (Red)
+   ;; :inverse-video t swaps foreground/background to create a Red Bar
+   '(org-habit-overdue-face ((t (:inherit error :inverse-video t))))
+   '(org-habit-overdue-future-face ((t (:inherit diff-removed))))
+
+   ;; 2. READY -> Inherit 'success' (Green)
+   '(org-habit-ready-face ((t (:inherit success :inverse-video t))))
+   '(org-habit-ready-future-face ((t (:inherit success :inverse-video t))))
+
+   ;; 3. ALERT -> Inherit 'warning' (Yellow/Orange)
+   '(org-habit-alert-face ((t (:inherit warning :inverse-video t))))
+   
+   ;; 4. CLEAR -> Inherit 'default' or a subtle shadow
+   ;; We usually don't invert this one, just keep it dark/subtle
+   '(org-habit-clear-face ((t (:inherit org-agenda-dimmed-todo-face))))
+   '(org-habit-clear-future-face ((t (:inherit org-agenda-dimmed-todo-face)))))
+
   ;; --- CAPTURE TEMPLATES ---
   (setq org-capture-templates
         `(("t" "Task" entry (file+headline "inbox.org" "Tasks")
@@ -1092,7 +1155,6 @@ a project, call `multi-vterm-dedicated-toggle'."
                                 :order 1)
                          (:name "🌱 Someday / Maybe (Incubator)"
                                 :file-path "someday-maybe.org"
-				:auto-parent t
                                 :order 2)
                          (:name "🚧 Active Projects"
                                 :todo "PROJ"
@@ -1186,8 +1248,14 @@ a project, call `multi-vterm-dedicated-toggle'."
 
 (use-package org-modern
   :defer t
-  :hook ((org-mode . org-modern-mode)
-         (org-agenda-finalize . org-modern-agenda)))
+  :after org
+  :custom
+  (org-modern-star '("◉" "○" "◈" "◇" "✳" "▪" "▫")) ;; Clean bullets
+  (org-modern-list '((43 . "➤") (45 . "–") (42 . "•")))
+  (org-modern-hide-stars nil)
+  :hook
+  (org-mode . org-modern-mode)
+  (org-agenda-finalize . org-modern-agenda))
 
 (use-package org-pomodoro
   :commands (org-pomodoro)
