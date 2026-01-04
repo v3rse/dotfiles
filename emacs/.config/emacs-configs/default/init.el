@@ -230,7 +230,7 @@ a project, call `multi-vterm-dedicated-toggle'."
 (use-package olivetti
   :hook (org-mode . olivetti-mode)
   :custom
-  (olivetti-body-width 100)  ;; Text takes up 100 chars width
+  (olivetti-body-width 180)  ;; Text takes up 100 chars width
   (olivetti-minimum-body-width 80))
 
 ;;; Editing & Navigation
@@ -902,6 +902,10 @@ a project, call `multi-vterm-dedicated-toggle'."
   (org-log-redeadline 'note)      ; Force note when deadline changes (Accountability)
   (org-agenda-include-diary nil)
   (org-agenda-block-separator nil) ; Cleaner super-agenda look
+  (org-startup-indented t)
+  (org-startup-folded 'content)
+  (org-startup-with-inline-images t)
+  (org-hide-leading-stars t)
   
   ;; --- Navigation & Editing ---
   (org-refile-use-outline-path t)
