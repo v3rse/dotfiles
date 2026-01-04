@@ -913,10 +913,10 @@ a project, call `multi-vterm-dedicated-toggle'."
   
   ;; --- Habits ---
   (org-habit-graph-column 60)
-  (org-habit-completed-glyph ?✅)
-  (org-habit-incompleted-glyph ?❌)
-  (org-habit-skipped-glyph ?➖)
-  (org-habit-today-glyph ?👇)
+  (org-habit-completed-glyph ?🟢)
+  (org-habit-incompleted-glyph ?🔴)
+  (org-habit-skipped-glyph ?⚫)
+  (org-habit-today-glyph ?⭐)
 
   ;; --- TODO Keywords & Faces ---
   (org-todo-keywords 
