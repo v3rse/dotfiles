@@ -676,6 +676,7 @@ a project, call `multi-vterm-dedicated-toggle'."
     (exec-path-from-shell-initialize)))
 
 (use-package mise
+  :if (not (eq system-type 'darwin))
   :ensure t
   :hook (after-init . global-mise-mode))
 
