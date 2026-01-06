@@ -889,7 +889,7 @@ a project, call `multi-vterm-dedicated-toggle'."
   ;; --- Directories & Files ---
   (org-directory "~/org/")
   (org-default-notes-file "~/org/inbox.org")
-  (org-agenda-files '("inbox.org" "agenda.org" "projects.org" "someday-maybe.org" "notes.org"))
+  (org-agenda-files '("inbox.org" "projects.org" "someday-maybe.org" "notes.org"))
   (org-archive-location "~/org/archive/%s_archive::datetree/")
   
   ;; --- Appearance & Logging ---
@@ -1199,7 +1199,7 @@ a project, call `multi-vterm-dedicated-toggle'."
   (add-to-list 'org-modules 'org-habit)
   
   ;; --- REFILE SETTINGS ---
-  (defvar v3rse/org-refile-target-files '("agenda.org" "projects.org" "someday-maybe.org" "notes.org"))
+  (defvar v3rse/org-refile-target-files '("projects.org" "someday-maybe.org" "notes.org"))
   (setq v3rse/org-refile-file-paths
         (let (result)
           (dolist (file v3rse/org-refile-target-files result)
