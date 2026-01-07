@@ -902,7 +902,6 @@ a project, call `multi-vterm-dedicated-toggle'."
   (org-log-reschedule 'time)      ; Timestamp when rescheduled
   (org-log-redeadline 'note)      ; Force note when deadline changes (Accountability)
   (org-agenda-include-diary nil)
-  (org-agenda-block-separator nil) ; Cleaner super-agenda look
   (org-startup-indented t)
   (org-startup-folded 'content)
   (org-startup-with-inline-images t)
@@ -1115,10 +1114,10 @@ a project, call `multi-vterm-dedicated-toggle'."
                      (org-agenda-start-day nil)
                      (org-super-agenda-groups
                       '(
-                        ;; 1. MORNING BOOST: The single task you tagged :FOCUS: last night
-                        (:name "🚀 The One Thing (Focus)"
-                               :tag "FOCUS"
-                               :order 1)
+                        ;; ;; 1. MORNING BOOST: The single task you tagged :FOCUS: last night
+                        ;; (:name "🚀 The One Thing (Focus)"
+                        ;;        :tag "FOCUS"
+                        ;;        :order 1)
                         
                         ;; 2. CALENDAR: Hard commitments
                         (:name "⏰ Schedule"
@@ -1127,48 +1126,71 @@ a project, call `multi-vterm-dedicated-toggle'."
                         
                         ;; 3. RISKS: Items blocked by others (HOLD). 
                         ;; Keeps stakeholder issues visible daily.
-                        (:name "⏳ Waiting on Stakeholders (Follow Up!)"
-                               :todo "WAIT"
-                               :order 3)
+                        ;; (:name "⏳ Waiting on Stakeholders (Follow Up!)"
+                        ;;        :todo "WAIT"
+                        ;;        :order 3)
                         
                         ;; 4. EXECUTION: Active work
-                        (:name "⚡ In Progress"
-                               :todo "STRT"
-                               :order 4)
+                        ;; (:name "⚡ In Progress"
+                        ;;        :todo "STRT"
+                        ;;        :order 4)
                         
-                        (:name "🏃 Next Actions"
-                               :todo "NEXT"
-                               :order 5)
+                        ;; (:name "🏃 Next Actions"
+                        ;;        :todo "NEXT"
+                        ;;        :order 5)
                         
-                        ;; 5. LOW ENERGY: Easy wins
-                        (:name "☕ Quick Hits (Low Effort)"
-                               :effort< "0:15"
-                               :order 6)
+                        ;; ;; 5. LOW ENERGY: Easy wins
+                        ;; (:name "☕ Quick Hits (Low Effort)"
+                        ;;        :effort< "0:15"
+                        ;;        :order 6)
                         
                         ;; Discard other stuff to keep the view clean
                         (:discard (:anything t))))))))
 
           ;; COMMAND 'p': Project & Backlog Planning
           ;; Use this to move things from TODO -> NEXT
-          ("p" "Workflow Planning"
-           ((alltodo ""
-                     ((org-agenda-overriding-header "Workflow Board")
-                      (org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'deadline))
+;; --- P: PLANNING VIEW ---
+          ("p" "Workflow Planning Board"
+           (
+            ;; 1. INBOX
+            (alltodo ""
+                     ((org-agenda-overriding-header "📥 Inbox (Process & Refile)")
+                      (org-agenda-files '("inbox.org"))
+                      (org-super-agenda-groups '((:auto-parent t)))))
+
+            ;; 2. READING LIST (New Addition)
+            ;; Scans notes.org for :unread: tag.
+            (tags "unread" 
+                  ((org-agenda-overriding-header "📚 Reading List")
+                   (org-agenda-files '("notes.org")) 
+                   (org-super-agenda-groups
+                    '((:auto-category t)))))
+
+            ;; 3. SOMEDAY / MAYBE
+            (alltodo ""
+                     ((org-agenda-overriding-header "🌱 Someday / Maybe (Incubator)")
+                      (org-agenda-files '("someday-maybe.org"))
                       (org-super-agenda-groups
-                       '((:name "📥 Inbox"
-                                :file-path "inbox"
-                                :order 1)
-                         (:name "🌱 Someday / Maybe (Incubator)"
-                                :file-path "someday-maybe.org"
-                                :order 2)
-                         (:name "🚧 Active Projects"
-                                :todo "PROJ"
-                                :order 3)
-                         (:name "📅 Backlog (Select tasks to move to NEXT)"
-				:auto-parent t
-                                :todo ("TODO" "HOLD")
-                                :order 4)
-                         (:discard (:todo ("STRT" "NEXT" "DONE" "CNCL")))))))))
+                       '((:auto-parent t)))))
+
+            ;; 4. PROJECTS
+            (alltodo ""
+                     ((org-agenda-overriding-header "🚧 Active Projects")
+                      (org-agenda-files '("projects.org"))
+                      (org-super-agenda-groups
+                       '((:auto-parent t)
+                         (:discard (:anything t))))))
+
+            ;; 5. BACKLOG
+            (alltodo ""
+                     ((org-agenda-overriding-header "📅 Backlog (Select tasks to move to NEXT)")
+                      (org-agenda-files '("projects.org"))
+                      (org-super-agenda-groups
+                       '((:auto-parent t)
+                         (:name "Standalone Tasks" :file-path "agenda" :order 2)
+                         (:discard (:todo ("STRT" "NEXT" "WAIT" "DONE" "CNCL")))))))
+            )
+	   )
 
           ;; COMMAND 'r': The Review Dashboard
           ;; This runs your Weekly Review checklist
@@ -1207,8 +1229,8 @@ a project, call `multi-vterm-dedicated-toggle'."
   
   ;; NOTE: I reduced maxlevel to 3. Level 9 is too deep and causes cognitive load when refiling.
   (setq org-refile-targets
-        '((nil :maxlevel . 3)
-          (v3rse/org-refile-file-paths :maxlevel . 3)))
+        '((nil :maxlevel . 5)
+          (v3rse/org-refile-file-paths :maxlevel . 5)))
 
   :hook ((org-mode . visual-line-mode))
   :bind (("C-c a" . org-agenda)
