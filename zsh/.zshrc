@@ -172,3 +172,6 @@ load-nvmrc() {
 
 add-zsh-hook chpwd load-nvmrc
 load-nvmrc
+
+# bun completions
+[ -s "/Users/nana.adane/.bun/_bun" ] && source "/Users/nana.adane/.bun/_bun"
