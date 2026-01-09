@@ -1115,9 +1115,9 @@ a project, call `multi-vterm-dedicated-toggle'."
                      (org-super-agenda-groups
                       '(
                         ;; ;; 1. MORNING BOOST: The single task you tagged :FOCUS: last night
-                        ;; (:name "🚀 The One Thing (Focus)"
-                        ;;        :tag "FOCUS"
-                        ;;        :order 1)
+                        (:name "🚀 The One Thing (Focus)"
+                               :tag "FOCUS"
+                               :order 1)
                         
                         ;; 2. CALENDAR: Hard commitments
                         (:name "⏰ Schedule"
@@ -1126,23 +1126,23 @@ a project, call `multi-vterm-dedicated-toggle'."
                         
                         ;; 3. RISKS: Items blocked by others (HOLD). 
                         ;; Keeps stakeholder issues visible daily.
-                        ;; (:name "⏳ Waiting on Stakeholders (Follow Up!)"
-                        ;;        :todo "WAIT"
-                        ;;        :order 3)
+                        (:name "⏳ Waiting on Stakeholders (Follow Up!)"
+                               :todo "WAIT"
+                               :order 3)
                         
                         ;; 4. EXECUTION: Active work
-                        ;; (:name "⚡ In Progress"
-                        ;;        :todo "STRT"
-                        ;;        :order 4)
+                        (:name "⚡ In Progress"
+                               :todo "STRT"
+                               :order 4)
                         
-                        ;; (:name "🏃 Next Actions"
-                        ;;        :todo "NEXT"
-                        ;;        :order 5)
+                        (:name "🏃 Next Actions"
+                               :todo "NEXT"
+                               :order 5)
                         
                         ;; ;; 5. LOW ENERGY: Easy wins
-                        ;; (:name "☕ Quick Hits (Low Effort)"
-                        ;;        :effort< "0:15"
-                        ;;        :order 6)
+                        (:name "☕ Quick Hits (Low Effort)"
+                               :effort< "0:15"
+                               :order 6)
                         
                         ;; Discard other stuff to keep the view clean
                         (:discard (:anything t))))))))
