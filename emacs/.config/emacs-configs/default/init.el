@@ -1082,10 +1082,15 @@ a project, call `multi-vterm-dedicated-toggle'."
                          "** Wrap-up Checklist [0/5]"
                          "- [ ] Clear Inbox (Refile/Delete)"
                          "- [ ] Update status of active tasks (Log delays!)"
-                         "- [ ] Check HOLD tasks (Ping stakeholders?)"
+                         "- [ ] Check WAIT tasks (Ping stakeholders?)"
                          "- [ ] Journal: Wins, Blockers, Mood, Brag Log"
                          "- [ ] PLAN TOMORROW: Tag one item :FOCUS:"
                          "** Journal"
+                         "*** Mood:"
+                         "*** Thoughts:"
+                         "*** Wins:"
+                         "*** Fails:"
+                         "*** Blocker:"
                          "%?") "\n"))
 
         ;; 4. WEEKLY REVIEW
