@@ -930,7 +930,7 @@ a project, call `multi-vterm-dedicated-toggle'."
    '(("TODO" . (:inherit (bold font-lock-builtin-face org-todo)))
      ("STRT" . (:inherit (bold font-lock-constant-face org-todo)))
      ("NEXT" . (:inherit (bold font-lock-keyword-face org-todo)))
-     ("WAIT" . (:inherit (bold error org-todo)))
+     ("WAIT" . (:inherit (bold warning org-todo)))
      ("HOLD" . (:inherit (bold warning org-todo)))
      ("LOOP" . (:inherit (bold font-lock-keyword-face org-todo)))
      ("PROJ" . (:inherit (bold font-lock-doc-face org-todo)))
@@ -942,7 +942,7 @@ a project, call `multi-vterm-dedicated-toggle'."
    '(("TODO" . (:inherit (bold font-lock-builtin-face org-modern-todo)))
      ("STRT" . (:inherit (bold font-lock-constant-face org-modern-todo)))
      ("NEXT" . (:inherit (bold font-lock-keyword-face org-modern-todo)))
-     ("WAIT" . (:inherit (bold error org-modern-todo)))
+     ("WAIT" . (:inherit (bold warning org-modern-todo)))
      ("HOLD" . (:inherit (bold warning org-modern-todo)))
      ("LOOP" . (:inherit (bold font-lock-keyword-face org-modern-todo)))
      ("PROJ" . (:inherit (bold font-lock-doc-face org-modern-todo)))
@@ -1119,35 +1119,42 @@ a project, call `multi-vterm-dedicated-toggle'."
                      (org-agenda-start-day nil)
                      (org-super-agenda-groups
                       '(
-                        ;; ;; 1. MORNING BOOST: The single task you tagged :FOCUS: last night
                         (:name "🚀 The One Thing (Focus)"
                                :tag "FOCUS"
                                :order 1)
                         
-                        ;; 2. CALENDAR: Hard commitments
-                        (:name "⏰ Schedule"
-                               :time-grid t
-                               :order 2)
-                        
-                        ;; 3. RISKS: Items blocked by others (HOLD). 
-                        ;; Keeps stakeholder issues visible daily.
-                        (:name "⏳ Waiting on Stakeholders (Follow Up!)"
-                               :todo "WAIT"
-                               :order 3)
-                        
-                        ;; 4. EXECUTION: Active work
                         (:name "⚡ In Progress"
                                :todo "STRT"
+                               :order 2)
+
+			(:name "Important"
+			       :priority "A"
+			       :order 3)
+
+                        (:name "☕ Quick Hits (Low Effort)"
+                               :effort< "0:15"
                                :order 4)
+
+                        (:name "⏳ Waiting on Stakeholders (Follow Up!)"
+                               :todo "WAIT"
+                               :order 5)
+
+                        (:name "⏰ Schedule"
+			       :scheduled today
+			       :time-grid t
+                               :order 6)
+
+			(:name "Due Soon"
+			       :deadline future
+			       :order 7)
+
+			(:name "Overdue"
+			       :deadline past
+			       :order 8)
                         
                         (:name "🏃 Next Actions"
                                :todo "NEXT"
-                               :order 5)
-                        
-                        ;; ;; 5. LOW ENERGY: Easy wins
-                        (:name "☕ Quick Hits (Low Effort)"
-                               :effort< "0:15"
-                               :order 6)
+                               :order 9)
                         
                         ;; Discard other stuff to keep the view clean
                         (:discard (:anything t))))))))
