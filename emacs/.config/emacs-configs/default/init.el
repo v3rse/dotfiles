@@ -1366,16 +1366,12 @@ a project, call `multi-vterm-dedicated-toggle'."
   :init
   (require 'gptel-integrations))
 
-(use-package shell-maker
-  :ensure t)
-
-(use-package acp
-  :vc (:url "https://github.com/xenodium/acp.el"))
-
 (use-package agent-shell
-  :vc (:url "https://github.com/xenodium/agent-shell")
+  :config
   (setq agent-shell-google-authentication
-      (agent-shell-google-make-authentication :login t)))
+	(agent-shell-google-make-authentication :login t))
+  (setq agent-shell-anthropic-authentication
+	(agent-shell-anthropic-make-authentication :login t)))
 
 ;;; Help System
 (use-package helpful
