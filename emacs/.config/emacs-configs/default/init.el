@@ -1431,10 +1431,13 @@ ITEM is expected to be a string with the 'org-marker text property."
   :config
   (setq agent-shell-google-authentication
 	(agent-shell-google-make-authentication :login t)
+	agent-shell-anthropic-authentication
+	(agent-shell-anthropic-make-authentication :login t)
+        agent-shell-openai-authentication
+	(agent-shell-openai-make-authentication
+	 :api-key (lambda () (auth-source-pass-get `secret "openai-api-key")))
 	agent-shell-google-gemini-command
-      '("gemini" "--experimental-acp" "--model" "gemini-3-pro-preview"))
-  (setq agent-shell-anthropic-authentication
-	(agent-shell-anthropic-make-authentication :login t)))
+      '("gemini" "--experimental-acp" "--model" "gemini-3-pro-preview")))
 
 ;;; Help System
 (use-package helpful
