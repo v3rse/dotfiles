@@ -1369,7 +1369,9 @@ a project, call `multi-vterm-dedicated-toggle'."
 (use-package agent-shell
   :config
   (setq agent-shell-google-authentication
-	(agent-shell-google-make-authentication :login t))
+	(agent-shell-google-make-authentication :login t)
+	agent-shell-google-gemini-command
+      '("gemini" "--experimental-acp" "--model" "gemini-3-pro-preview"))
   (setq agent-shell-anthropic-authentication
 	(agent-shell-anthropic-make-authentication :login t)))
 
