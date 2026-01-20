@@ -5,3 +5,4 @@ bin/bin/
 /emacs/.config/doom/custom.el
 /emacs/.config/emacs-configs/default/*.*~
 .aider*
+/.agent-shell/
