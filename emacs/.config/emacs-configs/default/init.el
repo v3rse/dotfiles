@@ -93,6 +93,57 @@ a project, call `multi-vterm-dedicated-toggle'."
   (if (bound-and-true-p vterm-copy-mode)
       (evil-normal-state)))
 
+;; --- AGENDA CUSTOM COMMANDS (The Engine) ---
+(defun org-agenda-goto-item (item)
+  "Go to the original location of the agenda item ITEM.
+ITEM is expected to be a string with the 'org-marker text property."
+  (let ((marker (get-text-property 0 'org-marker item)))
+    (when marker
+      (set-buffer (marker-buffer marker))
+      (goto-char (marker-position marker))
+      t)))
+
+(defun v3rse/get-project-ancestor-title (item)
+  "Return the title of the nearest 'PROJ' ancestor, or nil."
+  (save-excursion
+    (when (org-agenda-goto-item item)
+      (let ((result nil)
+            (continue t))
+        (while (and continue (org-up-heading-safe))
+          (when (string= (org-get-todo-state) "PROJ")
+            (setq result (org-get-heading t t t t)
+                  continue nil)))
+        result))))
+
+(defun v3rse/is-project-subtree (item)
+  "Return t if ITEM is a descendant of a 'PROJ' heading."
+  (not (null (v3rse/get-project-ancestor-title item))))
+
+(defun v3rse/project-has-next (item)
+  "Return t if ITEM (a project) has a descendant with TODO state 'NEXT'."
+  (save-excursion
+    (when (org-agenda-goto-item item)
+      (let ((has-next nil))
+        (org-map-entries
+         (lambda ()
+           (when (string= (org-get-todo-state) "NEXT")
+             (setq has-next t)))
+         nil 'tree)
+        has-next))))
+
+(defun v3rse/get-active-project-ancestor-title (item)
+  "Return the title of the nearest 'PROJ' ancestor if ITEM is 'NEXT', or nil."
+  (save-excursion
+    (when (org-agenda-goto-item item)
+      (when (string= (org-get-todo-state) "NEXT")
+        (let ((result nil)
+              (continue t))
+          (while (and continue (org-up-heading-safe))
+            (when (string= (org-get-todo-state) "PROJ")
+              (setq result (org-get-heading t t t t)
+                    continue nil)))
+          result)))))
+
 ;;; Core Emacs & UI
 (use-package emacs
   :ensure nil
@@ -1108,7 +1159,7 @@ a project, call `multi-vterm-dedicated-toggle'."
                          "%?") "\n"))
           ))
 
-  ;; --- AGENDA CUSTOM COMMANDS (The Engine) ---
+
   (setq org-agenda-custom-commands
         '(
           ;; COMMAND 'g': The "Get Things Done" Dashboard
@@ -1144,65 +1195,75 @@ a project, call `multi-vterm-dedicated-toggle'."
 			       :time-grid t
                                :order 6)
 
+                        (:name "⚠️ Due Today"
+                               :deadline today
+                               :order 7)
+
 			(:name "Due Soon"
 			       :deadline future
-			       :order 7)
+			       :order 8)
 
 			(:name "Overdue"
 			       :deadline past
-			       :order 8)
+			       :order 9)
                         
                         (:name "🏃 Next Actions"
                                :todo "NEXT"
-                               :order 9)
+                               :order 10)
                         
                         ;; Discard other stuff to keep the view clean
                         (:discard (:anything t))))))))
 
-          ;; COMMAND 'p': Project & Backlog Planning
-          ;; Use this to move things from TODO -> NEXT
-;; --- P: PLANNING VIEW ---
-          ("p" "Workflow Planning Board"
-           (
-            ;; 1. INBOX
-            (alltodo ""
+;; ;; --- P: PLANNING VIEW ---
+          ("p" "Planning View"
+           ((alltodo ""
                      ((org-agenda-overriding-header "📥 Inbox (Process & Refile)")
                       (org-agenda-files '("inbox.org"))
                       (org-super-agenda-groups '((:auto-parent t)))))
 
-            ;; 2. READING LIST (New Addition)
-            ;; Scans notes.org for :unread: tag.
-            (tags "unread" 
-                  ((org-agenda-overriding-header "📚 Reading List")
-                   (org-agenda-files '("notes.org")) 
-                   (org-super-agenda-groups
-                    '((:auto-category t)))))
+            ;; 4. PROJECTS & BACKLOG
+            (alltodo ""
+                     ((org-agenda-overriding-header "🚧 Projects & Backlog")
+                      (org-agenda-files '("projects.org"))
+                      (org-super-agenda-groups
+                       '(
+                         (:name "Waiting"
+                                :todo "WAIT")
 
-            ;; 3. SOMEDAY / MAYBE
+                         ;; Group Active Project Tasks by their PROJ ancestor
+                         (:auto-map v3rse/get-active-project-ancestor-title)
+
+                         (:name "Stuck Projects"
+                                :and (:todo "PROJ"
+                                      :not (:pred v3rse/project-has-next)))
+
+                         ;; Anything else not in a project
+                         (:name "Backlog"
+                                :and (:todo ("TODO" "NEXT")
+                                      :not (:pred v3rse/is-project-subtree)))
+
+                         ;; Hide Project headers themselves (unless stuck, handled above)
+                         (:discard (:anything))
+                        ))))
+            ))
+
+;; 	  ;; COMMAND 'i': Inspirations
+          ("i" "Inspirations"
+           (
+            ;; SOMEDAY / MAYBE
             (alltodo ""
                      ((org-agenda-overriding-header "🌱 Someday / Maybe (Incubator)")
                       (org-agenda-files '("someday-maybe.org"))
                       (org-super-agenda-groups
                        '((:auto-parent t)))))
-
-            ;; 4. PROJECTS
-            (alltodo ""
-                     ((org-agenda-overriding-header "🚧 Active Projects")
-                      (org-agenda-files '("projects.org"))
-                      (org-super-agenda-groups
-                       '((:auto-parent t)
-                         (:discard (:anything t))))))
-
-            ;; 5. BACKLOG
-            (alltodo ""
-                     ((org-agenda-overriding-header "📅 Backlog (Select tasks to move to NEXT)")
-                      (org-agenda-files '("projects.org"))
-                      (org-super-agenda-groups
-                       '((:auto-parent t)
-                         (:name "Standalone Tasks" :file-path "agenda" :order 2)
-                         (:discard (:todo ("STRT" "NEXT" "WAIT" "DONE" "CNCL")))))))
-            )
-	   )
+	    
+            ;; READING LIST
+            (tags "unread"
+                  ((org-agenda-overriding-header "📚 Reading List")
+                   (org-agenda-files '("notes.org"))
+                   (org-super-agenda-groups
+                    '((:auto-category t)))))
+	    ))
 
           ;; COMMAND 'r': The Review Dashboard
           ;; This runs your Weekly Review checklist
