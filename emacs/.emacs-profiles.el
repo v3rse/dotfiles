@@ -1,4 +1,7 @@
 (("doom" . ((user-emacs-directory . "~/.config/emacs-configs/doomemacs")
             (env . (("DOOMDIR" . "~/.config/doom")))))
  ("kick" . ((user-emacs-directory . "~/.config/emacs-configs/emacskick")))
+ ("centaur" . ((user-emacs-directory . "~/.config/emacs-configs/centaur")))
+ ("prelude" . ((user-emacs-directory . "~/.config/emacs-configs/prelude")))
+ ("purcell" . ((user-emacs-directory . "~/.config/emacs-configs/purcell")))
  ("default" . ((user-emacs-directory . "~/.config/emacs-configs/default"))))
