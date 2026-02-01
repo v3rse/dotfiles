@@ -1405,6 +1405,7 @@ ITEM is expected to be a string with the 'org-marker text property."
           ("Hacker News" "https://news.ycombinator.com/rss")
           ("Planet Emacs" "https://planet.emacslife.com/atom.xml")
           ("Lobsters" "https://lobste.rs/rss")
+	  ("Emrace The Red" "https://embracethered.com/blog/index.xml")
 	)
      )
   )
