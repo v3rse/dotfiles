@@ -165,7 +165,7 @@ ITEM is expected to be a string with the 'org-marker text property."
     (setq browse-url-generic-program "/Applications/Firefox.app/Contents/MacOS/firefox")
     (setq browse-url-generic-program "/usr/bin/zen-browser"))
   ;; font selection
-  (let ((mono-spaced-font "Aporetic Serif Mono")
+  (let ((mono-spaced-font "JetBrain Mono")
         (proportionately-spaced-font "Aporetic Sans"))
 
     (set-face-attribute 'default nil :family mono-spaced-font :height 120 :weight 'medium)
