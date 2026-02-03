@@ -1449,6 +1449,28 @@ ITEM is expected to be a string with the 'org-marker text property."
 	 ("C-h F" . #'helpful-function)
          ("C-c C-d" . #'helpful-at-point)))
 
+(use-package simple-httpd
+  :ensure t)
+
+;; my own site generator
+(use-package org-personal-site
+  :load-path "~/src/org-personal-site/"
+  :custom
+  (org-personal-site-source-dir "~/org/site")
+  (org-personal-site-output-dir "~/site")
+  (org-personal-site-name "nana adane")
+  (org-personal-site-author "Nana Adane")
+  (org-personal-site-cname "www.nanaadane.com")
+  (org-personal-site-url "https://nanaadane.com")
+  (org-personal-site-theme 'opencode-tui)
+  (org-personal-site-font-body-cdn 
+   "https://cdnjs.cloudflare.com/ajax/libs/Iosevka/6.0.0/iosevka-etoile/iosevka-etoile.min.css")
+  :bind (("C-c s n" . org-personal-site-new-post)
+         ("C-c s b" . org-personal-site-build)
+         ("C-c s p" . org-personal-site-preview)
+         ("C-c s d" . org-personal-site-deploy)
+         ("C-c s i" . org-personal-site-insert-image)))
+
 ;;; System Integration
 (use-package server
   :config
