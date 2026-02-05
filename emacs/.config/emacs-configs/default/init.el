@@ -168,7 +168,7 @@ ITEM is expected to be a string with the 'org-marker text property."
   (let ((mono-spaced-font "JetBrains Mono")
         (proportionately-spaced-font "Aporetic Sans"))
 
-    (set-face-attribute 'default nil :family mono-spaced-font :height 120 :weight 'medium)
+    (set-face-attribute 'default nil :family mono-spaced-font :height 110 :weight 'medium)
     (when (eq system-type 'darwin)
       (set-face-attribute 'default nil :family mono-spaced-font :height 140))
   
@@ -832,8 +832,9 @@ ITEM is expected to be a string with the 'org-marker text property."
 (use-package markdown-toc)
 
 (use-package nix-ts-mode
-  :ensure t
   :mode "\\.nix\\'")
+
+(use-package kotlin-ts-mode)
 
 ;;; Project Management
 (use-package projection
