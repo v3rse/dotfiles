@@ -607,13 +607,7 @@ ITEM is expected to be a string with the 'org-marker text property."
     "ni"  'org-id-get-create
 
     ;; --- [p] Projects ---
-    "p"   '(:ignore t :which-key "Projects")
-    "pf"  'project-find-file
-    "pp"  'project-switch-project
-    "pb"  'consult-project-buffer
-    "pg"  'project-find-regexp
-    "pD"  'project-dired
-    "pc"  'projection-multi-compile
+    "p"   '(:keymap project-prefix-map :which-key "Project")
     "pP"  '(:keymap projection-map :which-key "Projection")
 
     ;; --- [q] Quit / Session ---
