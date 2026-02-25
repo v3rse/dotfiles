@@ -31,7 +31,7 @@
   "set the light theme"
   (interactive)
   ;; (clean-load-theme 'doom-tomorrow-day)
-  (setq catppuccin-flavor 'frappe)
+  (setq catppuccin-flavor 'macchiato)
   (catppuccin-reload))
 
 (defun set-dark-theme ()
@@ -439,6 +439,8 @@ ITEM is expected to be a string with the 'org-marker text property."
   :init
   ;; tweak register preview
   (advice-add #'register-preview :override #'consult-register-window))
+
+(use-package wgrep)
 
 (use-package consult-eglot
   :config
