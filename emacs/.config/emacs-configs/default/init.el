@@ -208,8 +208,7 @@ ITEM is expected to be a string with the 'org-marker text property."
 
 (use-package catppuccin-theme)
 
-(use-package all-the-icons
-  :if (display-graphic-p))
+(use-package all-the-icons)
 
 (use-package doom-themes
   :custom
@@ -1402,7 +1401,8 @@ ITEM is expected to be a string with the 'org-marker text property."
           ("Hacker News" "https://news.ycombinator.com/rss")
           ("Planet Emacs" "https://planet.emacslife.com/atom.xml")
           ("Lobsters" "https://lobste.rs/rss")
-	  ("Emrace The Red" "https://embracethered.com/blog/index.xml")
+	  ("Embrace The Red" "https://embracethered.com/blog/index.xml")
+	  ("Pandaily" "https://pandaily.com/feed")
 	)
      )
   )
