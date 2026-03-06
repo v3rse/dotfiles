@@ -448,8 +448,7 @@ ITEM is expected to be a string with the 'org-marker text property."
    :initial (or (thing-at-point 'region t) (thing-at-point 'symbol t))))
 
 (use-package embark
-  :bind (("M-." . embark-dwim)
-	 ("C-h B" . embark-bindings)
+  :bind (("C-h B" . embark-bindings)
 	 :map minibuffer-local-map
 	 ("C-c C-c" . embark-collect)
 	 ("C-c C-e" . embark-export)))
@@ -535,6 +534,7 @@ ITEM is expected to be a string with the 'org-marker text property."
     "TAB" '(mode-line-other-buffer :which-key "Last Buffer")
     "*"   '(consult-ripgrep :which-key "Search Project")
     "."   '(embark-act :which-key "Context Action")
+    ","   '(embark-dwim :which-key "Context Default")
     "'"   '(vertico-repeat :which-key "Repeat Last Search")
     "`"   '(popper-toggle :which-key "Toggle Popup")
     "~"   '(popper-cycle :which-key "Cycle Popups")
