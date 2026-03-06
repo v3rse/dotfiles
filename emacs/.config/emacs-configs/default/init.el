@@ -548,13 +548,11 @@ ITEM is expected to be a string with the 'org-marker text property."
     "aw"  'eww
     "at"  'vterm
     "an"  'newsticker-treeview
-    "ad"  'dired
 
     ;; --- [b] Buffers ---
     "b"   '(:ignore t :which-key "Buffers")
     "bb"  'ibuffer
     "bd"  'kill-current-buffer
-    "bk"  'kill-current-buffer
     "bn"  'next-buffer
     "bp"  'previous-buffer
     "bs"  'save-buffer
@@ -577,7 +575,6 @@ ITEM is expected to be a string with the 'org-marker text property."
     "f"   '(:ignore t :which-key "Files")
     "ff"  'find-file
     "fr"  'consult-recent-file
-    "fs"  'save-buffer
     "fj"  'dired-jump
     "fd"  'dired
     "fC"  '(lambda () (interactive) (find-file user-init-file))
@@ -633,7 +630,7 @@ ITEM is expected to be a string with the 'org-marker text property."
     "T"   '(:ignore t :which-key "Toggle UI")
     "Tn"  '(display-line-numbers-mode :which-key "Line Numbers")
     "Tw"  '(visual-line-mode :which-key "Word Wrap")
-    "To"  '(visual-line-mode :which-key "Show Whitespaces")
+    "To"  '(whitespace-mode :which-key "Show Whitespace")
     "Tt"  '(toggle-truncate-lines :which-key "Truncate Lines")
     "Ts"  '(flyspell-mode :which-key "Flyspell")
     "Tr"  '(read-only-mode :which-key "Read Only")
