@@ -501,12 +501,20 @@ ITEM is expected to be a string with the 'org-marker text property."
 (use-package evil
   :init
   (setq evil-want-keybinding nil)
+  ;; In TUI, C-i and TAB are the same keystroke (ASCII 9).
+  ;; evil-want-C-i-jump binds C-i to evil-jump-forward, which shadows
+  ;; TAB in org-mode (org-cycle) and org-agenda (org-agenda-goto).
+  ;; Disable it so TAB works correctly; jump-forward rebound to M-i below.
+  (setq evil-want-C-i-jump nil)
   :custom
   (evil-undo-system 'undo-redo)
   :config
   ;; vterm hook
   (add-hook 'vterm-copy-mode-hook #'v3rse/vterm-copy-mode-evil)
   (evil-mode 1)
+  ;; Restore jump-forward on M-i since C-i/TAB was reclaimed for org-cycle etc.
+  (define-key evil-normal-state-map (kbd "M-i") 'evil-jump-forward)
+  (define-key evil-motion-state-map (kbd "M-i") 'evil-jump-forward)
   ;; Set Initial States
   (dolist (mode '(newsticker-treeview-mode newsticker-treeview-list-mode
                   newsticker-treeview-item-mode kubernetes-mode))
@@ -522,7 +530,8 @@ ITEM is expected to be a string with the 'org-marker text property."
   :config
   (add-hook 'org-mode-hook 'evil-org-mode)
   (add-hook 'evil-org-mode-hook
-            (lambda () (evil-org-set-key-theme)))
+            (lambda () (evil-org-set-key-theme
+                        '(textobjects navigation insert additional shift todo heading calendar))))
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
 
@@ -930,6 +939,9 @@ ITEM is expected to be a string with the 'org-marker text property."
           ("Task" ,(list (all-the-icons-faicon "check-square-o" :height 0.8)) nil nil :ascent center)
           ("Meeting" ,(list (all-the-icons-faicon "calendar" :height 0.8)) nil nil :ascent center)))
   :config
+  ;; Nullify the header keymap so Evil j/k work on group header lines
+  ;; instead of firing org-agenda commands bound in the text-property map
+  (setq org-super-agenda-header-map (make-sparse-keymap))
   (org-super-agenda-mode))
 
 (use-package org
