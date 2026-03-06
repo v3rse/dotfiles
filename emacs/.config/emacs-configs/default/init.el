@@ -199,6 +199,10 @@ ITEM is expected to be a string with the 'org-marker text property."
   (savehist-mode 1)
   (recentf-mode 1)
 
+  ;; mouse support in terminal
+  (unless (display-graphic-p)
+    (xterm-mouse-mode 1))
+
   :hook
   ((prog-mode . display-line-numbers-mode)
    (text-mode . visual-line-mode))
@@ -593,6 +597,7 @@ ITEM is expected to be a string with the 'org-marker text property."
     "hf"  'helpful-callable
     "hv"  'helpful-variable
     "hk"  'helpful-key
+    "hd"  'helpful-at-point
     "hm"  'describe-mode
     "hi"  'consult-info
 
@@ -1441,8 +1446,7 @@ ITEM is expected to be a string with the 'org-marker text property."
 	 ("C-h v" . #'helpful-variable)
 	 ("C-h k" . #'helpful-key)
 	 ("C-h x"  . #'helpful-command)
-	 ("C-h F" . #'helpful-function)
-         ("C-c C-d" . #'helpful-at-point)))
+	 ("C-h F" . #'helpful-function)))
 
 (use-package simple-httpd
   :ensure t)
