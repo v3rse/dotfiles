@@ -299,8 +299,8 @@ ITEM is expected to be a string with the 'org-marker text property."
 
 (use-package popper
   :functions popper-group-by-project
-  :bind (("C-`"   . popper-toggle)
-         ("C-M-`"   . popper-cycle)
+  :bind (("M-`"   . popper-toggle)
+         ("M-~"   . popper-cycle)
          ("C-x C-`" . popper-toggle-type))
   :custom
   (popper-display-control nil)
@@ -448,8 +448,7 @@ ITEM is expected to be a string with the 'org-marker text property."
    :initial (or (thing-at-point 'region t) (thing-at-point 'symbol t))))
 
 (use-package embark
-  :bind (("C-." . embark-act)
-	 ("M-." . embark-dwim)
+  :bind (("M-." . embark-dwim)
 	 ("C-h B" . embark-bindings)
 	 :map minibuffer-local-map
 	 ("C-c C-c" . embark-collect)
@@ -537,6 +536,8 @@ ITEM is expected to be a string with the 'org-marker text property."
     "*"   '(consult-ripgrep :which-key "Search Project")
     "."   '(embark-act :which-key "Context Action")
     "'"   '(vertico-repeat :which-key "Repeat Last Search")
+    "`"   '(popper-toggle :which-key "Toggle Popup")
+    "~"   '(popper-cycle :which-key "Cycle Popups")
     "/"   '(consult-line :which-key "Search Buffer")
     ";"   '(consult-complex-command :which-key "M-x History")
     ":"   '(execute-extended-command :which-key "M-x")
