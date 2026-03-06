@@ -52,29 +52,6 @@
         (set-light-theme)
       (set-dark-theme))))
 
-(defun v3rse/gptel-use-claude ()
-  "Switch to a claude backend for gptel"
-  (interactive)
-  (setq gptel-model 'claude-3-sonnet-20240229
-        gptel-backend (gptel-make-anthropic "Claude"
-                        :stream t
-                        :key (cadr (auth-source-user-and-password "api.anthropic.com" "apikey")))))
-
-(defun v3rse/gptel-use-ollama ()
-  "Switch to a ollama backend for gptel"
-  (interactive)
-  (setq gptel-model 'gemma3:12b
-        gptel-backend (gptel-make-ollama "Ollama"
-                        :host (format "%s:11434" v3rse/gptel-ollama-host)
-                        :stream t
-                        :models '(deepseek-r1:14b gemma3:12b))))
-
-(defun v3rse/gptel-use-chatgpt ()
-  "Switch to a chatgpt backend for gptel"
-  (interactive)
-  (setq gptel-model (default-value 'gptel-model)
-        gptel-backend (default-value 'gptel-backend)))
-
 (defun v3rse/multi-vterm-toggle-dwim ()
   "Toggle the vterm window.
 When in a project, toggle a `multi-vterm-project' terminal. When outside
@@ -560,7 +537,7 @@ ITEM is expected to be a string with the 'org-marker text property."
     ;; --- [a] Applications ---
     "a"   '(:ignore t :which-key "Applications")
     "aw"  'eww
-    "at"  'vterm
+    "at"  'v3rse/multi-vterm-toggle-dwim
     "an"  'newsticker-treeview
 
     ;; --- [b] Buffers ---
@@ -627,7 +604,6 @@ ITEM is expected to be a string with the 'org-marker text property."
     "q"   '(:ignore t :which-key "Quit/Session")
     "qq"  'save-buffers-kill-terminal
     "qr"  'restart-emacs
-    "qt"  'consult-theme
 
     ;; --- [s] Search ---
     "s"   '(:ignore t :which-key "Search")
@@ -649,6 +625,7 @@ ITEM is expected to be a string with the 'org-marker text property."
     "Tt"  '(toggle-truncate-lines :which-key "Truncate Lines")
     "Ts"  '(flyspell-mode :which-key "Flyspell")
     "Tr"  '(read-only-mode :which-key "Read Only")
+    "TT"  '(consult-theme :which-key "Theme")
 
     ;; --- [t] Tabs ---
     "t"   '(:ignore t :which-key "Tabs")
@@ -662,6 +639,10 @@ ITEM is expected to be a string with the 'org-marker text property."
     ;; --- [w] Windows ---
     "w"   '(:ignore t :which-key "Windows")
     "ww"  'ace-window
+    "wh"  'evil-window-left
+    "wj"  'evil-window-down
+    "wk"  'evil-window-up
+    "wl"  'evil-window-right
     "wd"  'delete-window
     "wo"  'delete-other-windows
     "ws"  'split-window-below
@@ -1427,18 +1408,6 @@ ITEM is expected to be a string with the 'org-marker text property."
   :custom
   (kubernetes-poll-frequency 3600)
   (kubernetes-redraw-frequency 3600))
-
-;;; AI Integration
-(use-package gptel
-  :custom
-  (gptel-default-mode 'org-mode)
-  (gptel-default-input-format 'org)
-  :config
-  (defvar v3rse/gptel-ollama-host "localhost"
-    "The ollama host server address for gptel")
-
-  :init
-  (require 'gptel-integrations))
 
 (use-package agent-shell
   :config
