@@ -1399,6 +1399,7 @@ ITEM is expected to be a string with the 'org-marker text property."
           ("Lobsters" "https://lobste.rs/rss")
 	  ("Embrace The Red" "https://embracethered.com/blog/index.xml")
 	  ("Pandaily" "https://pandaily.com/feed")
+	  ("Thoughtworks Engineering" "https://www.thoughtworks.com/rss/engineering.xml")
 	)
      )
   )
