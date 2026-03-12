@@ -1302,6 +1302,9 @@ ITEM is expected to be a string with the 'org-marker text property."
          ("C-c c" . org-capture)
          ("C-c l" . org-store-link)))
 
+(use-package gnuplot
+  :defer t)
+
 (use-package ob-plantuml
   :ensure nil
   :after org
@@ -1312,7 +1315,17 @@ ITEM is expected to be a string with the 'org-marker text property."
   (org-babel-do-load-languages
    'org-babel-load-languages
    (append org-babel-load-languages
-           '((plantuml . t)))))
+           '((plantuml . t)
+             (gnuplot . t)))))
+
+(use-package ob-mermaid
+  :after org
+  :config
+  (setq ob-mermaid-cli-path (executable-find "mmdc"))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   (append org-babel-load-languages
+           '((mermaid . t)))))
 
 (use-package org-super-agenda
   :after org
