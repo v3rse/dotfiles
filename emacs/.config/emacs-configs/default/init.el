@@ -108,6 +108,90 @@ ITEM is expected to be a string with the 'org-marker text property."
          nil 'tree)
         has-next))))
 
+(defun v3rse/org-count-tasks-by-state ()
+  "Count tasks per TODO state across agenda files. Returns an alist of (STATE . COUNT)."
+  (let ((counts nil))
+    (org-map-entries
+     (lambda ()
+       (let ((state (org-get-todo-state)))
+         (when state
+           (let ((cell (assoc state counts)))
+             (if cell
+                 (setcdr cell (1+ (cdr cell)))
+               (push (cons state 1) counts))))))
+     nil
+     (org-agenda-files))
+    counts))
+
+(defun v3rse/org-count-closed-today ()
+  "Count tasks closed today across agenda files."
+  (let ((count 0)
+        (today (format-time-string "%Y-%m-%d")))
+    (org-map-entries
+     (lambda ()
+       (let ((closed (org-entry-get nil "CLOSED")))
+         (when (and closed (string-prefix-p today (format-time-string "%Y-%m-%d" (org-time-string-to-time closed))))
+           (setq count (1+ count)))))
+     "/DONE|CNCL"
+     (org-agenda-files))
+    count))
+
+(defun v3rse/org-metrics ()
+  "Display a quick metrics summary of task counts and today's progress."
+  (interactive)
+  (let* ((counts (v3rse/org-count-tasks-by-state))
+         (done (or (cdr (assoc "DONE" counts)) 0))
+         (cncl (or (cdr (assoc "CNCL" counts)) 0))
+         (todo (or (cdr (assoc "TODO" counts)) 0))
+         (next (or (cdr (assoc "NEXT" counts)) 0))
+         (strt (or (cdr (assoc "STRT" counts)) 0))
+         (wait (or (cdr (assoc "WAIT" counts)) 0))
+         (hold (or (cdr (assoc "HOLD" counts)) 0))
+         (proj (or (cdr (assoc "PROJ" counts)) 0))
+         (loop (or (cdr (assoc "LOOP" counts)) 0))
+         (open (+ todo next strt wait hold))
+         (closed-today (v3rse/org-count-closed-today))
+         (total (+ open done cncl proj loop)))
+    (let* ((pct (if (> total 0) (/ (* (+ done cncl) 100) total) 0))
+           (bar-width 30)
+           (filled (/ (* pct bar-width) 100))
+           (empty (- bar-width filled))
+           (bar (concat (make-string filled ?█) (make-string empty ?░)))
+           (buf (get-buffer-create "*Org Metrics*")))
+      (with-current-buffer buf
+        (let ((inhibit-read-only t))
+          (erase-buffer)
+          (insert
+           (concat
+            "\n"
+            "  ┌─────────────────────────────────────────────┐\n"
+            (format "  │  📊 Metrics — %-30s│\n" (format-time-string "%A, %B %d"))
+            "  └─────────────────────────────────────────────┘\n"
+            "\n"
+            (format "  Today:  %d completed\n" closed-today)
+            "\n"
+            "  ── Progress ──────────────────────────────────\n"
+            "\n"
+            (format "  %s  %d%%\n" bar pct)
+            (format "  %d done out of %d total\n" (+ done cncl) total)
+            "\n"
+            "  ── Open Tasks ────────────────────────────────\n"
+            "\n"
+            (format "  %-12s %3d    %-12s %3d\n" "TODO" todo "NEXT" next)
+            (format "  %-12s %3d    %-12s %3d\n" "STRT" strt "WAIT" wait)
+            (format "  %-12s %3d    %-12s %3d\n" "HOLD" hold "PROJ" proj)
+            "\n"
+            "  ── Closed ────────────────────────────────────\n"
+            "\n"
+            (format "  %-12s %3d    %-12s %3d\n" "DONE" done "CNCL" cncl)
+            "\n"
+            "  ─────────────────────────────────────────────\n"
+            (format "  Total open: %d\n" open)
+            "\n"))
+          (goto-char (point-min))
+          (special-mode)))
+      (pop-to-buffer buf))))
+
 (defun v3rse/get-active-project-ancestor-title (item)
   "Return the title of the nearest 'PROJ' ancestor if ITEM is 'NEXT', or nil."
   (save-excursion
@@ -594,6 +678,7 @@ ITEM is expected to be a string with the 'org-marker text property."
     "nl"  'org-store-link
     "nt"  'org-todo
     "nn"  'consult-org-agenda
+    "nm"  'v3rse/org-metrics
     "ni"  'org-id-get-create
 
     ;; --- [p] Projects ---
@@ -1311,7 +1396,9 @@ ITEM is expected to be a string with the 'org-marker text property."
                     ((org-agenda-span 'day)
                      (org-agenda-overriding-header "🔄 Habits")
                      (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp ":HABIT:"))))
-            ))))
+            ))
+
+          ))
 
   (add-to-list 'org-modules 'org-habit)
   
