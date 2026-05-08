@@ -794,7 +794,12 @@ ITEM is expected to be a string with the 'org-marker text property."
   :custom
   (treesit-auto-install 'prompt)
   :config
+  (setq treesit-auto-langs (remove 'markdown treesit-auto-langs))
   (treesit-auto-add-to-auto-mode-alist 'all)
+  (setq auto-mode-alist
+        (seq-remove (lambda (entry)
+                      (memq (cdr entry) '(markdown-ts-mode markdown-ts-mode-maybe)))
+                    auto-mode-alist))
   (global-treesit-auto-mode t))
 
 (use-package magit
@@ -814,16 +819,41 @@ ITEM is expected to be a string with the 'org-marker text property."
 (use-package terraform-mode)
 
 (use-package markdown-mode
-  :mode "\\.md\\'"
+  :mode ("\\.md\\'" . markdown-mode)
+  :init
+  (setq auto-mode-alist
+        (seq-remove (lambda (entry)
+                      (memq (cdr entry) '(markdown-ts-mode markdown-ts-mode-maybe)))
+                    auto-mode-alist))
+  :hook (markdown-mode . visual-line-mode)
+  :bind (:map markdown-mode-map
+              ("C-c C-x C-l" . markdown-toggle-markup-hiding)
+              ("C-c C-x C-i" . markdown-toggle-inline-images))
   :custom
   (markdown-enable-html t)
   (markdown-enable-math t)
   (markdown-fontify-code-blocks-natively t)
-  (markdown-enable-highlighting-syntax t))
+  (markdown-enable-highlighting-syntax t)
+  (markdown-hide-markup t)
+  (markdown-hide-urls t)
+  (markdown-fontify-whole-heading-line t)
+  (markdown-header-scaling t)
+  (markdown-display-remote-images t)
+  (markdown-max-image-size '(800 . 600)))
 
 (use-package edit-indirect)
 
 (use-package markdown-toc)
+
+(use-package grip-mode
+  :after markdown-mode
+  :bind (:map markdown-mode-map
+              ("C-c C-c p" . grip-mode)))
+
+(use-package valign
+  :hook ((markdown-mode org-mode) . valign-mode)
+  :custom
+  (valign-fancy-bar t))
 
 (use-package nix-ts-mode
   :mode "\\.nix\\'")
