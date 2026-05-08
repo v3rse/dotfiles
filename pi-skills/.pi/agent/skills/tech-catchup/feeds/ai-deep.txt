@@ -1,0 +1,9 @@
+# Deep AI/ML — research, infra, opinionated commentary
+https://www.latent.space/feed
+https://importai.substack.com/feed
+https://lastweekin.ai/feed
+https://www.aisnakeoil.com/feed
+https://karpathy.github.io/feed.xml
+https://deepmind.google/blog/rss.xml
+https://www.reddit.com/r/LocalLLaMA/top/.rss?t=week
+https://www.reddit.com/r/MachineLearning/top/.rss?t=week

@@ -6,3 +6,5 @@ bin/bin/
 /emacs/.config/emacs-configs/default/*.*~
 .aider*
 /.agent-shell/
+__pycache__/
+*.pyc

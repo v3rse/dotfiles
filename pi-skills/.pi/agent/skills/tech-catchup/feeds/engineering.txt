@@ -1,0 +1,20 @@
+# Software engineering — newsletters & tastemaker blogs
+https://newsletter.pragmaticengineer.com/feed
+https://simonwillison.net/atom/everything/
+https://changelog.com/news/feed
+https://jvns.ca/atom.xml
+https://danluu.com/atom.xml
+https://www.hillelwayne.com/index.xml
+https://drewdevault.com/blog/index.xml
+https://fabiensanglard.net/rss.xml
+https://world.hey.com/dhh/feed.atom
+https://overreacted.io/rss.xml
+https://kentcdodds.com/blog/rss.xml
+https://fly.io/blog/feed.xml
+https://blog.cloudflare.com/rss/
+https://github.blog/feed/
+https://www.reddit.com/r/programming/top/.rss?t=week
+# ThoughtWorks Insights — Tech Radar + practitioner essays (per profile)
+https://www.thoughtworks.com/rss/insights.xml
+# Theo (t3.gg) — YouTube uploads, per profile
+https://www.youtube.com/feeds/videos.xml?channel_id=UCbRP3c757lWg9M-U7TyEkXA

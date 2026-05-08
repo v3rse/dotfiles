@@ -1,0 +1,5 @@
+# Always-on aggregators (high signal, all domains)
+https://hnrss.org/frontpage
+https://hnrss.org/best
+https://lobste.rs/rss
+https://www.techmeme.com/feed.xml

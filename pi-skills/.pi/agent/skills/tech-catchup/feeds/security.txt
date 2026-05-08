@@ -1,0 +1,6 @@
+# Security, infosec, vulns
+https://krebsonsecurity.com/feed/
+https://www.schneier.com/feed/atom/
+https://rss.beehiiv.com/feeds/xgTKUmMmUm.xml
+https://news.risky.biz/feed/
+https://tldr.tech/api/rss/infosec
