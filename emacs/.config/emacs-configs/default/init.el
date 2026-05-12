@@ -1059,6 +1059,7 @@ ITEM is expected to be a string with the 'org-marker text property."
   (org-log-done 'time)            ; Timestamp when done
   (org-log-reschedule 'time)      ; Timestamp when rescheduled
   (org-log-redeadline 'note)      ; Force note when deadline changes (Accountability)
+  (org-deadline-warning-days 3)
   (org-agenda-include-diary nil)
   (org-startup-indented t)
   (org-startup-folded 'content)
@@ -1272,7 +1273,7 @@ ITEM is expected to be a string with the 'org-marker text property."
           ;; COMMAND 'g': The "Get Things Done" Dashboard
           ;; This is what you look at 90% of the day.
           ("g" "Get Things Done (Dashboard)"
-           ((agenda "" 
+           ((agenda ""
                     ((org-agenda-span 'day)
                      (org-agenda-start-day nil)
                      (org-super-agenda-groups
@@ -1327,6 +1328,11 @@ ITEM is expected to be a string with the 'org-marker text property."
                      ((org-agenda-overriding-header "📥 Inbox (Process & Refile)")
                       (org-agenda-files '("inbox.org"))
                       (org-super-agenda-groups '((:auto-parent t)))))
+
+            ;; MISSED SCHEDULED ITEMS
+            (tags-todo "TODO=\"TODO\"+SCHEDULED<\"<today>\""
+                     ((org-agenda-overriding-header "📅 Missed Scheduled Items")
+                      (org-agenda-sorting-strategy '(scheduled-up priority-down))))
 
             ;; 4. PROJECTS & BACKLOG
             (alltodo ""
