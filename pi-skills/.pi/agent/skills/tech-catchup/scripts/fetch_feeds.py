@@ -38,8 +38,10 @@ from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 from xml.etree import ElementTree as ET
 
+from urllib.parse import urlparse
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _lib import canonicalize_url, parse_date, first_sentence  # noqa: E402
+from _lib import canonicalize_url, parse_date, first_sentence, title_fingerprint, load_tastemakers  # noqa: E402
 
 UA = "Mozilla/5.0 tech-catchup-skill/2.0"
 NS = {
@@ -114,7 +116,77 @@ def fetch(url: str, timeout: int, cache_entry: dict | None) -> tuple[bytes | Non
     raise RuntimeError("unreachable")
 
 
-# ---- RSS/Atom parser ------------------------------------------------------
+
+# ---- tastemaker endorsement extraction ----------------------------------
+
+# Pattern: Simon Willison's "Quoting" blogmarks have <blockquote cite="URL">
+_BLOCKQUOTE_CITE_RE = re.compile(r'<blockquote\s+cite="(https?://[^"]+)"', re.IGNORECASE)
+# Generic: first external <a href="URL"> that isn't the feed's own domain
+_LINK_RE = re.compile(r'<a\s+href="(https?://[^"]+)"', re.IGNORECASE)
+
+
+def _extract_endorsements(feed_url: str, title: str, raw_html: str) -> list[str]:
+    """Extract external URLs that a tastemaker post endorses.
+
+    For Simon Willison's "Quoting" blogmarks, the cited URL is in the
+    <blockquote cite="..."> attribute.  For other posts we fall back to
+    the first external <a> href that isn't the feed's own domain.
+    """
+    if not raw_html:
+        return []
+    feed_host = urlparse(feed_url).netloc.lower()
+    # Strip www. prefix for comparison
+    feed_host = feed_host.removeprefix("www.")
+
+    out: list[str] = []
+    # 1. Quoting blogmarks: cite attribute is authoritative
+    for m in _BLOCKQUOTE_CITE_RE.finditer(raw_html):
+        url = m.group(1)
+        canon = canonicalize_url(url)
+        if canon and canon not in out:
+            out.append(canon)
+
+    # 2. If no cite found, look for first external link
+    if not out:
+        for m in _LINK_RE.finditer(raw_html):
+            url = m.group(1)
+            canon = canonicalize_url(url)
+            host = urlparse(canon).netloc.lower().removeprefix("www.")
+            if host and host != feed_host and canon not in out:
+                out.append(canon)
+                break  # only first external link
+
+    return out
+
+
+def _url_to_tastemaker_handle(feed_url: str, tastemakers: dict[str, list[str]]) -> str | None:
+    """Map a feed URL to its tastemaker handle using tastemakers.json hosts."""
+    feed_lower = feed_url.lower()
+    for handle, hosts in tastemakers.items():
+        for h in hosts:
+            if h.lower() in feed_lower:
+                return handle
+    return None
+
+
+ENDORSEMENTS_PATH = Path.home() / ".cache" / "tech-catchup" / "endorsements.json"
+
+
+def _load_endorsements() -> dict[str, list[str]]:
+    """Load {canonical_url: [tastemaker_handle, ...]} map."""
+    if not ENDORSEMENTS_PATH.exists():
+        return {}
+    try:
+        return json.loads(ENDORSEMENTS_PATH.read_text())
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def _save_endorsements(d: dict[str, list[str]]) -> None:
+    """Persist endorsements map."""
+    ENDORSEMENTS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    ENDORSEMENTS_PATH.write_text(json.dumps(d, indent=2, sort_keys=True))
+
 
 def _strip_html(text: str | None) -> str:
     if not text:
@@ -148,6 +220,9 @@ def _extract_primary_and_discussion(feed_url: str, raw_link: str, raw_desc_html:
 
 
 def parse_feed(url: str, body: bytes) -> tuple[str, list[dict]]:
+    """Parse RSS/Atom feed. Each item dict includes 'summary_raw' (plain text)
+    and 'summary_html' (raw HTML, if available from content:encoded or atom:content).
+    """
     try:
         root = ET.fromstring(body)
     except ET.ParseError as e:
@@ -171,8 +246,9 @@ def parse_feed(url: str, body: bytes) -> tuple[str, list[dict]]:
             pub = (item.findtext("pubDate")
                    or item.findtext("{http://purl.org/dc/elements/1.1/}date")
                    or "")
-            desc_html = (item.findtext("description")
-                         or item.findtext("{http://purl.org/rss/1.0/modules/content/}encoded")
+            # Prefer content:encoded over description for richer HTML
+            desc_html = (item.findtext("{http://purl.org/rss/1.0/modules/content/}encoded")
+                         or item.findtext("description")
                          or "")
             primary, discussion = _extract_primary_and_discussion(url, raw_link, desc_html)
             items.append({
@@ -181,6 +257,7 @@ def parse_feed(url: str, body: bytes) -> tuple[str, list[dict]]:
                 "discussion": canonicalize_url(discussion),
                 "published": pub,
                 "summary_raw": _strip_html(desc_html),
+                "summary_html": desc_html,
             })
 
     # Atom
@@ -198,15 +275,18 @@ def parse_feed(url: str, body: bytes) -> tuple[str, list[dict]]:
                     break
             pub = (entry.findtext("atom:published", default="", namespaces=NS)
                    or entry.findtext("atom:updated", default="", namespaces=NS))
-            summary = (entry.findtext("atom:summary", default="", namespaces=NS)
-                       or entry.findtext("atom:content", default="", namespaces=NS))
-            primary, discussion = _extract_primary_and_discussion(url, raw_link, summary)
+            # Prefer atom:content over atom:summary for richer HTML
+            content_html = entry.findtext("atom:content", default="", namespaces=NS)
+            summary_html = entry.findtext("atom:summary", default="", namespaces=NS)
+            raw_html = content_html or summary_html
+            primary, discussion = _extract_primary_and_discussion(url, raw_link, raw_html)
             items.append({
                 "title": title,
                 "link": canonicalize_url(primary),
                 "discussion": canonicalize_url(discussion),
                 "published": pub,
-                "summary_raw": _strip_html(summary),
+                "summary_raw": _strip_html(raw_html),
+                "summary_html": raw_html,
             })
 
     return feed_title, items
@@ -215,26 +295,29 @@ def parse_feed(url: str, body: bytes) -> tuple[str, list[dict]]:
 # ---- per-feed worker ------------------------------------------------------
 
 def process(url: str, since: datetime, max_items: int, timeout: int,
-            cache: dict, use_cache: bool, full_summaries: bool
-            ) -> tuple[str, list[dict], str | None, str, dict | None]:
-    """Returns (url, items, error_msg, status, new_cache_entry).
+            cache: dict, use_cache: bool, full_summaries: bool,
+            tastemaker_hosts: set[str] | None = None,
+            ) -> tuple[str, list[dict], str | None, str, dict | None, dict[str, list[str]]]:
+    """Returns (url, items, error_msg, status, new_cache_entry, endorsements).
     status ∈ {"ok","cached","err"}.
+    endorsements = {canonical_url: [tastemaker_handle, ...]}.
     """
     cache_entry = cache.get(url) if use_cache else None
     try:
         body, new_cache = fetch(url, timeout, cache_entry)
     except (HTTPError, URLError, ValueError, TimeoutError) as e:
-        return url, [], f"{type(e).__name__}: {e}", "err", None
+        return url, [], f"{type(e).__name__}: {e}", "err", None, {}
 
     if body is None:  # 304
-        return url, [], None, "cached", new_cache or cache_entry
+        return url, [], None, "cached", new_cache or cache_entry, {}
 
     try:
         feed_title, items = parse_feed(url, body)
     except ValueError as e:
-        return url, [], f"{type(e).__name__}: {e}", "err", None
+        return url, [], f"{type(e).__name__}: {e}", "err", None, {}
 
     out = []
+    feed_endorsements: dict[str, list[str]] = {}
     for it in items:
         dt = parse_date(it["published"])
         if dt and dt < since:
@@ -243,11 +326,24 @@ def process(url: str, since: datetime, max_items: int, timeout: int,
         it["feed"] = url
         it["feed_title"] = feed_title
         summary = it.pop("summary_raw")
+        summary_html = it.pop("summary_html", "")
         it["summary"] = summary if full_summaries else first_sentence(summary)
         out.append(it)
+
+        # Extract endorsements from tastemaker feeds
+        if tastemaker_hosts is not None:
+            handle = _url_to_tastemaker_handle(url, tastemaker_hosts)
+            if handle:
+                endorsed = _extract_endorsements(url, it.get("title", ""), summary_html)
+                for eurl in endorsed:
+                    if eurl not in feed_endorsements:
+                        feed_endorsements[eurl] = []
+                    if handle not in feed_endorsements[eurl]:
+                        feed_endorsements[eurl].append(handle)
+
         if len(out) >= max_items:
             break
-    return url, out, None, "ok", new_cache
+    return url, out, None, "ok", new_cache, feed_endorsements
 
 
 # ---- main -----------------------------------------------------------------
@@ -287,14 +383,20 @@ def main() -> int:
     cache = {} if args.no_cache else _load_cache()
     new_cache = dict(cache)
 
+    # Load tastemakers for endorsement extraction
+    tastemakers = load_tastemakers(NEWS / "feeds" / "tastemakers.json")
+
+    all_endorsements: dict[str, list[str]] = {}
+
     with ThreadPoolExecutor(max_workers=args.concurrency) as ex:
         futs = {
             ex.submit(process, u, since, args.max_per_feed, args.timeout,
-                      cache, not args.no_cache, args.full_summaries): u
+                      cache, not args.no_cache, args.full_summaries,
+                      tastemakers): u
             for u in urls
         }
         for fut in as_completed(futs):
-            url, items, err, status, ce = fut.result()
+            url, items, err, status, ce, feed_endorsements = fut.result()
             if status == "err":
                 print(f"ERR {err} {url}", file=sys.stderr)
                 continue
@@ -309,8 +411,21 @@ def main() -> int:
             for it in items:
                 print(json.dumps(it, ensure_ascii=False))
 
+            # Merge feed endorsements into global map
+            for eurl, handles in feed_endorsements.items():
+                if eurl not in all_endorsements:
+                    all_endorsements[eurl] = []
+                for h in handles:
+                    if h not in all_endorsements[eurl]:
+                        all_endorsements[eurl].append(h)
+
     if not args.no_cache:
         _save_cache(new_cache)
+
+    if all_endorsements:
+        _save_endorsements(all_endorsements)
+        print(f"endorsements: {len(all_endorsements)} unique URLs endorsed", file=sys.stderr)
+
     return 0
 
 

@@ -85,7 +85,6 @@ def main() -> int:
     ap.add_argument("--profile", default=str(Path.home() / "org" / "news" / "profile.md"))
     ap.add_argument("--top", type=int, default=5)
     ap.add_argument("--per-section", type=int, default=8)
-    ap.add_argument("--use-llm", action="store_true", help="Re-rank with LLM after heuristic scoring")
     args = ap.parse_args()
 
     profile = parse_profile(args.profile)
@@ -219,45 +218,6 @@ def main() -> int:
                    ("top" if c["score"] >= 4 and tier1_source_count(c["sources"]) >= 2 else c["domain"]))
               for c in capped]
     capped += [dict(c, bucket="radar") for c in buckets["radar"][: args.per_section]]
-
-    # ---- optional LLM re-rank ---------------------------------------------
-    if args.use_llm:
-        import subprocess as _sp
-        script_dir = Path(__file__).resolve().parent
-        llm_rank_path = script_dir / "llm_rank.py"
-        if llm_rank_path.exists():
-            # Serialize capped items to JSONL and pipe to llm_rank.py
-            input_jsonl = "\n".join(json.dumps(c, ensure_ascii=False) for c in capped)
-            try:
-                result = _sp.run(
-                    [sys.executable, str(llm_rank_path),
-                     "--profile", args.profile],
-                    input=input_jsonl,
-                    capture_output=True,
-                    text=True,
-                    timeout=300,
-                )
-                if result.returncode == 0:
-                    new_capped: list[dict] = []
-                    for line in result.stdout.strip().splitlines():
-                        if not line.strip():
-                            continue
-                        try:
-                            new_capped.append(json.loads(line))
-                        except json.JSONDecodeError:
-                            continue
-                    if new_capped:
-                        # Override bucket with llm_section when present
-                        for c in new_capped:
-                            if c.get("llm_section"):
-                                c["bucket"] = c["llm_section"]
-                        capped = new_capped
-                else:
-                    print(f"llm_rank.py failed (rc={result.returncode}), using heuristic ranking", file=sys.stderr)
-            except Exception as e:
-                print(f"llm_rank.py error: {e}, using heuristic ranking", file=sys.stderr)
-        else:
-            print("llm_rank.py not found, using heuristic ranking", file=sys.stderr)
 
     # ---- output ---------------------------------------------------------
     bucket_counts: dict[str, int] = {}

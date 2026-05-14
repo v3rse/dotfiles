@@ -105,7 +105,14 @@ python3 "$SKILL/scripts/rank.py" \
 }
 ```
 
-The **scoring, multi-source corroboration, tastemaker attribution, dedup, and bucket assignment are all done by `rank.py`.** Your job is judgment: pick which clusters to feature, write the one-sentence "why it matters" lines, and group them into the output template.
+The **scoring, multi-source corroboration, tastemaker attribution, dedup, and bucket assignment are all done by `rank.py`.** Your job is judgment — you are the LLM re-ranker:
+
+- **Demote** items that are technically on-profile but low-substance (press releases, quote posts with no real content, releases of tools you'd never use)
+- **Promote** items the heuristics under-scored because the title/summary language didn't match the keyword list but the content clearly matters
+- **Re-bucket** freely — a `radar` item can become a top story if it's genuinely significant; a `top` item can drop to `engineering` if it's just multi-sourced noise
+- **Skip entirely** anything that hits the ignore rules in spirit even if not in letter
+
+Then write the one-sentence "why it matters" lines and group into the output template.
 
 #### About the cache
 

@@ -13,7 +13,12 @@ https://kentcdodds.com/blog/rss.xml
 https://fly.io/blog/feed.xml
 https://blog.cloudflare.com/rss/
 https://github.blog/feed/
-https://www.reddit.com/r/programming/top/.rss?t=week
+https://www.reddit.com/r/ExperiencedDevs/top/.rss?t=week
+https://www.reddit.com/r/devops/top/.rss?t=week
+https://www.reddit.com/r/sre/top/.rss?t=week
+https://www.reddit.com/r/programmingtools/top/.rss?t=week
+https://www.reddit.com/r/LocalLLaMA/top/.rss?t=week
+https://www.reddit.com/r/MachineLearning/top/.rss?t=week
 # ThoughtWorks Insights — Tech Radar + practitioner essays (per profile)
 https://www.thoughtworks.com/rss/insights.xml
 # Theo (t3.gg) — YouTube uploads, per profile
