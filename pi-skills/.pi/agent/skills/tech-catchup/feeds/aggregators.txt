@@ -3,3 +3,9 @@ https://hnrss.org/frontpage
 https://hnrss.org/best
 https://lobste.rs/rss
 https://www.techmeme.com/feed.xml
+https://www.reddit.com/r/ExperiencedDevs/top/.rss?t=week
+https://www.reddit.com/r/devops/top/.rss?t=week
+https://www.reddit.com/r/sre/top/.rss?t=week
+https://www.reddit.com/r/programmingtools/top/.rss?t=week
+https://www.reddit.com/r/LocalLLaMA/top/.rss?t=week
+https://www.reddit.com/r/MachineLearning/top/.rss?t=week
