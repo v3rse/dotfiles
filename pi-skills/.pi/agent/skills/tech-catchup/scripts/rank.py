@@ -52,6 +52,28 @@ from _lib import (
     load_tastemakers, title_fingerprint, score_item, AGGREGATORS, kw_hit,
 )
 
+# Tier-1 aggregators for "top" bucket multi-source threshold.
+# Techmeme is intentionally excluded (it's an aggregator-of-aggregators).
+TIER1_AGGREGATORS = ("hnrss.org", "ycombinator.com", "lobste.rs", "reddit.com")
+
+
+def tier1_source_count(sources: list[dict]) -> int:
+    """Count distinct Tier-1 aggregator hosts among sources.
+
+    hnrss.org and ycombinator.com both map to HN, so they count as one.
+    """
+    seen: set[str] = set()
+    for s in sources:
+        feed = (s.get("feed") or "").lower()
+        if "hnrss.org" in feed or "ycombinator.com" in feed:
+            seen.add("hn")
+        elif "lobste.rs" in feed:
+            seen.add("lobsters")
+        elif "reddit.com" in feed:
+            seen.add("reddit")
+    return len(seen)
+
+
 NEWS = Path.home() / "org" / "news"
 FEEDS_DIR = NEWS / "feeds"
 TASTEMAKERS_PATH = FEEDS_DIR / "tastemakers.json"
@@ -166,7 +188,7 @@ def main() -> int:
     # ---- bucket ---------------------------------------------------------
     buckets: dict[str, list[dict]] = {"top": [], "radar": []}
     for c in scored:
-        if c["score"] >= 3:
+        if c["score"] >= 4 and tier1_source_count(c["sources"]) >= 2:
             buckets["top"].append(c)
         elif c["score"] >= 1:
             buckets.setdefault(c["domain"], []).append(c)
@@ -189,7 +211,7 @@ def main() -> int:
     for c in buckets["top"][: args.top]:
         c["bucket"] = "top"
     capped = [dict(c, bucket=c.get("bucket") or
-                   ("top" if c["score"] >= 3 else c["domain"]))
+                   ("top" if c["score"] >= 4 and tier1_source_count(c["sources"]) >= 2 else c["domain"]))
               for c in capped]
     capped += [dict(c, bucket="radar") for c in buckets["radar"][: args.per_section]]
 
