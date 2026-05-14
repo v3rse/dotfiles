@@ -50,8 +50,49 @@ def _save_cache(url: str, result: dict) -> None:
         pass
 
 
+def _load_recent_feedback(n: int = 30) -> list[dict]:
+    """Load the last N feedback entries from ~/org/news/feedback.jsonl."""
+    path = Path.home() / "org" / "news" / "feedback.jsonl"
+    if not path.exists():
+        return []
+    entries: list[dict] = []
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    entries.append(json.loads(line))
+                except json.JSONDecodeError:
+                    continue
+    except OSError:
+        return []
+    # Return last N entries, most recent last
+    return entries[-n:] if len(entries) > n else entries
+
+
+def _format_feedback_examples(entries: list[dict]) -> str:
+    """Format feedback entries as few-shot examples for the LLM prompt."""
+    if not entries:
+        return ""
+
+    emoji_map = {"up": "👍", "down": "👎", "save": "💾"}
+    lines = ["The user previously rated these items:"]
+    for e in entries:
+        action = e.get("action", "")
+        url = e.get("url", "")
+        title = e.get("title", "")
+        emoji = emoji_map.get(action, action)
+        # Show title if available, else URL
+        display = title if title else url
+        lines.append(f'- {emoji} "{display}"')
+
+    return "\n".join(lines) + "\n\n"
+
+
 def _build_prompt(items: list[dict], profile_md: str) -> str:
-    """Build the prompt for a single batch of items."""
+    """Build the prompt for a single batch of items, including recent feedback."""
     # Build a compact JSON array with just id, title, summary, source
     batch = []
     for item in items:
@@ -62,9 +103,13 @@ def _build_prompt(items: list[dict], profile_md: str) -> str:
             "source": item.get("primary", ""),
         })
 
+    feedback_entries = _load_recent_feedback(30)
+    feedback_block = _format_feedback_examples(feedback_entries)
+
     return (
         f"You score tech news items for a senior engineer with this profile:\n"
         f"<profile>\n{profile_md}\n</profile>\n\n"
+        f"{feedback_block}"
         f"For each item, return JSON: "
         f'{{"id": <int>, "score": 0-10, "section": "top|engineering|security|ai|radar|skip", "rationale": "<20 words"}}.\n'
         f"Score 10 = must-read for this person. Score 0 = skip entirely (off-topic or ignored).\n"
