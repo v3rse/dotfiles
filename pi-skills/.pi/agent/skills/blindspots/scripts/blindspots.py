@@ -30,7 +30,7 @@ Output JSONL (one cluster per line), shape mirrors rank.py output plus:
   "reason_detail": "matched 'crypto'" | "feed→hardware (off by default)" | ...
 """
 from __future__ import annotations
-import argparse, json, sys, os, re
+import argparse, json, sys, os, re, hashlib
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -45,19 +45,99 @@ from _lib import (  # type: ignore
 NEWS = Path(os.environ.get("TECH_CATCHUP_DIR", str(Path.home() / "org" / "news")))
 FEEDS_DIR = NEWS / "feeds"
 TASTEMAKERS_PATH = FEEDS_DIR / "tastemakers.json"
+LLM_CACHE_DIR = Path.home() / ".cache" / "tech-catchup" / "llm"
 
 # Preserve old blindspots aggregators (excludes reddit.com) for no behavior change
 BLINDSPOTS_AGGREGATORS = ("hnrss.org", "ycombinator.com", "lobste.rs", "techmeme.com")
 
+# Fixed rationale buckets for grouping skipped items
+RATIONALE_BUCKETS = {
+    "off-topic": ["off-topic", "off topic", "not relevant", "unrelated"],
+    "noise": ["noise", "low quality", "clickbait", "listicle", "fluff"],
+    "framework-drama": ["framework", "drama", "react", "vue", "angular", "svelte"],
+    "crypto": ["crypto", "web3", "blockchain", "nft", "bitcoin", "ethereum"],
+    "hype": ["hype", "overhyped", "buzzword", "marketing", "pr"],
+    "low-signal-aggregator": ["aggregator", "reddit", "low signal", "minimal"],
+}
+
+
 
 def kw_hit(text: str, keywords: list[str]) -> tuple[bool, str]:
+    """Return (True, matched_kw) if any keyword appears as a whole word in text."""
     if not keywords:
         return False, ""
     t = text.lower()
     for kw in keywords:
-        if kw and kw in t:
+        kw_low = kw.lower().strip()
+        if not kw_low:
+            continue
+        if re.search(rf"\b{re.escape(kw_low)}\b", t):
             return True, kw
     return False, ""
+
+
+def _llm_cache_path(url: str) -> Path:
+    key = hashlib.sha1(url.encode()).hexdigest()
+    return LLM_CACHE_DIR / f"{key}.json"
+
+
+def _load_llm_cache(url: str) -> dict | None:
+    """Load cached LLM result for a URL, or None if not cached."""
+    p = _llm_cache_path(url)
+    if not p.exists():
+        return None
+    try:
+        data = json.loads(p.read_text())
+        if isinstance(data, dict) and "section" in data:
+            return data
+    except (json.JSONDecodeError, OSError):
+        pass
+    return None
+
+
+def _bucket_rationale(rationale: str) -> str:
+    """Map an LLM rationale string to a fixed bucket name."""
+    r_lower = rationale.lower()
+    for bucket, keywords in RATIONALE_BUCKETS.items():
+        for kw in keywords:
+            if kw in r_lower:
+                return bucket
+    # Extract first noun phrase as fallback: look for first 1-3 word phrase
+    words = re.findall(r"[a-z]{3,}", r_lower)
+    if words:
+        return words[0]
+    return "other"
+
+
+def _today_digest_urls() -> set[str]:
+    """Extract canonical URLs from today's tech-catchup digest markdown."""
+    urls: set[str] = set()
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    # Look for today's digest file (exact date or date-pm variant)
+    candidates = [
+        NEWS / f"tech-catchup-{today}.md",
+        NEWS / f"tech-catchup-{today}-pm.md",
+    ]
+    # Also check yesterday in case it's early morning
+    yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")
+    candidates.extend([
+        NEWS / f"tech-catchup-{yesterday}.md",
+        NEWS / f"tech-catchup-{yesterday}-pm.md",
+    ])
+
+    for path in candidates:
+        if not path.exists():
+            continue
+        text = path.read_text()
+        # Extract URLs from markdown links: [text](url)
+        for match in re.finditer(r"\[([^\]]+)\]\(([^)]+)\)", text):
+            url = match.group(2).strip()
+            if url.startswith("http"):
+                urls.add(canonicalize_url(url))
+        # Also extract bare URLs
+        for match in re.finditer(r"https?://[^\s\)\"\']+", text):
+            urls.add(canonicalize_url(match.group(0)))
+    return urls
 
 
 def cluster(items: list[dict]) -> list[dict]:
@@ -164,6 +244,38 @@ def classify(c: dict, profile: dict, deprioritized: set[str],
     return "outside-interests", "no interest-keyword or tastemaker hit"
 
 
+def classify_llm(c: dict, digest_urls: set[str]) -> tuple[str, str, int] | None:
+    """LLM-based blindspot classification.
+
+    Returns (reason, detail, curiosity_score) if the item was skipped by LLM
+    and is NOT already in today's digest. Returns None otherwise.
+    """
+    primary = c.get("primary", "")
+    if not primary:
+        return None
+
+    # Deduplicate against digest
+    canon = canonicalize_url(primary)
+    if canon in digest_urls:
+        return None
+
+    cached = _load_llm_cache(primary)
+    if cached is None:
+        return None  # No LLM data for this item
+
+    section = cached.get("section", "")
+    if section != "skip":
+        return None  # LLM didn't skip this item
+
+    rationale = cached.get("rationale", "")
+    bucket = _bucket_rationale(rationale)
+
+    # Curiosity score: same heuristics as before, but only for skipped items
+    score = curiosity_score(c)
+
+    return bucket, rationale, score
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--profile",
@@ -172,6 +284,8 @@ def main() -> int:
     ap.add_argument("--deprioritized", default="",
                     help="comma list of domains to treat as off-domain "
                          "(e.g. 'hardware,adjacent'). Defaults to empty.")
+    ap.add_argument("--use-llm", action="store_true",
+                    help="Use LLM skip signal when available (reads cached llm_rank.py results)")
     args = ap.parse_args()
 
     profile = parse_profile(args.profile)
@@ -198,26 +312,73 @@ def main() -> int:
 
     clusters = cluster(items)
 
+    # Decide path: LLM-based or heuristic
+    # If --use-llm flag is set OR any cache files exist, try LLM path first
+    has_llm_cache = LLM_CACHE_DIR.exists() and any(LLM_CACHE_DIR.iterdir())
+    use_llm = args.use_llm or has_llm_cache
+
     candidates: list[dict] = []
-    for c in clusters:
-        cls = classify(c, profile, deprioritized, trusted_hosts, domain_of)
-        if cls is None:
-            continue
-        reason, detail = cls
-        c["score"] = curiosity_score(c)
-        c["reason"] = reason
-        c["reason_detail"] = detail
-        candidates.append(c)
 
-    candidates.sort(key=lambda c: (-c["score"], c.get("published") or ""))
+    if use_llm:
+        digest_urls = _today_digest_urls()
+        llm_candidates: list[dict] = []
+        heuristic_candidates: list[dict] = []
 
-    # Take top N globally, then sort by reason for stable output grouping
-    REASON_ORDER = ["ignored", "off-domain", "no-tastemaker", "outside-interests"]
-    top = candidates[: args.top]
-    top.sort(key=lambda c: (REASON_ORDER.index(c["reason"]), -c["score"]))
+        for c in clusters:
+            # Try LLM path first
+            llm_cls = classify_llm(c, digest_urls)
+            if llm_cls is not None:
+                reason, detail, score = llm_cls
+                c["score"] = score
+                c["reason"] = reason
+                c["reason_detail"] = detail
+                c["llm_rationale"] = detail
+                llm_candidates.append(c)
+                continue
+
+            # Fall back to heuristic for this item (whether or not LLM cache exists)
+            cls = classify(c, profile, deprioritized, trusted_hosts, domain_of)
+            if cls is not None:
+                reason, detail = cls
+                c["score"] = curiosity_score(c)
+                c["reason"] = reason
+                c["reason_detail"] = detail
+                heuristic_candidates.append(c)
+
+        if llm_candidates:
+            # Sort by curiosity score, take top N
+            llm_candidates.sort(key=lambda c: (-c["score"], c.get("published") or ""))
+            candidates = llm_candidates[: args.top]
+            # Sort by reason bucket for stable grouping
+            candidates.sort(key=lambda c: (c["reason"], -c["score"]))
+            mode = "llm"
+        else:
+            # No LLM skips found, use heuristic candidates
+            candidates = heuristic_candidates
+            mode = "heuristic"
+    else:
+        # Pure heuristic path (no LLM cache, no --use-llm)
+        for c in clusters:
+            cls = classify(c, profile, deprioritized, trusted_hosts, domain_of)
+            if cls is None:
+                continue
+            reason, detail = cls
+            c["score"] = curiosity_score(c)
+            c["reason"] = reason
+            c["reason_detail"] = detail
+            candidates.append(c)
+
+        candidates.sort(key=lambda c: (-c["score"], c.get("published") or ""))
+
+        # Take top N globally, then sort by reason for stable output grouping
+        REASON_ORDER = ["ignored", "off-domain", "no-tastemaker", "outside-interests"]
+        top = candidates[: args.top]
+        top.sort(key=lambda c: (REASON_ORDER.index(c["reason"]), -c["score"]))
+        candidates = top
+        mode = "heuristic"
 
     counts: dict[str, int] = {}
-    for c in top:
+    for c in candidates:
         counts[c["reason"]] = counts.get(c["reason"], 0) + 1
         out = {
             "reason": c["reason"],
@@ -230,10 +391,13 @@ def main() -> int:
             "summary": c.get("summary", ""),
             "published": c.get("published", ""),
         }
+        # Preserve LLM fields if present
+        if "llm_rationale" in c:
+            out["llm_rationale"] = c["llm_rationale"]
         print(json.dumps(out, ensure_ascii=False))
 
-    print(f"blindspots: {len(candidates)} candidates from {len(clusters)} "
-          f"clusters → emitted {len(top)} ("
+    print(f"blindspots ({mode}): {len(candidates)} candidates from {len(clusters)} "
+          f"clusters → emitted {len(candidates)} ("
           + " · ".join(f"{k}={v}" for k, v in sorted(counts.items())) + ")",
           file=sys.stderr)
     return 0
