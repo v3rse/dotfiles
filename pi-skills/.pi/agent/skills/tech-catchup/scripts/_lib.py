@@ -214,6 +214,24 @@ def load_tastemakers(path: str | Path) -> dict[str, list[str]]:
         return {}
 
 
+# Endorsements cache path (TASK-11 placeholder)
+ENDORSEMENTS_PATH = Path.home() / ".cache" / "tech-catchup" / "endorsements.json"
+
+def load_endorsements(path: Path = ENDORSEMENTS_PATH) -> dict[str, list[str]]:
+    """Load tastemaker endorsement map: external_url -> [tastemaker_handle].
+    Returns empty dict if file doesn't exist (TASK-11 not yet fully implemented).
+    """
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text())
+        if isinstance(data, dict):
+            return {k: v if isinstance(v, list) else [] for k, v in data.items()}
+    except (json.JSONDecodeError, OSError):
+        pass
+    return {}
+
+
 def kw_hit(text: str, keywords: list[str]) -> bool:
     """Return True if any keyword appears as a whole word in text.
 

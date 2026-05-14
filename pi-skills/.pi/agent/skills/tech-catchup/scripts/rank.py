@@ -50,7 +50,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _lib import (
     canonicalize_url, parse_profile, feeds_by_domain,
     load_tastemakers, title_fingerprint, score_item, AGGREGATORS, kw_hit,
-    classify_format,
+    classify_format, load_endorsements, ENDORSEMENTS_PATH,
 )
 
 # Tier-1 aggregators for "top" bucket multi-source threshold.
@@ -99,6 +99,9 @@ def main() -> int:
         if not profile_handles or handle.lower() in profile_handles:
             for h in hosts:
                 trusted_hosts.append((handle, h.lower()))
+
+    # Load tastemaker endorsements
+    endorsements = load_endorsements(ENDORSEMENTS_PATH)
 
     # ---- read & cluster -------------------------------------------------
     clusters: list[dict] = []
@@ -169,7 +172,7 @@ def main() -> int:
         if kw_hit(haystack, profile["ignore"]):
             continue
 
-        score, _reasons, tastemaker_via = score_item(c, profile, trusted_hosts, AGGREGATORS)
+        score, _reasons, tastemaker_via = score_item(c, profile, trusted_hosts, AGGREGATORS, endorsements)
 
         # Pick a domain — first non-aggregator source's mapped domain, else "?"
         chosen_domain = None
