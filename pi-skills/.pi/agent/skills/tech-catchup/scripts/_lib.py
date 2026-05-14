@@ -237,6 +237,7 @@ def score_item(
     profile: dict,
     trusted_hosts: list[tuple[str, str]],
     aggregators: tuple[str, ...] = AGGREGATORS,
+    endorsements: dict[str, list[str]] | None = None,
 ) -> tuple[int, list[str], list[str]]:
     """Compute a score for a single cluster/item.
 
@@ -279,7 +280,67 @@ def score_item(
                 reasons.append(f"domain:{domain}+{bonus}")
                 break
 
+    # Tastemaker endorsement bonus: +2 if primary URL is endorsed by a tastemaker
+    if endorsements and primary_url:
+        canon = canonicalize_url(primary_url)
+        if canon in endorsements:
+            endorsers = endorsements[canon]
+            score += 2
+            reasons.append(f"endorsed-by:{','.join(endorsers)}")
+            # Also add to tastemaker_via for display
+            for h in endorsers:
+                if h not in tastemaker_via:
+                    tastemaker_via.append(h)
+
     return score, reasons, tastemaker_via
+
+
+def classify_format(item: dict) -> str:
+    """Tag a news item with its content format.
+
+    Priority: quote > postmortem > release > essay > news
+    """
+    title = (item.get("title") or "").strip()
+    summary = (item.get("summary") or "").strip()
+    primary = (item.get("primary") or "").strip()
+    haystack = (title + " " + summary).lower()
+
+    # quote — Simon Willison's blogmark format
+    if title.startswith("Quoting "):
+        return "quote"
+
+    # postmortem — outage/incident/RCA content
+    if re.search(r"\b(postmortem|outage|incident|root cause|rca|investigated|death spiral)\b", haystack):
+        return "postmortem"
+
+    # release — version numbers or release keywords
+    if re.search(r"\b\d+\.\d+", title) or re.search(
+        r"\b(released|launched|now available|ga)\b", haystack
+    ):
+        return "release"
+
+    # essay — known essay domains OR long-form title
+    ESSAY_DOMAINS = (
+        "danluu.com",
+        "fasterthanli.me",
+        "sirupsen.com",
+        "registerspill.thorstenball.com",
+        "pragmaticengineer.com",
+        "newsletter.pragmaticengineer.com",
+        "blog.bryanl.dev",
+        "simonwillison.net",
+    )
+    primary_lower = primary.lower()
+    if any(domain in primary_lower for domain in ESSAY_DOMAINS):
+        return "essay"
+
+    # essay heuristic: title is ≥ 6 words and no other tag matched
+    word_count = len(title.split())
+    if word_count >= 6:
+        return "essay"
+
+    # fallback
+    return "news"
 
 
 # ----- title fingerprint for cross-feed clustering ----------------------
