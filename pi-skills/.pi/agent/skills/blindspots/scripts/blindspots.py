@@ -30,7 +30,7 @@ Output JSONL (one cluster per line), shape mirrors rank.py output plus:
   "reason_detail": "matched 'crypto'" | "feed→hardware (off by default)" | ...
 """
 from __future__ import annotations
-import argparse, json, sys, re
+import argparse, json, sys, os, re
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -39,13 +39,15 @@ TC_SKILL = Path.home() / ".pi" / "agent" / "skills" / "tech-catchup"
 sys.path.insert(0, str(TC_SKILL / "scripts"))
 from _lib import (  # type: ignore
     canonicalize_url, parse_profile, feeds_by_domain,
-    load_tastemakers, title_fingerprint, parse_date,
+    load_tastemakers, title_fingerprint, parse_date, score_item,
 )
 
 NEWS = Path(os.environ.get("TECH_CATCHUP_DIR", str(Path.home() / "org" / "news")))
 FEEDS_DIR = NEWS / "feeds"
 TASTEMAKERS_PATH = FEEDS_DIR / "tastemakers.json"
-AGGREGATORS = ("hnrss.org", "ycombinator.com", "lobste.rs", "techmeme.com")
+
+# Preserve old blindspots aggregators (excludes reddit.com) for no behavior change
+BLINDSPOTS_AGGREGATORS = ("hnrss.org", "ycombinator.com", "lobste.rs", "techmeme.com")
 
 
 def kw_hit(text: str, keywords: list[str]) -> tuple[bool, str]:
@@ -99,31 +101,13 @@ def cluster(items: list[dict]) -> list[dict]:
     return clusters
 
 
-def rank_score(c: dict, profile: dict,
-               trusted_hosts: list[tuple[str, str]]) -> int:
-    """Replicate rank.py scoring so we know what would survive."""
-    feeds = [s["feed"] for s in c["sources"]]
-    haystack = (c["title"] + " " + c.get("summary", "")).lower()
-    s = 0
-    if len({canonicalize_url(f) for f in feeds}) >= 2:
-        s += 3
-    if any(any(agg in (f or "").lower() for agg in AGGREGATORS) for f in feeds):
-        s += 2
-    if any(host in (f or "").lower()
-           for _, host in trusted_hosts for f in feeds):
-        s += 2
-    if kw_hit(haystack, profile["interests"])[0]:
-        s += 1
-    return s
-
-
 def curiosity_score(c: dict) -> int:
     """How interesting this blindspot item is, for ordering only."""
     s = 0
     feeds = {canonicalize_url(x["feed"]) for x in c["sources"]}
     if len(feeds) >= 2:
         s += 3
-    if any(any(agg in (f or "").lower() for agg in AGGREGATORS)
+    if any(any(agg in (f or "").lower() for agg in BLINDSPOTS_AGGREGATORS)
            for f in feeds):
         s += 2
     pub = parse_date(c.get("published"))
@@ -156,7 +140,8 @@ def classify(c: dict, profile: dict, deprioritized: set[str],
             domain = d
             break
 
-    rs = rank_score(c, profile, trusted_hosts)
+    # Preserve old blindspots aggregators (excludes reddit.com) for no behavior change
+    rs, _reasons, _tastemaker_via = score_item(c, profile, trusted_hosts, BLINDSPOTS_AGGREGATORS)
 
     # 2. off-domain — would survive ranking but lives in a domain
     #    the user deprioritized. Worth surfacing as a blindspot regardless
@@ -170,7 +155,7 @@ def classify(c: dict, profile: dict, deprioritized: set[str],
 
     has_tm = any(host in (f or "").lower()
                  for _, host in trusted_hosts for f in feeds)
-    is_agg = any(any(agg in (f or "").lower() for agg in AGGREGATORS)
+    is_agg = any(any(agg in (f or "").lower() for agg in BLINDSPOTS_AGGREGATORS)
                  for f in feeds)
 
     if is_agg and not has_tm:

@@ -49,29 +49,19 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _lib import (
     canonicalize_url, parse_profile, feeds_by_domain,
-    load_tastemakers, title_fingerprint,
+    load_tastemakers, title_fingerprint, score_item, AGGREGATORS, kw_hit,
 )
 
 NEWS = Path.home() / "org" / "news"
 FEEDS_DIR = NEWS / "feeds"
 TASTEMAKERS_PATH = FEEDS_DIR / "tastemakers.json"
 
-# Tier-1 aggregator hosts (substring match against feed URL)
-AGGREGATORS = ("hnrss.org", "ycombinator.com", "lobste.rs", "techmeme.com")
-
-
-def kw_hit(text: str, keywords: list[str]) -> bool:
-    if not keywords:
-        return False
-    t = text.lower()
-    return any(kw and kw in t for kw in keywords)
-
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--profile", default=str(Path.home() / "org" / "news" / "profile.md"))
     ap.add_argument("--top", type=int, default=5)
-    ap.add_argument("--per-section", type=int, default=5)
+    ap.add_argument("--per-section", type=int, default=8)
     args = ap.parse_args()
 
     profile = parse_profile(args.profile)
@@ -155,20 +145,7 @@ def main() -> int:
         if kw_hit(haystack, profile["ignore"]):
             continue
 
-        score = 0
-        if len({canonicalize_url(f) for f in feeds}) >= 2:
-            score += 3
-        if any(any(agg in (f or "").lower() for agg in AGGREGATORS) for f in feeds):
-            score += 2
-        tastemaker_via: list[str] = []
-        for handle, host in trusted_hosts:
-            if any(host in (f or "").lower() for f in feeds):
-                if handle not in tastemaker_via:
-                    tastemaker_via.append(handle)
-        if tastemaker_via:
-            score += 2
-        if kw_hit(haystack, profile["interests"]):
-            score += 1
+        score, _reasons, tastemaker_via = score_item(c, profile, trusted_hosts, AGGREGATORS)
 
         # Pick a domain — first non-aggregator source's mapped domain, else "?"
         chosen_domain = None
