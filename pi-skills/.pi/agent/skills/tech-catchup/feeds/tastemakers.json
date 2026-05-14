@@ -18,9 +18,8 @@
   "theo":            ["youtube.com/feeds/videos.xml?channel_id=UCbRP3c757lWg9M-U7TyEkXA", "t3.gg"],
   "thoughtworks":    ["thoughtworks.com"],
   "mattlevine":      ["bloomberg.com/opinion/authors/ARbTQlRLRjE"],
-  "balaji":          [],
-  "ID_AA_Carmack":   [],
-  "mitchellh":       [],
-  "thorstenball":    [],
-  "kelseyhightower": []
+  "sirupsen":        ["sirupsen.com"],
+  "fasterthanli.me": ["fasterthanli.me"],
+  "thorstenball":    ["registerspill.thorstenball.com"],
+  "bryanl":          ["blog.bryanl.dev"]
 }
