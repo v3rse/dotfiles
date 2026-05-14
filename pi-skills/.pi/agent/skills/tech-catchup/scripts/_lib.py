@@ -12,6 +12,19 @@ from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
 # Tier-1 aggregator hosts (substring match against feed URL)
 AGGREGATORS = ("hnrss.org", "ycombinator.com", "lobste.rs", "techmeme.com", "reddit.com")
 
+# Domain-authority bonus weights (longest-prefix match, cap +2 per item)
+DOMAIN_WEIGHTS = {
+    "newsletter.pragmaticengineer.com": 2,
+    "pragmaticengineer.com": 2,
+    "danluu.com": 2,
+    "simonwillison.net": 1,
+    "blog.cloudflare.com": 1,
+    "registerspill.thorstenball.com": 1,
+    "github.blog/engineering": 1,
+    "fasterthanli.me": 1,
+    "sirupsen.com": 1,
+}
+
 # Tracking-only query params we always strip
 _TRACKING = {
     "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
@@ -202,11 +215,21 @@ def load_tastemakers(path: str | Path) -> dict[str, list[str]]:
 
 
 def kw_hit(text: str, keywords: list[str]) -> bool:
-    """Return True if any keyword appears as a substring in text."""
+    """Return True if any keyword appears as a whole word in text.
+
+    Uses regex word-boundary matching to avoid false positives
+    (e.g. "ops" matching "Desktops" or "crypto" matching "Cryptography").
+    """
     if not keywords:
         return False
     t = text.lower()
-    return any(kw and kw in t for kw in keywords)
+    for kw in keywords:
+        kw_low = kw.lower().strip()
+        if not kw_low:
+            continue
+        if re.search(rf"\b{re.escape(kw_low)}\b", t):
+            return True
+    return False
 
 
 def score_item(
@@ -242,6 +265,19 @@ def score_item(
     if kw_hit(haystack, profile["interests"]):
         score += 1
         reasons.append("interest")
+
+    # Domain-authority bonus (longest-prefix match, cap +2 per item)
+    primary_url = c.get("primary", "")
+    if primary_url:
+        parsed = urlparse(primary_url)
+        host = parsed.netloc.lower()
+        path = parsed.path.lower()
+        full = host + path
+        for domain, bonus in sorted(DOMAIN_WEIGHTS.items(), key=lambda x: -len(x[0])):
+            if domain in full:
+                score += bonus
+                reasons.append(f"domain:{domain}+{bonus}")
+                break
 
     return score, reasons, tastemaker_via
 
