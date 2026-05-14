@@ -17,7 +17,6 @@ DOMAIN_WEIGHTS = {
     "newsletter.pragmaticengineer.com": 2,
     "pragmaticengineer.com": 2,
     "danluu.com": 2,
-    "simonwillison.net": 1,
     "blog.cloudflare.com": 1,
     "registerspill.thorstenball.com": 1,
     "github.blog/engineering": 1,
@@ -180,7 +179,14 @@ def parse_profile(path: str | Path) -> dict:
             elif "ignore" in key:
                 out["ignore"] = [c.lower() for c in collected]
             elif "tastemaker" in key:
-                out["tastemakers"] = collected
+                # Deduplicate while preserving order
+                seen: set[str] = set()
+                deduped = []
+                for h in collected:
+                    if h.lower() not in seen:
+                        seen.add(h.lower())
+                        deduped.append(h)
+                out["tastemakers"] = deduped
             elif "domain" in key:
                 out["domains"] = collected
             elif "budget" in key:
