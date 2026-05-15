@@ -11,7 +11,7 @@ cd "$DOTFILES" && stow -t ~ pi-skills
 
 echo "==> Linking skills for Claude Code..."
 mkdir -p ~/.claude/skills
-for skill in blindspots tech-catchup wiki-builder; do
+for skill in blindspots tech-catchup wiki-builder job-search interview-prep; do
   target="$HOME/.claude/skills/$skill"
   source="$DOTFILES/pi-skills/.pi/agent/skills/$skill"
   
