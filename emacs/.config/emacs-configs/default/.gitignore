@@ -1,0 +1,20 @@
+# Emacs runtime state — never commit these
+custom.el
+dape-breakpoints
+history
+projects.eld
+recentf.eld
+tramp
+bookmarks
+places
+savehist
+
+# Package directory
+elpa/
+
+# Temp and generated
+tmp/
+tree-sitter/
+auto-save-list/
+backup/
+*.elc
