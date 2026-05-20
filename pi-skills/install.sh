@@ -1,5 +1,5 @@
 #!/bin/bash
-# Install pi skills and symlink them for Claude Code
+# Install pi skills and symlink them globally
 # Run from ~/dotfiles: ./pi-skills/install.sh
 
 set -euo pipefail
@@ -9,18 +9,24 @@ DOTFILES="${DOTFILES:-$HOME/dotfiles}"
 echo "==> Stowing pi-skills..."
 cd "$DOTFILES" && stow -t ~ pi-skills
 
-echo "==> Linking skills for Claude Code..."
-mkdir -p ~/.claude/skills
-for skill in blindspots tech-catchup wiki-builder job-search interview-prep; do
-  target="$HOME/.claude/skills/$skill"
-  source="$DOTFILES/pi-skills/.pi/agent/skills/$skill"
-  
-  if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
-    echo "    $skill: already linked"
-  else
-    ln -sf "$source" "$target"
-    echo "    $skill: linked"
-  fi
-done
+link_skills() {
+  local dest="$1"
+  mkdir -p "$dest"
+  echo "==> Linking skills to $dest..."
+  for source in "$DOTFILES"/pi-skills/.pi/agent/skills/*/; do
+    skill=$(basename "$source")
+    target="$dest/$skill"
+    if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
+      echo "    $skill: already linked"
+    else
+      ln -sf "$source" "$target"
+      echo "    $skill: linked"
+    fi
+  done
+}
 
-echo "==> Done. Skills available in both ~/.pi/agent/skills/ and ~/.claude/skills/"
+link_skills "$HOME/.agents/skills"
+link_skills "$HOME/.claude/skills"
+link_skills "$HOME/.gemini/skills"
+
+echo "==> Done. Skills available in ~/.pi/agent/skills/, ~/.agents/skills/, ~/.claude/skills/, ~/.gemini/skills/"

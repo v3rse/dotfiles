@@ -23,10 +23,10 @@ Read these files from ~/org/career/:
 
 | File | Purpose |
 |------|---------|
-| `external-positioning-2026.org` | Core narrative, target role types, value pillars |
-| `career-cv-entry.org` | CV summary, skills stack, compact bullets |
-| `career-star-stories.org` | STAR stories for behavioral prep |
-| `target-companies-2026.org` | Tiered target list — check if company is already listed |
+| `external-positioning.org` | Core narrative, target role types, value pillars |
+| `cv-entry.org` | CV summary, skills stack, compact bullets |
+| `star-stories.org` | STAR stories for behavioral prep |
+| `target-companies.org` | Tiered target list — check if company is already listed |
 
 ## Step 3: Load Company Pattern
 
@@ -70,11 +70,11 @@ Produce a structured markdown checklist with these sections:
 
 | Likely Question | Best Story | Key Detail to Emphasize |
 |-----------------|----------|------------------------|
-| "Tell me about a system you designed from scratch" | Story 5 (Scalable Mail Architecture) | SQS→processor→SES→SNS, 1,211 customers, phased rollout |
-| "How do you handle production incidents?" | Story 4 (S3 Migration) | Dec 2023 rollback, post-mortem, remediation |
-| "Give me an example of cross-functional delivery" | Story 2 (MS OAuth) | Daily syncs, weekly stakeholders, plan pivot |
-| "How do you make technical decisions with uncertainty?" | Story 1 (ADR-013) | 11 vendors, structured matrix, stakeholder alignment |
-| "Tell me about a project without a PM or deadline" | Story 5alt (ExternalSMTP) | 9,500 customers, no PM, sustained ownership |
+| "Tell me about a system you designed from scratch" | <best story from star-stories.org> | <key technical detail> |
+| "How do you handle production incidents?" | <best story from star-stories.org> | <key detail: rollback, post-mortem, remediation> |
+| "Give me an example of cross-functional delivery" | <best story from star-stories.org> | <key detail: stakeholders, pivots, outcomes> |
+| "How do you make technical decisions with uncertainty?" | <best story from star-stories.org> | <key detail: structured decision process> |
+| "Tell me about a project without a PM or deadline" | <best story from star-stories.org> | <key detail: ownership, initiative, impact> |
 
 ## System Design Prompts to Practice
 

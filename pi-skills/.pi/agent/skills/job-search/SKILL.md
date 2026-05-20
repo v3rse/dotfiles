@@ -12,9 +12,9 @@ Read these files from ~/org/career/ to build the user's profile context:
 
 | File | What It Provides |
 |------|-----------------|
-| `external-positioning-2026.org` | Core narrative, target role types, value pillars |
-| `target-companies-2026.org` | Tiered target company list with career page links |
-| `career-cv-entry.org` | CV summary, skills stack, compact bullets |
+| `external-positioning.org` | Core narrative, target role types, value pillars |
+| `target-companies.org` | Tiered target company list with career page links |
+| `cv-entry.org` | CV summary, skills stack, compact bullets |
 | `career-next-steps.org` | Market context, must-have filters, red flags |
 
 If any file is missing, proceed with what is available and note the gap.
@@ -37,7 +37,7 @@ Confirm with the user before proceeding.
 
 Run 4–6 parallel `web_search` calls covering:
 
-1. **Tier 1 targets** — Search the user's Tier 1 companies from `target-companies-2026.org` for open roles matching the criteria. Example queries:
+1. **Tier 1 targets** — Search the user's Tier 1 companies from `target-companies.org` for open roles matching the criteria. Example queries:
    - `"<company>" "senior backend engineer" Germany remote 2026`
    - `site:greenhouse.io OR site:jobs.ashbyhq.com OR site:workable.com "<company>" backend engineer remote Germany`
 
@@ -118,8 +118,8 @@ After delivering the report, ask the user:
 
 > "Want me to tailor your CV and draft a cover letter for any of these? Paste the job description and I'll customize using your work-history doc."
 
-If the user provides a JD, read `career-work-history.org` and `career-star-stories.org` from ~/org/career/, then:
+If the user provides a JD, read `work-history.org` and `star-stories.org` from ~/org/career/, then:
 
 1. Rewrite the CV entry bullets to match the JD's stated needs.
 2. Draft a cover letter connecting specific job requirements to specific past wins.
-3. Suggest 2–3 STAR stories from `career-star-stories.org` that fit the role.
+3. Suggest 2–3 STAR stories from `star-stories.org` that fit the role.

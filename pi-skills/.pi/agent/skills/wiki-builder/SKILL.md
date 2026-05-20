@@ -5,6 +5,17 @@ description: Build and maintain a personal LLM-readable wiki from agent session 
 
 # Build a Personal LLM Wiki from Agent Sessions
 
+## Scripts
+
+All scripts live in `scripts/` alongside this file. Replace `<skill-dir>` with the absolute path to this skill's directory, and `<wiki-root>` with the wiki path (default `~/org/wiki`).
+
+| Script | Purpose | When to use |
+|---|---|---|
+| `scaffold.py <slug> <title> [tags]` | Create blank page with frontmatter | Start of Step 4 |
+| `find-related.py <keyword> [...]` | Find pages by keyword, output slugs | Steps 3 & 6 |
+| `reindex.py` | Regenerate index.md | After every page write/update |
+| `validate.py` | Check all pages against checklist | End of every session |
+
 Extract durable knowledge from a session (research findings, tool comparisons, design decisions, learned patterns, debugging conclusions) and save it as atomic markdown pages in a wiki. The wiki is the **persistent layer** above ephemeral agent chats — small enough to grep, structured enough to feed back into LLM context.
 
 ## Core principles
@@ -55,9 +66,10 @@ For each concept, decide a **slug**: kebab-case, descriptive, stable. The slug i
 Before writing anything new:
 
 ```bash
-ls <wiki-root>/*.md
-rg -l "<concept-keyword>" <wiki-root>/
+python3 <skill-dir>/scripts/find-related.py <concept-keyword> [keyword2] --wiki <wiki-root>
 ```
+
+This returns matching slugs, titles, tags, and matched lines — ready to paste into `related:` fields. Fall back to `rg -l` for raw text search if needed.
 
 For each atomic concept:
 - **Existing page on same topic** → update mode (Step 5)
@@ -68,7 +80,13 @@ Also scan for pages that should now link **to** the new page, and update them in
 
 ## Step 4: Write a new page
 
-Create `<wiki-root>/<slug>.md` using this template:
+Scaffold the file first, then fill it in:
+
+```bash
+python3 <skill-dir>/scripts/scaffold.py <slug> "<Title>" tag1,tag2 --wiki <wiki-root>
+```
+
+This writes the page with correct frontmatter and today's dates. Then fill in the body. Template:
 
 ```markdown
 ---
@@ -142,40 +160,18 @@ After writing or updating pages, update bidirectional links:
 - For each new page, scan existing pages for natural backlinks and add them.
 
 ```bash
-# Find pages that mention the new concept by keyword
-rg -l "<keyword>" <wiki-root>/*.md
+python3 <skill-dir>/scripts/find-related.py <slug-keyword> --wiki <wiki-root>
 ```
 
 Update only pages where the link is genuinely useful — don't link-spam.
 
 ## Step 7: Regenerate the index
 
-Rewrite `<wiki-root>/index.md` so the wiki has one canonical, LLM-readable table of contents.
-
-Format:
-
-```markdown
-# Wiki Index
-
-Last updated: YYYY-MM-DD · <N> pages
-
-## By tag
-
-### ai-coding
-- [Parallel Coding Agents](parallel-coding-agents.md) — embracing the parallel agent lifestyle
-- [Tmux Workflow for Agents](tmux-workflow-for-agents.md) — tmux + worktrees for parallel sessions
-
-### workflow
-- ...
-
-## All pages (alphabetical)
-
-- [Git Worktrees](git-worktrees.md)
-- [Parallel Coding Agents](parallel-coding-agents.md)
-- ...
+```bash
+python3 <skill-dir>/scripts/reindex.py <wiki-root>
 ```
 
-Build it by reading frontmatter from every `<wiki-root>/*.md` (excluding `README.md` and `index.md` itself). The one-line description after the `—` is the page's lead line (the `>` blockquote under the title).
+Reads all `*.md` frontmatter and lead lines, writes `index.md` grouped by tag then alphabetically. Always run this after any page is created or updated.
 
 ## Step 8: Seed README.md (first-time only)
 
@@ -231,11 +227,18 @@ Index regenerated (12 pages total).
 
 ## Validation
 
-Before finishing, verify:
+```bash
+python3 <skill-dir>/scripts/validate.py <wiki-root>
+```
 
-- [ ] Every new/updated page has all required frontmatter fields
-- [ ] `created` and `updated` are valid ISO dates (YYYY-MM-DD)
-- [ ] Every page has at least one entry in `sources:`
-- [ ] Every `related:` slug points to a file that exists
-- [ ] `index.md` lists every `.md` page (except `README.md` and `index.md`)
-- [ ] No two pages cover the same atomic concept (would-be duplicates were merged)
+Checks all pages for:
+- Required frontmatter fields (title, slug, tags, created, updated, sources)
+- Valid ISO dates
+- At least one source
+- All `related:` slugs resolve to existing files
+- Index coverage (warns on unlisted pages)
+- Mega-pages (>400 lines)
+
+Exits 0 if clean. Fix any errors before reporting done.
+
+Still check manually: no two pages cover the same atomic concept (would-be duplicates were merged).
