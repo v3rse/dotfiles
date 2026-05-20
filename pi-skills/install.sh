@@ -27,6 +27,5 @@ link_skills() {
 
 link_skills "$HOME/.agents/skills"
 link_skills "$HOME/.claude/skills"
-link_skills "$HOME/.gemini/skills"
 
-echo "==> Done. Skills available in ~/.pi/agent/skills/, ~/.agents/skills/, ~/.claude/skills/, ~/.gemini/skills/"
+echo "==> Done. Skills available in ~/.pi/agent/skills/, ~/.agents/skills/ (+ Gemini alias), ~/.claude/skills/"
