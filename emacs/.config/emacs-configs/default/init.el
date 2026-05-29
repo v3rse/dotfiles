@@ -802,18 +802,15 @@ ITEM is expected to be a string with the 'org-marker text property."
 (use-package mise
   :if (not (eq system-type 'darwin))
   :ensure t
-  :hook (after-init . global-mise-mode))
+  :init
+  (global-mise-mode 1))
 
 (use-package eglot
   :ensure nil
   :custom
-  (eglot-sync-connect 0) ; async do not block
-  (eglot-autoshutdown t) ; shutdown after closing last managed buffer
-  (eglot-report-progress nil) ; disable messages
-  ;; (eglot-server-programs
-  ;;   `((;; Append your custom mapping to the existing list
-  ;; 	(lua-ts-mode . ("lua-language-server"))
-  ;; 	,@eglot-server-programs))
+  (eglot-sync-connect 0)
+  (eglot-autoshutdown t)
+  (eglot-report-progress nil)
   :hook
   ((prog-mode . eglot-ensure)
    (eglot-managed-mode . eldoc-mode)
@@ -877,10 +874,14 @@ ITEM is expected to be a string with the 'org-marker text property."
 (use-package treesit-auto
   :after emacs
   :custom
-  (treesit-auto-install 'prompt)
+  (treesit-auto-install t)
   :config
   (setq treesit-auto-langs (remove 'markdown treesit-auto-langs))
   (treesit-auto-add-to-auto-mode-alist 'all)
+  ;; Auto-install every missing language grammar on startup
+  (dolist (lang treesit-auto-langs)
+    (unless (treesit-language-available-p lang)
+      (ignore-errors (treesit-install-language-grammar lang))))
   (setq auto-mode-alist
         (seq-remove (lambda (entry)
                       (memq (cdr entry) '(markdown-ts-mode markdown-ts-mode-maybe)))
@@ -942,6 +943,9 @@ ITEM is expected to be a string with the 'org-marker text property."
 
 (use-package nix-ts-mode
   :mode "\\.nix\\'")
+
+(use-package zig-ts-mode
+  :mode "\\.zig\\'")
 
 (use-package kotlin-ts-mode)
 
