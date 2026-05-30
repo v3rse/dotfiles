@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{title}}</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css" id="hljs-light-theme">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" id="hljs-dark-theme" disabled>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+<style>
+:root {
+    --ivory: #FAF9F5; --paper: #FFFFFF; --slate: #141413;
+    --clay: #D97757; --clay-d: #B85C3E; --olive: #788C5D; --gold: #C4A43E;
+    --g100: #F0EEE6; --g200: #E6E3DA; --g300: #D1CFC5; --g500: #87867F; --g700: #3D3D3A;
+    --serif: ui-serif, Georgia, "Times New Roman", Times, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+    --bg: var(--ivory); --text: var(--slate); --header-text: var(--slate);
+    --border: var(--g300); --shadow: 0 8px 24px rgba(20,20,19,0.06);
+    --risk-high: var(--clay); --risk-med: #C4A43E; --risk-low: var(--olive);
+}
+[data-theme="dark"] {
+    --bg: #141413; --text: #F0EEE6; --header-text: #F0EEE6;
+    --paper: #1e1e1c; --border: #3D3D3A;
+    --g100: #1e1e1c; --g200: #2a2a28; --g300: #3D3D3A;
+    --g500: #87867F; --g700: #D1CFC5; --slate: #F0EEE6;
+    --shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg: #141413; --text: #F0EEE6; --header-text: #F0EEE6;
+        --paper: #1e1e1c; --border: #3D3D3A;
+        --g100: #1e1e1c; --g200: #2a2a28; --g300: #3D3D3A;
+        --g500: #87867F; --g700: #D1CFC5; --slate: #F0EEE6;
+        --shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+}
+
+* { box-sizing: border-box; }
+body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--sans); line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    padding: 0 0 6rem;
+}
+.wrap { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+
+/* Top bar */
+.top-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 0; flex-wrap: wrap; gap: 12px;
+}
+.gallery-link {
+    font-family: var(--mono); font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--clay); text-decoration: none; font-weight: 600;
+}
+.gallery-link:hover { color: var(--clay-d); } .gallery-link::before { content: "← "; }
+.theme-toggle {
+    font-family: var(--mono); font-size: 11px; color: var(--g500);
+    cursor: pointer; background: none; border: none; padding: 0;
+    display: flex; align-items: center; gap: 6px;
+}
+.theme-toggle:hover { color: var(--clay); }
+.theme-toggle .icon { font-size: 12px; }
+
+/* Header */
+.subtitle {
+    font-family: var(--mono); font-size: 12px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--g500); margin-bottom: 6px;
+}
+h1 {
+    font-family: var(--serif); font-weight: 500;
+    font-size: clamp(28px, 4.5vw, 44px);
+    line-height: 1.12; letter-spacing: -0.02em;
+    margin: 0 0 6px; color: var(--header-text);
+}
+.meta-row {
+    display: flex; flex-wrap: wrap; gap: 16px;
+    margin-bottom: 28px;
+    font-family: var(--mono); font-size: 11px; color: var(--g500);
+    letter-spacing: 0.04em;
+}
+.meta-row .severity {
+    padding: 2px 8px; border-radius: 4px; font-weight: 700;
+}
+.severity.SEV-1 { background: var(--clay); color: #fff; }
+.severity.SEV-2 { background: var(--gold); color: var(--slate); }
+.severity.SEV-3 { background: var(--olive); color: #fff; }
+
+/* TL;DR */
+.tldr {
+    background: var(--paper); border: 1.5px solid var(--slate);
+    border-left: 4px solid var(--clay); border-radius: 10px;
+    padding: 20px 24px; margin-bottom: 32px;
+    box-shadow: var(--shadow);
+}
+.tldr h4 {
+    font-family: var(--mono); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--clay); margin: 0 0 10px;
+}
+.tldr p { font-size: 14.5px; color: var(--g700); margin: 0; line-height: 1.65; }
+
+/* Highlights (status) */
+.highlights {
+    margin-bottom: 40px;
+}
+.highlights h2 {
+    font-family: var(--serif); font-size: 20px; font-weight: 500;
+    margin: 0 0 16px; color: var(--header-text);
+    display: flex; align-items: baseline; gap: 10px;
+}
+.highlights h2::before { content: "•"; color: var(--clay); }
+.highlights ul {
+    list-style: none; padding: 0; margin: 0;
+}
+.highlights li {
+    padding: 10px 0; border-bottom: 1px solid var(--g100);
+    font-size: 15px; line-height: 1.6;
+}
+.highlights li strong { color: var(--text); }
+
+/* Timeline */
+.timeline-section { margin-bottom: 40px; }
+.timeline-section h2 {
+    font-family: var(--serif); font-size: 20px; font-weight: 500;
+    margin: 0 0 20px; color: var(--header-text);
+    display: flex; align-items: baseline; gap: 10px;
+}
+.timeline-section h2::before { content: "•"; color: var(--clay); }
+.tl-event {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 10px 0; position: relative;
+}
+.tl-event::before {
+    content: ""; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--g300); flex-shrink: 0; margin-top: 6px;
+}
+.tl-event.detected::before { background: var(--clay); }
+.tl-event.mitigated::before { background: var(--olive); }
+.tl-event .tl-time {
+    font-family: var(--mono); font-size: 12px; color: var(--g500);
+    min-width: 60px; padding-top: 2px; font-weight: 600;
+}
+.tl-event .tl-body { font-size: 14px; color: var(--g700); line-height: 1.6; }
+.tl-event .tl-body strong { color: var(--text); }
+
+/* Shipped table */
+.shipped-section { margin-bottom: 40px; }
+.shipped-section h2 {
+    font-family: var(--serif); font-size: 20px; font-weight: 500;
+    margin: 0 0 16px; color: var(--header-text);
+    display: flex; align-items: baseline; gap: 10px;
+}
+.shipped-section h2::before { content: "•"; color: var(--clay); }
+.data-table {
+    width: 100%; border-collapse: collapse; font-size: 14px;
+}
+.data-table th {
+    text-align: left; padding: 10px 14px;
+    border-bottom: 2px solid var(--slate);
+    font-family: var(--mono); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.05em; color: var(--g500);
+}
+.data-table td {
+    padding: 10px 14px; border-bottom: 1.5px solid var(--border);
+    line-height: 1.55;
+}
+.data-table tr:hover td { background: var(--g100); }
+.data-table .risk-High { color: var(--risk-high); font-weight: 700; }
+.data-table .risk-Med { color: var(--risk-med); font-weight: 600; }
+.data-table .risk-Low { color: var(--risk-low); font-weight: 600; }
+
+/* Chart */
+.chart-section { margin-bottom: 40px; }
+.chart-section h2 {
+    font-family: var(--serif); font-size: 20px; font-weight: 500;
+    margin: 0 0 16px; color: var(--header-text);
+    display: flex; align-items: baseline; gap: 10px;
+}
+.chart-section h2::before { content: "•"; color: var(--clay); }
+.bar-chart {
+    display: flex; align-items: flex-end; gap: 12px;
+    height: 160px; padding: 8px 0; margin-bottom: 8px;
+}
+.bar-chart .bar {
+    flex: 1; min-width: 24px; max-width: 60px;
+    background: var(--clay); border-radius: 6px 6px 0 0;
+    transition: height 0.6s ease;
+    position: relative;
+}
+.bar-chart .bar .bar-val {
+    position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+    font-family: var(--mono); font-size: 10px; color: var(--g500);
+}
+.bar-chart .bar .bar-label {
+    position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+    font-family: var(--mono); font-size: 10px; color: var(--g500);
+    white-space: nowrap;
+}
+
+/* Impact stats */
+.impact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px; margin-bottom: 40px;
+}
+.impact-card {
+    background: var(--paper); border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 20px; text-align: center;
+}
+.impact-card .impact-val {
+    font-family: var(--serif); font-size: 32px; font-weight: 500;
+    color: var(--text); line-height: 1.1;
+}
+.impact-card .impact-label {
+    font-family: var(--mono); font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--g500); margin-top: 6px;
+}
+
+/* Action items */
+.action-section { margin-bottom: 40px; }
+.action-section h2 {
+    font-family: var(--serif); font-size: 20px; font-weight: 500;
+    margin: 0 0 16px; color: var(--header-text);
+    display: flex; align-items: baseline; gap: 10px;
+}
+.action-section h2::before { content: "•"; color: var(--clay); }
+
+/* Root cause / code block */
+.root-cause {
+    margin-bottom: 40px;
+}
+.root-cause h2 {
+    font-family: var(--serif); font-size: 20px; font-weight: 500;
+    margin: 0 0 16px; color: var(--header-text);
+    display: flex; align-items: baseline; gap: 10px;
+}
+.root-cause h2::before { content: "•"; color: var(--clay); }
+pre {
+    background: var(--g200);
+    padding: 24px; border-radius: 12px;
+    overflow-x: auto; border: 1.5px solid var(--border);
+    font-size: 13.5px; line-height: 1.6;
+    margin: 2rem 0; position: relative;
+    font-family: var(--mono); color: var(--text);
+}
+pre code { font-family: var(--mono); color: var(--text); }
+[data-theme="dark"] pre code.hljs { background: var(--g200); }
+pre .copy-btn {
+    position: absolute; top: 8px; right: 8px;
+    font-family: var(--mono); font-size: 10px;
+    background: var(--paper); border: 1px solid var(--border);
+    border-radius: 6px; padding: 4px 10px;
+    cursor: pointer; color: var(--g500);
+    opacity: 0; transition: opacity 150ms ease;
+}
+pre:hover .copy-btn { opacity: 1; }
+pre .copy-btn:hover { color: var(--clay); border-color: var(--clay); }
+
+/* Mermaid */
+.mermaid-container {
+    position: relative; margin: 4rem 0;
+    background: var(--paper); border-radius: 14px;
+    border: 1.5px solid var(--border); overflow: hidden;
+    height: 500px;
+}
+.mermaid-controls {
+    position: absolute; top: 1rem; right: 1rem;
+    display: flex; gap: 0.5rem; z-index: 10;
+}
+.mermaid-btn {
+    background: var(--bg); border: 1.5px solid var(--border);
+    padding: 4px 10px; border-radius: 6px;
+    cursor: pointer; font-size: 12px; color: var(--g500);
+    font-family: var(--sans);
+}
+.mermaid-btn:hover { border-color: var(--clay); color: var(--clay); }
+.mermaid {
+    height: 100%; width: 100%;
+    display: flex; justify-content: center; align-items: center;
+}
+
+/* Generic content */
+h2 { font-family: var(--serif); font-size: 20px; font-weight: 500; margin: 24px 0 12px; color: var(--header-text); }
+h3 { font-family: var(--serif); font-size: 17px; font-weight: 500; margin: 18px 0 8px; color: var(--header-text); }
+p { font-size: 14.5px; color: var(--g700); line-height: 1.65; margin: 0 0 14px; }
+ul, ol { font-size: 14.5px; color: var(--g700); line-height: 1.65; padding-left: 22px; }
+li { margin-bottom: 4px; }
+table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+th { text-align: left; padding: 10px 14px; border-bottom: 2px solid var(--slate); }
+td { padding: 10px 14px; border-bottom: 1.5px solid var(--border); }
+tr:hover td { background: var(--g100); }
+
+@media (max-width: 768px) {
+    .impact-grid { grid-template-columns: repeat(2, 1fr); }
+    .bar-chart { height: 120px; }
+}
+@media print {
+    .top-bar, .theme-toggle, .gallery-link { display: none !important; }
+    body { background: #fff; color: #000; padding: 0; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div class="top-bar">
+        <a href="index.html" class="gallery-link">Gallery</a>
+        <button class="theme-toggle" id="theme-toggle"><span class="icon" id="theme-icon">◐</span> Theme</button>
+    </div>
+
+    <header>
+        <div class="subtitle">{{subtitle}}</div>
+        <h1>{{title}}</h1>
+        <div class="meta-row" id="meta-row"></div>
+    </header>
+
+    <div id="tldr-section"></div>
+    <div id="highlights-section"></div>
+    <div id="timeline-section"></div>
+    <div id="impact-section"></div>
+    <div id="shipped-section"></div>
+    <div id="chart-section"></div>
+    <div id="root-cause-section"></div>
+    <div id="action-section"></div>
+    <div id="content-section"></div>
+</div>
+
+<script>
+const rawContent = `{{content}}`;
+const contentDiv = document.createElement('div');
+contentDiv.innerHTML = marked.parse(rawContent);
+
+// Detect report type
+const headings = Array.from(contentDiv.querySelectorAll('h2, h3'));
+const headingTexts = headings.map(h => h.textContent.toLowerCase());
+const isIncident = headingTexts.some(t => /incident|sev|outage|post-?mortem|root cause|timeline/i.test(t));
+const isStatus = headingTexts.some(t => /shipped|highlight|velocity|carryover|status|weekly/i.test(t));
+
+// Meta row
+const metaTable = contentDiv.querySelector('table');
+if (metaTable && metaTable.querySelectorAll('tr').length <= 5) {
+    const cells = metaTable.querySelectorAll('td');
+    if (cells.length >= 4 && cells.length <= 12) {
+        const items = [];
+        metaTable.querySelectorAll('tr').forEach(row => {
+            const tds = row.querySelectorAll('td');
+            if (tds.length === 2) {
+                items.push(tds[0].textContent.trim() + ' <strong>' + tds[1].textContent.trim() + '</strong>');
+            }
+        });
+        if (items.length > 0) {
+            document.getElementById('meta-row').innerHTML = items.join(' · ');
+            if (metaTable.closest('div') === contentDiv || metaTable.parentElement === contentDiv) {
+                metaTable.remove();
+            }
+        }
+    }
+}
+
+// TL;DR
+const tldrHeading = headings.find(h => /tldr|summary|overview/i.test(h.textContent));
+if (tldrHeading) {
+    let next = tldrHeading.nextElementSibling;
+    let html = '';
+    while (next && !['H2','H3'].includes(next.tagName)) {
+        html += next.outerHTML;
+        next = next.nextElementSibling;
+    }
+    if (html) {
+        document.getElementById('tldr-section').innerHTML = '<div class="tldr"><h4>TL;DR</h4>' + html + '</div>';
+    }
+}
+
+// Highlights (status report)
+const highlightsHeading = headings.find(h => /highlight|top|key/i.test(h.textContent));
+if (highlightsHeading && isStatus) {
+    let next = highlightsHeading.nextElementSibling;
+    let html = '';
+    while (next && !['H2','H3'].includes(next.tagName)) {
+        html += next.outerHTML;
+        next = next.nextElementSibling;
+    }
+    if (html) {
+        document.getElementById('highlights-section').innerHTML = '<div class="highlights"><h2>Highlights</h2>' + html + '</div>';
+    }
+}
+
+// Timeline (incident report)
+const timelineHeading = headings.find(h => /timeline|sequence|chronology/i.test(h.textContent));
+if ((isIncident || timelineHeading) && timelineHeading) {
+    let next = timelineHeading.nextElementSibling;
+    const events = [];
+    while (next && !['H2','H3'].includes(next.tagName)) {
+        if (next.tagName === 'P' || next.tagName === 'DIV') {
+            const text = next.textContent.trim();
+            const timeMatch = text.match(/(\d{2}:\d{2})/);
+            if (timeMatch) {
+                const time = timeMatch[1];
+                const body = text.replace(timeMatch[0], '').replace(/^[-–—:\s]+/, '');
+                const classes = body.toLowerCase().includes('mitigat') || body.toLowerCase().includes('resolv') || body.toLowerCase().includes('green') ? 'mitigated' :
+                    body.toLowerCase().includes('detect') || body.toLowerCase().includes('impact') || body.toLowerCase().includes('alert') || body.toLowerCase().includes('start') ? 'detected' : '';
+                events.push({ time, body, classes });
+            }
+        }
+        next = next.nextElementSibling;
+    }
+    if (events.length > 0) {
+        document.getElementById('timeline-section').innerHTML = '<div class="timeline-section"><h2>Timeline</h2>' +
+            events.map(e => '<div class="tl-event'+(e.classes?' '+e.classes:'')+'"><span class="tl-time">'+e.time+'</span><span class="tl-body">'+e.body+'</span></div>').join('') +
+            '</div>';
+    }
+}
+
+// Impact stats (incident)
+const impactHeading = headings.find(h => /impact|metrics|damage/i.test(h.textContent));
+if (impactHeading && isIncident) {
+    let next = impactHeading.nextElementSibling;
+    const stats = [];
+    while (next && !['H2','H3'].includes(next.tagName)) {
+        const text = next.textContent.trim();
+        const numMatch = text.match(/([\d,.]+[%]?)\s*[-–—]\s*(.+)/);
+        if (numMatch) {
+            stats.push({ val: numMatch[1], label: numMatch[2] });
+        } else {
+            const kvMatch = text.match(/(.+?)[:]\s*(.+)/);
+            if (kvMatch && /\d/.test(kvMatch[2])) {
+                stats.push({ val: kvMatch[2].trim(), label: kvMatch[1].trim() });
+            }
+        }
+        next = next.nextElementSibling;
+    }
+    if (stats.length > 0) {
+        document.getElementById('impact-section').innerHTML = '<div class="impact-grid">' +
+            stats.map(s => '<div class="impact-card"><div class="impact-val">'+s.val+'</div><div class="impact-label">'+s.label+'</div></div>').join('') +
+            '</div>';
+    }
+}
+
+// Shipped table (status)
+const shippedHeading = headings.find(h => /shipped|completed|delivered|merged/i.test(h.textContent));
+if (shippedHeading && isStatus) {
+    let next = shippedHeading.nextElementSibling;
+    let html = '';
+    while (next && !['H2','H3'].includes(next.tagName)) {
+        html += next.outerHTML;
+        next = next.nextElementSibling;
+    }
+    if (html) {
+        document.getElementById('shipped-section').innerHTML = '<div class="shipped-section"><h2>' + shippedHeading.textContent + '</h2>' + html + '</div>';
+    }
+}
+
+// Chart (status)
+const velocityHeading = headings.find(h => /velocity|chart|graph|trend/i.test(h.textContent));
+if (velocityHeading) {
+    let next = velocityHeading.nextElementSibling;
+    let values = [];
+    let labels = [];
+    while (next && !['H2','H3'].includes(next.tagName)) {
+        const text = next.textContent.trim();
+        // Try to parse "day value" or "label: value" pairs
+        const pairs = text.match(/(\w+)\s+(\d+)/g);
+        if (pairs) {
+            pairs.forEach(p => {
+                const [label, val] = p.split(/\s+/);
+                labels.push(label);
+                values.push(parseInt(val));
+            });
+        }
+        next = next.nextElementSibling;
+    }
+    if (values.length > 0) {
+        const maxVal = Math.max(...values);
+        document.getElementById('chart-section').innerHTML = '<div class="chart-section"><h2>Velocity</h2>' +
+            '<div class="bar-chart">' +
+            values.map((v, i) => '<div class="bar" style="height:' + (v/maxVal*100) + '%"><span class="bar-val">'+v+'</span><span class="bar-label">'+labels[i]+'</span></div>').join('') +
+            '</div><p style="font-size:12px;color:var(--g500);font-family:var(--mono)">' + velocityHeading.nextElementSibling?.textContent?.trim() + '</p></div>';
+    }
+}
+
+// Root cause (incident)
+const rootCauseHeading = headings.find(h => /root cause|analysis|why/i.test(h.textContent));
+if (rootCauseHeading) {
+    let next = rootCauseHeading.nextElementSibling;
+    let html = '';
+    while (next && !['H2','H3'].includes(next.tagName)) {
+        html += next.outerHTML;
+        next = next.nextElementSibling;
+    }
+    if (html) {
+        document.getElementById('root-cause-section').innerHTML = '<div class="root-cause"><h2>' + rootCauseHeading.textContent + '</h2>' + html + '</div>';
+    }
+}
+
+// Action items
+const actionHeading = headings.find(h => /action|follow.?up|remediation|next step/i.test(h.textContent));
+if (actionHeading) {
+    let next = actionHeading.nextElementSibling;
+    let html = '';
+    while (next && !['H2','H3'].includes(next.tagName)) {
+        html += next.outerHTML;
+        next = next.nextElementSibling;
+    }
+    if (html) {
+        document.getElementById('action-section').innerHTML = '<div class="action-section"><h2>' + actionHeading.textContent + '</h2>' + html + '</div>';
+    }
+}
+
+// Anything remaining — move to DOM FIRST so mermaid/copy-target queries hit the live document
+document.getElementById('content-section').innerHTML = contentDiv.innerHTML;
+const contentSection = document.getElementById('content-section');
+
+// Mermaid preprocessing (on live DOM)
+contentSection.querySelectorAll('pre code.language-mermaid').forEach((codeBlock, idx) => {
+    const pre = codeBlock.parentElement;
+    const diagram = codeBlock.textContent;
+    const container = document.createElement('div');
+    container.className = 'mermaid-container';
+    const controls = document.createElement('div');
+    controls.className = 'mermaid-controls';
+    controls.innerHTML = '<button class="mermaid-btn" data-idx="'+idx+'">Reset</button><button class="mermaid-btn" data-idx="'+idx+'">Fit</button>';
+    const mermaidDiv = document.createElement('div');
+    mermaidDiv.className = 'mermaid';
+    mermaidDiv.id = 'mermaid-' + idx;
+    mermaidDiv.textContent = diagram;
+    mermaidDiv.dataset.diagram = diagram;
+    container.appendChild(controls);
+    container.appendChild(mermaidDiv);
+    pre.replaceWith(container);
+});
+
+// Add copy buttons to code blocks (on live DOM)
+contentSection.querySelectorAll('pre:not(.mermaid-container pre)').forEach(pre => {
+    if (pre.querySelector('.copy-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.onclick = () => {
+        navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 1500);
+        });
+    };
+    pre.appendChild(btn);
+});
+
+// Mermaid rendering (reusable — called on load and on theme change)
+const zoomInstances = {};
+const renderMermaidDiagrams = (theme) => {
+    document.querySelectorAll('.mermaid').forEach(div => {
+        div.textContent = div.dataset.diagram || '';
+        div.removeAttribute('data-processed');
+    });
+    Object.values(zoomInstances).forEach(z => { try { z.destroy(); } catch(e) {} });
+    for (const k in zoomInstances) delete zoomInstances[k];
+
+    mermaid.initialize({ startOnLoad: false, theme: theme || 'neutral' });
+    return mermaid.run({ querySelector: '.mermaid' }).then(() => {
+        document.querySelectorAll('.mermaid svg').forEach((svg, idx) => {
+            svg.style.height = '100%'; svg.style.width = '100%';
+            zoomInstances[idx] = svgPanZoom(svg, {
+                zoomEnabled: true, controlIconsEnabled: false,
+                fit: true, center: true, minZoom: 0.1, maxZoom: 10
+            });
+        });
+    });
+};
+
+renderMermaidDiagrams('neutral');
+
+// Mermaid controls
+document.querySelectorAll('.mermaid-btn').forEach(btn => {
+    btn.onclick = () => {
+        const idx = parseInt(btn.dataset.idx);
+        if (!zoomInstances[idx]) return;
+        if (btn.textContent === 'Reset') { zoomInstances[idx].resetZoom(); zoomInstances[idx].center(); }
+        if (btn.textContent === 'Fit') { zoomInstances[idx].fit(); zoomInstances[idx].center(); }
+    };
+});
+
+// Syntax highlighting
+hljs.highlightAll();
+
+// Highlight.js theme switching
+const hljsLight = document.getElementById('hljs-light-theme');
+const hljsDark = document.getElementById('hljs-dark-theme');
+const setHljsTheme = t => {
+    if (t === 'dark') { hljsLight.disabled = true; hljsDark.disabled = false; }
+    else { hljsLight.disabled = false; hljsDark.disabled = true; }
+};
+
+// Theme
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
+const getTheme = () => localStorage.getItem('theme') || 'auto';
+const applyTheme = t => {
+    document.documentElement.removeAttribute('data-theme');
+    const isDark = t === 'dark' || (t === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (isDark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        setHljsTheme('dark');
+        renderMermaidDiagrams('dark');
+    } else {
+        if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+        setHljsTheme('light');
+        renderMermaidDiagrams('neutral');
+    }
+    themeIcon.textContent = isDark ? '◑' : '◐';
+};
+applyTheme(getTheme());
+themeToggle.onclick = () => {
+    const c = getTheme();
+    const n = c === 'auto' ? 'dark' : c === 'dark' ? 'light' : 'auto';
+    localStorage.setItem('theme', n);
+    applyTheme(n);
+};
+
+document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 't' && !e.ctrlKey && !e.metaKey) themeToggle.click();
+});
+</script>
+</body>
+</html>

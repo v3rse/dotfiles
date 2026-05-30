@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{title}}</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css" id="hljs-light-theme">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" id="hljs-dark-theme" disabled>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+<style>
+:root {
+    --ivory: #FAF9F5; --paper: #FFFFFF; --slate: #141413;
+    --clay: #D97757; --clay-d: #B85C3E;
+    --olive: #788C5D; --gold: #C4A43E;
+    --g100: #F0EEE6; --g200: #E6E3DA; --g300: #D1CFC5; --g500: #87867F; --g700: #3D3D3A;
+    --serif: ui-serif, Georgia, "Times New Roman", Times, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+    --bg: var(--ivory); --text: var(--slate);
+    --border: var(--g300); --shadow: 0 12px 32px rgba(20,20,19,0.08);
+}
+[data-theme="dark"] {
+    --bg: #141413; --text: #F0EEE6;
+    --paper: #1e1e1c; --border: #3D3D3A;
+    --g100: #1e1e1c; --g200: #2a2a28; --g300: #3D3D3A;
+    --g500: #87867F; --g700: #D1CFC5; --slate: #F0EEE6;
+    --shadow: 0 12px 32px rgba(0,0,0,0.3);
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg: #141413; --text: #F0EEE6;
+        --paper: #1e1e1c; --border: #3D3D3A;
+        --g100: #1e1e1c; --g200: #2a2a28; --g300: #3D3D3A;
+        --g500: #87867F; --g700: #D1CFC5; --slate: #F0EEE6;
+        --shadow: 0 12px 32px rgba(0,0,0,0.3);
+    }
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased;padding:3rem 2rem 6rem}
+.wrap{max-width:1300px;margin:0 auto}
+
+/* Header */
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+.gallery-link{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--clay);text-decoration:none;font-weight:600}
+.gallery-link:hover{color:var(--clay-d)} .gallery-link::before{content:"← "}
+.theme-toggle{font-family:var(--mono);font-size:11px;color:var(--g500);cursor:pointer;background:none;border:none;padding:0;display:flex;align-items:center;gap:6px}
+.theme-toggle:hover{color:var(--clay)}
+.theme-toggle .icon{width:16px;height:16px;border:1.5px solid var(--g500);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px}
+
+.subtitle{font-family:var(--mono);font-size:12px;color:var(--g500);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem}
+h1{font-family:var(--serif);font-weight:500;font-size:clamp(28px,4.5vw,48px);line-height:1.1;letter-spacing:-0.02em;margin:0 0 1.5rem;color:var(--text)}
+.intro{font-size:16px;color:var(--g700);max-width:720px;margin-bottom:3rem;line-height:1.65}
+
+/* Tier labels */
+.tier-nav{display:flex;gap:8px;margin-bottom:2.5rem;flex-wrap:wrap}
+.tier-btn{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:6px 14px;border-radius:8px;border:1.5px solid var(--border);background:var(--paper);color:var(--g500);cursor:pointer;font-weight:600;transition:all 150ms ease}
+.tier-btn:hover{border-color:var(--slate);color:var(--slate)}
+.tier-btn.active{background:var(--slate);color:var(--bg);border-color:var(--slate)}
+.tier-btn .count{opacity:0.6;margin-left:4px;font-size:10px}
+
+/* Comparison grid */
+.compare-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:24px;margin-bottom:4rem}
+.compare-card{background:var(--paper);border:1.5px solid var(--border);border-radius:14px;padding:28px;transition:all 150ms ease;display:flex;flex-direction:column;position:relative}
+.compare-card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--slate)}
+.compare-card.featured{border-color:var(--clay);border-width:2px}
+.compare-card.hidden{display:none}
+.compare-card .rank{position:absolute;top:-12px;right:16px;font-family:var(--mono);font-size:10px;font-weight:700;background:var(--clay);color:#fff;padding:3px 8px;border-radius:6px;letter-spacing:0.05em}
+.compare-card h3{font-family:var(--serif);font-size:22px;font-weight:500;margin:0 0 6px;color:var(--text);line-height:1.25;padding-right:50px}
+.compare-card .source{font-family:var(--mono);font-size:11px;color:var(--g500);margin-bottom:14px}
+.compare-card .desc{font-size:14px;color:var(--g700);margin-bottom:16px;line-height:1.6;flex:1}
+.compare-card .meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.compare-card .meta-tag{font-family:var(--mono);font-size:10px;background:var(--g100);border:1px solid var(--border);border-radius:6px;padding:3px 10px;color:var(--g500);font-weight:600;letter-spacing:0.03em}
+.compare-card .meta-tag.highlight{background:var(--clay);color:#fff;border-color:var(--clay)}
+.compare-card .meta-tag.good{background:var(--olive);color:#fff;border-color:var(--olive)}
+.compare-card .score-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto;padding-top:18px;border-top:1px solid var(--g100)}
+.compare-card .score{text-align:center}
+.compare-card .score .val{font-family:var(--serif);font-size:24px;font-weight:500;display:block;line-height:1}
+.compare-card .score .label{font-family:var(--mono);font-size:9px;text-transform:uppercase;color:var(--g500);letter-spacing:0.05em;margin-top:4px;display:block}
+.compare-card .score.good .val{color:var(--olive)}
+.compare-card .score.warn .val{color:var(--clay)}
+.compare-card .cta{display:block;margin-top:16px;padding:10px 0;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--clay);text-decoration:none;font-weight:600;text-align:center;border:1.5px solid var(--clay);border-radius:8px;transition:all 150ms ease}
+.compare-card .cta:hover{background:var(--clay);color:#fff}
+
+/* Scorecard summary */
+.scorecard{background:var(--paper);border:2px solid var(--slate);border-radius:14px;padding:32px;margin-bottom:4rem;box-shadow:var(--shadow)}
+.scorecard h2{font-family:var(--serif);font-size:24px;font-weight:500;margin:0 0 20px}
+.scorecard table{width:100%;border-collapse:collapse;font-size:14px}
+.scorecard th{text-align:left;padding:10px 14px;border-bottom:2px solid var(--slate);font-weight:600;font-size:12px;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.05em;color:var(--g500)}
+.scorecard td{padding:10px 14px;border-bottom:1px solid var(--border)}
+.scorecard tr:last-child td{border-bottom:none}
+.scorecard tr:hover td{background:var(--g100)}
+.scorecard .winner{font-weight:700;color:var(--olive)}
+
+/* Code — distinct bg for contrast against page */
+pre {
+    background: var(--g200);
+    padding: 24px; border-radius: 12px;
+    overflow-x: auto; border: 1.5px solid var(--border);
+    font-size: 13.5px; line-height: 1.6;
+    margin: 2rem 0; position: relative;
+    font-family: var(--mono); color: var(--text);
+}
+pre code { font-family: var(--mono); color: var(--text); }
+[data-theme="dark"] pre code.hljs { background: var(--g200); }
+pre .copy-btn {
+    position: absolute; top: 8px; right: 8px;
+    font-family: var(--mono); font-size: 10px;
+    background: var(--paper); border: 1px solid var(--border);
+    border-radius: 6px; padding: 4px 10px;
+    cursor: pointer; color: var(--g500);
+    opacity: 0; transition: opacity 150ms ease;
+}
+pre:hover .copy-btn { opacity: 1; }
+pre .copy-btn:hover { color: var(--clay); border-color: var(--clay); }
+
+/* Mermaid */
+.mermaid-container {
+    position: relative; margin: 4rem 0;
+    background: var(--paper); border-radius: 14px;
+    border: 1.5px solid var(--border); overflow: hidden;
+    height: 500px;
+}
+.mermaid-controls {
+    position: absolute; top: 1rem; right: 1rem;
+    display: flex; gap: 0.5rem; z-index: 10;
+}
+.mermaid-btn {
+    background: var(--bg); border: 1.5px solid var(--border);
+    padding: 4px 10px; border-radius: 6px;
+    cursor: pointer; font-size: 12px; color: var(--g500);
+    font-family: var(--sans);
+}
+.mermaid-btn:hover { border-color: var(--clay); color: var(--clay); }
+.mermaid {
+    height: 100%; width: 100%;
+    display: flex; justify-content: center; align-items: center;
+}
+
+/* Recommendation */
+.recommendation{background:var(--paper);border:1.5px solid var(--olive);border-left:4px solid var(--olive);border-radius:10px;padding:24px 28px;margin-bottom:4rem}
+.recommendation h2{font-family:var(--serif);font-size:20px;font-weight:500;margin:0 0 10px;color:var(--olive)}
+.recommendation p{font-size:15px;color:var(--g700);margin:0;line-height:1.6}
+
+/* Sort controls */
+.sort-row{display:flex;gap:16px;align-items:center;margin-bottom:2rem;flex-wrap:wrap}
+.sort-row label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--g500)}
+.sort-row select{font-family:var(--sans);font-size:13px;padding:6px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--paper);color:var(--text);cursor:pointer}
+#result-count{font-family:var(--mono);font-size:11px;color:var(--g500);margin-left:auto}
+
+@media (max-width:768px){
+    body{padding:1.5rem 1rem}
+    .compare-grid{grid-template-columns:1fr}
+    .top-bar{flex-direction:column;align-items:flex-start}
+}
+@media print{
+    .tier-nav,.sort-row,.theme-toggle,.compare-card .cta,.gallery-link{display:none!important}
+    body{background:#fff;color:#000;padding:1rem}
+    .compare-card{border:1px solid #ccc;box-shadow:none;break-inside:avoid}
+    .compare-card.hidden{display:flex!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div class="top-bar">
+        <a href="index.html" class="gallery-link">Gallery</a>
+        <button class="theme-toggle" id="theme-toggle"><span class="icon" id="theme-icon">◐</span> Theme</button>
+    </div>
+    <div class="subtitle">{{subtitle}}</div>
+    <h1>{{title}}</h1>
+    <div class="intro" id="intro-text"></div>
+    <div id="filters"></div>
+    <div class="sort-row">
+        <label>Sort by</label>
+        <select id="sort-select">
+            <option value="rank">Rank</option>
+            <option value="title">Name</option>
+        </select>
+        <span id="result-count"></span>
+    </div>
+    <div class="compare-grid" id="compare-grid"></div>
+    <div id="summary-section"></div>
+    <div id="recommendation-section"></div>
+</div>
+
+<script>
+const rawContent = `{{content}}`;
+const contentDiv = document.createElement('div');
+contentDiv.innerHTML = marked.parse(rawContent);
+
+// Move first paragraph to intro
+const firstP = contentDiv.querySelector('p');
+if (firstP && firstP === contentDiv.firstElementChild) {
+    document.getElementById('intro-text').innerHTML = firstP.innerHTML;
+    firstP.remove();
+}
+
+// Parse cards: look for h3 + paragraph + table patterns
+// Each card is: <h3>Title</h3><p>Description</p><table>...</table>
+// Or: card divs with specific structure
+const cards = [];
+const headings = contentDiv.querySelectorAll('h2, h3');
+const compareGrid = document.getElementById('compare-grid');
+const summarySection = document.getElementById('summary-section');
+const recSection = document.getElementById('recommendation-section');
+
+// Strategy: group content into cards based on h3s, or use explicit .card divs
+const explicitCards = contentDiv.querySelectorAll('.card');
+if (explicitCards.length > 0) {
+    explicitCards.forEach((card, i) => {
+        const h = card.querySelector('h3');
+        const p = card.querySelector('p');
+        const title = h ? h.textContent : 'Option ' + (i+1);
+        const desc = p ? p.innerHTML : '';
+        const tags = [];
+        card.querySelectorAll('.badge').forEach(b => tags.push(b.textContent.trim()));
+
+        // Extract score-like data from tables
+        const scores = {};
+        card.querySelectorAll('table tr').forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length === 2) {
+                const key = cells[0].textContent.trim().toLowerCase();
+                const val = cells[1].textContent.trim();
+                if (key.includes('score') || key.includes('rating') || key.includes('match')) {
+                    scores[key] = val;
+                }
+            }
+        });
+
+        cards.push({ title, desc, tags, scores, el: card, featured: card.classList.contains('pane') });
+    });
+    explicitCards.forEach(c => c.remove());
+} else {
+    // Fallback: detect h3-based sections
+    contentDiv.querySelectorAll('h3').forEach((h, i) => {
+        let desc = '';
+        let sibling = h.nextElementSibling;
+        const tags = [];
+        while (sibling && sibling.tagName !== 'H3' && sibling.tagName !== 'H2') {
+            if (sibling.tagName === 'P') desc += sibling.outerHTML;
+            sibling.querySelectorAll('.badge').forEach(b => tags.push(b.textContent.trim()));
+            sibling = sibling.nextElementSibling;
+        }
+        cards.push({ title: h.textContent, desc, tags, scores: {}, el: null, featured: false });
+    });
+}
+
+// Move remaining content to summary/recommendation
+const remaining = contentDiv.innerHTML.trim();
+if (remaining && cards.length > 0) {
+    // Check for recommendation section
+    const recH2 = contentDiv.querySelector('h2');
+    if (recH2 && (recH2.textContent.toLowerCase().includes('recommend') || recH2.textContent.toLowerCase().includes('verdict') || recH2.textContent.toLowerCase().includes('conclusion'))) {
+        recSection.innerHTML = '<div class="recommendation">' + recH2.outerHTML;
+        let sib = recH2.nextElementSibling;
+        while (sib) {
+            recSection.querySelector('.recommendation').innerHTML += sib.outerHTML;
+            sib = sib.nextElementSibling;
+        }
+    } else if (remaining) {
+        summarySection.innerHTML = remaining;
+    }
+}
+
+// Extract tiers from tags
+const tiers = new Set();
+cards.forEach(c => c.tags.forEach(t => {
+    const lower = t.toLowerCase();
+    if (lower.includes('top') || lower.includes('tier') || lower.includes('strong') || lower.includes('good') || lower.includes('maybe')) {
+        tiers.add(t);
+    }
+}));
+
+// Render tier buttons
+if (tiers.size > 0) {
+    const filterDiv = document.getElementById('filters');
+    filterDiv.innerHTML = '<div class="tier-nav">' +
+        '<button class="tier-btn active" data-tier="all">All <span class="count">'+cards.length+'</span></button>' +
+        Array.from(tiers).map(t => '<button class="tier-btn" data-tier="'+t.toLowerCase()+'">'+t+' <span class="count"></span></button>').join('') +
+        '</div>';
+
+    filterDiv.querySelectorAll('.tier-btn').forEach(btn => {
+        btn.onclick = () => {
+            filterDiv.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            filterCards(btn.dataset.tier);
+        };
+    });
+}
+
+// Detect feature columns from tables
+let featureColumns = ['match', 'score', 'rating', 'fit', 'quality'];
+const allKeys = new Set();
+cards.forEach(c => Object.keys(c.scores).forEach(k => allKeys.add(k)));
+if (allKeys.size > 0) featureColumns = Array.from(allKeys).slice(0, 3);
+
+// Render cards
+function renderCards(cardList) {
+    compareGrid.innerHTML = cardList.map((c, i) => {
+        const tagsHtml = c.tags.map(t => '<span class="meta-tag">'+t+'</span>').join('');
+        const scoresHtml = Object.entries(c.scores).slice(0, 4).map(([k,v]) => {
+            const cls = parseFloat(v) > 70 ? 'good' : parseFloat(v) < 40 ? 'warn' : '';
+            return '<div class="score '+cls+'"><span class="val">'+v+'</span><span class="label">'+k+'</span></div>';
+        }).join('');
+        const featured = i === 0 && c.featured !== false;
+        return '<div class="compare-card'+(featured?' featured':'')+'" data-tier="'+c.tags.join(' ').toLowerCase()+'">' +
+            (featured ? '<span class="rank">Top Pick</span>' : '') +
+            '<h3>'+c.title+'</h3>' +
+            (c.desc ? '<div class="desc">'+c.desc+'</div>' : '') +
+            (tagsHtml ? '<div class="meta-row">'+tagsHtml+'</div>' : '') +
+            (scoresHtml ? '<div class="score-row">'+scoresHtml+'</div>' : '') +
+            '</div>';
+    }).join('');
+    document.getElementById('result-count').textContent = cardList.length + ' options';
+    if (cardList.length === 0) {
+        compareGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--g500);padding:3rem">No matching options</p>';
+    }
+}
+
+function filterCards(tier) {
+    if (tier === 'all') {
+        document.querySelectorAll('.compare-card').forEach(c => c.classList.remove('hidden'));
+        document.getElementById('result-count').textContent = cards.length + ' options';
+    } else {
+        document.querySelectorAll('.compare-card').forEach(c => {
+            c.classList.toggle('hidden', !c.dataset.tier.includes(tier));
+        });
+        const visible = document.querySelectorAll('.compare-card:not(.hidden)').length;
+        document.getElementById('result-count').textContent = visible + ' of ' + cards.length + ' options';
+    }
+    // Update tier counts
+    document.querySelectorAll('.tier-btn .count').forEach(cnt => {
+        const t = cnt.parentElement.dataset.tier;
+        if (t === 'all') cnt.textContent = cards.length;
+        else cnt.textContent = cards.filter(c => c.tags.some(tag => tag.toLowerCase().includes(t))).length;
+    });
+}
+
+renderCards(cards);
+
+// ---- Mermaid, copy buttons, syntax highlighting (on live DOM) ----
+const wrap = document.querySelector('.wrap');
+
+wrap.querySelectorAll('pre code.language-mermaid').forEach((codeBlock, idx) => {
+    const pre = codeBlock.parentElement;
+    const diagram = codeBlock.textContent;
+    const container = document.createElement('div');
+    container.className = 'mermaid-container';
+    const controls = document.createElement('div');
+    controls.className = 'mermaid-controls';
+    controls.innerHTML = '<button class="mermaid-btn" data-idx="'+idx+'">Reset</button><button class="mermaid-btn" data-idx="'+idx+'">Fit</button>';
+    const mermaidDiv = document.createElement('div');
+    mermaidDiv.className = 'mermaid';
+    mermaidDiv.id = 'mermaid-' + idx;
+    mermaidDiv.textContent = diagram;
+    mermaidDiv.dataset.diagram = diagram;
+    container.appendChild(controls);
+    container.appendChild(mermaidDiv);
+    pre.replaceWith(container);
+});
+
+wrap.querySelectorAll('pre:not(.mermaid-container pre)').forEach(pre => {
+    if (pre.querySelector('.copy-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.onclick = () => {
+        navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 1500);
+        });
+    };
+    pre.appendChild(btn);
+});
+
+const zoomInstances = {};
+const renderMermaidDiagrams = (theme) => {
+    document.querySelectorAll('.mermaid').forEach(div => {
+        div.textContent = div.dataset.diagram || '';
+        div.removeAttribute('data-processed');
+    });
+    Object.values(zoomInstances).forEach(z => { try { z.destroy(); } catch(e) {} });
+    for (const k in zoomInstances) delete zoomInstances[k];
+
+    mermaid.initialize({ startOnLoad: false, theme: theme || 'neutral' });
+    return mermaid.run({ querySelector: '.mermaid' }).then(() => {
+        document.querySelectorAll('.mermaid svg').forEach((svg, idx) => {
+            svg.style.height = '100%'; svg.style.width = '100%';
+            zoomInstances[idx] = svgPanZoom(svg, {
+                zoomEnabled: true, controlIconsEnabled: false,
+                fit: true, center: true, minZoom: 0.1, maxZoom: 10
+            });
+        });
+    });
+};
+
+renderMermaidDiagrams('neutral');
+
+document.querySelectorAll('.mermaid-btn').forEach(btn => {
+    btn.onclick = () => {
+        const idx = parseInt(btn.dataset.idx);
+        if (!zoomInstances[idx]) return;
+        if (btn.textContent === 'Reset') { zoomInstances[idx].resetZoom(); zoomInstances[idx].center(); }
+        if (btn.textContent === 'Fit') { zoomInstances[idx].fit(); zoomInstances[idx].center(); }
+    };
+});
+
+hljs.highlightAll();
+
+const hljsLight = document.getElementById('hljs-light-theme');
+const hljsDark = document.getElementById('hljs-dark-theme');
+const setHljsTheme = t => {
+    if (t === 'dark') { hljsLight.disabled = true; hljsDark.disabled = false; }
+    else { hljsLight.disabled = false; hljsDark.disabled = true; }
+};
+
+// Initial tier counts
+document.querySelectorAll('.tier-btn .count').forEach(cnt => {
+    const t = cnt.parentElement.dataset.tier;
+    if (t === 'all') cnt.textContent = cards.length;
+    else cnt.textContent = cards.filter(c => c.tags.some(tag => tag.toLowerCase().includes(t))).length;
+});
+
+// Sort
+document.getElementById('sort-select').onchange = function() {
+    const val = this.value;
+    const sorted = [...cards];
+    if (val === 'title') sorted.sort((a,b) => a.title.localeCompare(b.title));
+    // rank = keep original order (first = best)
+    renderCards(sorted);
+    const activeTier = document.querySelector('.tier-btn.active');
+    if (activeTier) filterCards(activeTier.dataset.tier);
+};
+
+// Theme
+const themeToggle=document.getElementById('theme-toggle'),themeIcon=document.getElementById('theme-icon');
+const getTheme=()=>localStorage.getItem('theme')||'auto';
+const applyTheme=t=>{
+    document.documentElement.removeAttribute('data-theme');
+    const isDark = t === 'dark' || (t === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (isDark) {
+        document.documentElement.setAttribute('data-theme','dark');
+        setHljsTheme('dark');
+        renderMermaidDiagrams('dark');
+    } else {
+        if(t==='light') document.documentElement.setAttribute('data-theme','light');
+        setHljsTheme('light');
+        renderMermaidDiagrams('neutral');
+    }
+    themeIcon.textContent=isDark?'◑':'◐';
+};
+applyTheme(getTheme());
+themeToggle.onclick=()=>{
+    const c=getTheme(),n=c==='auto'?'dark':c==='dark'?'light':'auto';
+    localStorage.setItem('theme',n);applyTheme(n);
+};
+document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
+    if(e.key==='t'&&!e.ctrlKey&&!e.metaKey)themeToggle.click();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{title}}</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css" id="hljs-light-theme">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" id="hljs-dark-theme" disabled>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+<style>
+:root {
+    --ivory: #FAF9F5; --paper: #FFFFFF; --slate: #141413;
+    --clay: #D97757; --clay-d: #B85C3E; --oat: #E3DACC; --olive: #788C5D;
+    --g100: #F0EEE6; --g200: #E6E3DA; --g300: #D1CFC5; --g500: #87867F; --g700: #3D3D3A;
+    --serif: ui-serif, Georgia, "Times New Roman", Times, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+    --bg: var(--ivory); --text: var(--slate); --header-text: var(--slate);
+    --border: var(--g300); --shadow: 0 12px 32px rgba(20,20,19,0.08);
+    --progress: 0%;
+}
+[data-theme="dark"] {
+    --bg: #141413; --text: #F0EEE6; --header-text: #F0EEE6;
+    --paper: #1e1e1c; --border: #3D3D3A;
+    --g100: #1e1e1c; --g200: #2a2a28; --g300: #3D3D3A;
+    --g500: #87867F; --g700: #D1CFC5; --slate: #F0EEE6;
+    --shadow: 0 12px 32px rgba(0,0,0,0.3);
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg: #141413; --text: #F0EEE6; --header-text: #F0EEE6;
+        --paper: #1e1e1c; --border: #3D3D3A;
+        --g100: #1e1e1c; --g200: #2a2a28; --g300: #3D3D3A;
+        --g500: #87867F; --g700: #D1CFC5; --slate: #F0EEE6;
+        --shadow: 0 12px 32px rgba(0,0,0,0.3);
+    }
+}
+
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased;display:flex;height:100vh;overflow:hidden}
+
+/* Progress bar */
+#progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--clay);z-index:1000;transition:width 80ms linear;width:var(--progress)}
+
+/* Sidebar */
+aside{width:280px;background:var(--bg);border-right:1.5px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;padding:2rem 0;overflow:hidden;position:relative}
+.sidebar-header{padding:0 1.5rem 1.5rem;border-bottom:1px solid var(--border)}
+.sidebar-footer{padding:1.5rem;border-top:1px solid var(--border);margin-top:auto}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--g500);margin-bottom:16px;display:flex;align-items:center;gap:12px;padding-left:12px}
+.eyebrow::before{content:"";width:20px;height:1.5px;background:var(--clay)}
+.gallery-link{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--clay);text-decoration:none;margin-bottom:1rem;padding-left:12px;font-weight:600}
+.gallery-link:hover{color:var(--clay-d)} .gallery-link::before{content:"←"}
+#sidebar-search{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--paper);color:var(--text);font-family:var(--sans);font-size:13px;outline:none;margin-bottom:0.5rem}
+#sidebar-search:focus{border-color:var(--clay)}
+.search-meta{font-size:11px;color:var(--g500);font-family:var(--mono);margin-bottom:0.25rem;text-align:right}
+nav{flex-grow:1;overflow-y:auto;padding:1rem 0.75rem}
+nav a{display:block;font-size:13px;padding:10px 14px;margin-bottom:4px;border-radius:8px;text-decoration:none;color:var(--g700);transition:all 150ms ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+nav a:hover{background:var(--g100);color:var(--clay)}
+nav a.active{background:var(--paper);border:1.5px solid var(--slate);color:var(--slate);font-weight:600}
+nav a.hidden,.nav-group.collapsed nav a{display:none}
+.nav-group-header{display:flex;align-items:center;gap:4px;padding:2px 6px 2px 0;margin-bottom:2px}
+.nav-group-link{flex:1;font-size:13px;padding:8px 10px 8px 14px;border-radius:8px;text-decoration:none;color:var(--g700);transition:all 150ms ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.nav-group-link:hover{background:var(--g100);color:var(--clay)}
+.nav-group-link.active{background:var(--paper);border:1.5px solid var(--slate);color:var(--slate);font-weight:600}
+.nav-group-link.active-parent{color:var(--slate);font-weight:600;background:var(--g100)}
+.nav-group-toggle{flex-shrink:0;background:none;border:none;padding:4px 6px;cursor:pointer;color:var(--g400);font-size:10px;line-height:1;border-radius:4px;transition:all 150ms ease;display:none}
+.nav-group-toggle:hover{color:var(--clay);background:var(--g100)}
+.nav-group.has-children .nav-group-toggle{display:block}
+.nav-group.collapsed .nav-group-toggle{transform:rotate(-90deg)}
+nav a.h3-link{padding-left:28px;font-size:12px;color:var(--g500)}
+nav a.h3-link:hover{color:var(--clay)}
+
+/* Theme toggle */
+.theme-toggle{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--g500);cursor:pointer;background:none;border:none;padding:0;width:100%}
+.theme-toggle:hover{color:var(--clay)}
+.theme-toggle .icon{width:18px;height:18px;border:1.5px solid var(--g500);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px}
+.kb-hint{font-family:var(--mono);font-size:9px;color:var(--g500);opacity:0.7;margin-left:auto}
+
+/* Main */
+main{flex-grow:1;overflow-y:auto;padding:4rem 2rem 8rem;scroll-behavior:smooth}
+.wrap{max-width:1100px;margin:0 auto}
+h1{font-family:var(--serif);font-weight:500;font-size:clamp(32px,5vw,56px);line-height:1.08;letter-spacing:-0.02em;margin-bottom:1.5rem;color:var(--header-text)}
+h1 em{font-style:italic;color:var(--clay)}
+h2{font-family:var(--serif);font-weight:500;font-size:28px;margin-top:5rem;margin-bottom:1.25rem;letter-spacing:-0.012em;display:flex;align-items:baseline;gap:16px;color:var(--header-text);scroll-margin-top:2rem}
+h2::before{content:"•";color:var(--clay);font-size:1.2em}
+h3{font-family:var(--serif);font-weight:500;font-size:20px;margin-top:3rem;margin-bottom:0.75rem;color:var(--header-text);scroll-margin-top:2rem}
+.intro{font-size:17.5px;color:var(--g700);margin-bottom:4rem;max-width:720px;line-height:1.6}
+
+/* Reveal animations */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.5s ease,transform 0.5s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+h2.reveal,h3.reveal,.card.reveal,.pane.reveal,pre.reveal,table.reveal,blockquote.reveal{opacity:0;transform:translateY(24px)}
+h2.reveal.visible,h3.reveal.visible,.card.reveal.visible,.pane.reveal.visible,pre.reveal.visible,table.reveal.visible,blockquote.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* Spatial Elements */
+.grid,.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px;margin:2.5rem 0}
+.card{background:var(--paper);border:1.5px solid var(--border);border-radius:14px;padding:26px;transition:all 150ms ease;display:flex;flex-direction:column;box-shadow:0 4px 12px rgba(0,0,0,0.02);height:100%}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--slate)}
+.card h3{font-family:var(--serif);font-size:20px;font-weight:500;margin:0 0 10px;color:var(--header-text);line-height:1.25}
+.card p{font-size:14.5px;color:var(--g700);margin:0;flex:1;line-height:1.6}
+.badge{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;background:var(--g100);padding:3px 10px;border:1.5px solid var(--border);border-radius:6px;color:var(--g500);margin-bottom:14px;display:inline-block;width:fit-content;font-weight:600}
+.badge.clay{background:var(--clay);color:#fff;border-color:var(--clay)}
+.badge.olive{background:var(--olive);color:#fff;border-color:var(--olive)}
+.action-bridge{margin-top:24px;padding-top:18px;border-top:1px solid var(--g100);display:flex;justify-content:space-between;align-items:center}
+.btn-action{font-family:var(--mono);font-size:11px;color:var(--clay);background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;letter-spacing:0.05em;text-transform:uppercase}
+.btn-action:hover{color:var(--clay-d)}
+.btn-action::after{content:"→";transition:transform 150ms ease}
+.btn-action:hover::after{transform:translateX(4px)}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:2.5rem 0;font-size:14.5px}
+th{text-align:left;padding:14px;border-bottom:2.5px solid var(--slate);font-weight:600;color:var(--header-text);cursor:default;user-select:none}
+td{padding:14px;border-bottom:1.5px solid var(--border)}
+tr:hover td{background:var(--g100)}
+th.sortable{cursor:pointer}
+th.sortable:hover{color:var(--clay)}
+th.sortable::after{content:" ⇅";font-size:11px;opacity:0.3}
+th.sortable.asc::after{content:" ↑";opacity:1}
+th.sortable.desc::after{content:" ↓";opacity:1}
+
+/* Code blocks */
+pre{background:var(--g100);padding:24px;border-radius:12px;overflow-x:auto;border:1.5px solid var(--border);font-size:13.5px;line-height:1.6;margin:2rem 0;position:relative}
+pre .copy-btn{position:absolute;top:8px;right:8px;font-family:var(--mono);font-size:10px;background:var(--paper);border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;color:var(--g500);opacity:0;transition:opacity 150ms ease}
+pre:hover .copy-btn{opacity:1}
+pre .copy-btn:hover{color:var(--clay);border-color:var(--clay)}
+[data-theme="dark"] pre code.hljs { background: var(--g100); }
+
+/* Mermaid */
+.mermaid-container{position:relative;margin:4rem 0;background:var(--paper);border-radius:14px;border:1.5px solid var(--border);overflow:hidden;height:500px}
+.mermaid-controls{position:absolute;top:1rem;right:1rem;display:flex;gap:0.5rem;z-index:10}
+.mermaid-btn{background:var(--bg);border:1.5px solid var(--border);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--g500);font-family:var(--sans)}
+.mermaid-btn:hover{border-color:var(--clay);color:var(--clay)}
+.mermaid{height:100%;width:100%;display:flex;justify-content:center;align-items:center}
+
+/* Pane */
+.pane{background:var(--paper);border:1.5px solid var(--slate);border-radius:14px;padding:32px;box-shadow:var(--shadow);margin:3.5rem 0}
+
+/* Accordion (enhanced details) */
+details{margin:1rem 0;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;background:var(--paper)}
+details[open]{box-shadow:var(--shadow)}
+summary{padding:14px 20px;cursor:pointer;font-weight:600;color:var(--header-text);background:var(--g100);font-size:15px;user-select:none;display:flex;align-items:center;gap:10px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"→";font-size:12px;transition:transform 200ms ease;color:var(--clay);display:inline-block}
+details[open]>summary::before{transform:rotate(90deg)}
+details .details-content{padding:0 20px 20px}
+
+/* Back to top */
+#back-to-top{position:fixed;bottom:2rem;right:2rem;width:44px;height:44px;border-radius:50%;background:var(--paper);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--g500);opacity:0;transform:translateY(10px);transition:all 200ms ease;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+#back-to-top.visible{opacity:1;transform:translateY(0)}
+#back-to-top:hover{border-color:var(--clay);color:var(--clay)}
+
+/* Search highlight */
+.search-highlight{background:rgba(217,119,87,0.25);border-radius:2px;padding:0 2px}
+.search-highlight.current{background:rgba(217,119,87,0.5);outline:2px solid var(--clay);outline-offset:1px}
+
+/* Print */
+@media print{
+    aside,#progress-bar,#back-to-top,.mermaid-controls,.copy-btn{display:none!important}
+    body{display:block;height:auto;overflow:visible;background:#fff;color:#000}
+    main{padding:0;overflow:visible}
+    .wrap{max-width:100%}
+    .card,.pane{box-shadow:none;border:1px solid #ccc;break-inside:avoid}
+    pre{white-space:pre-wrap;word-wrap:break-word}
+    h2{margin-top:2rem;page-break-after:avoid}
+    @page{margin:2cm}
+}
+
+/* Mobile */
+@media (max-width:768px){
+    body{flex-direction:column;height:auto;overflow:visible}
+    aside{width:100%;height:auto;border-right:none;border-bottom:1.5px solid var(--border);position:sticky;top:0;z-index:100;padding:1rem}
+    .sidebar-header{border-bottom:none;padding-bottom:0.5rem}
+    .eyebrow{display:none}
+    nav{display:flex;overflow-x:auto;gap:8px;padding:0.5rem 0}
+    nav a{margin-bottom:0;white-space:nowrap}
+    nav a.h3-link{display:none}
+    .sidebar-footer{display:none}
+    main{padding:2rem 1.5rem;overflow:visible}
+    .grid,.card-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<aside>
+    <div class="sidebar-header">
+        <a href="index.html" class="gallery-link">Back to Gallery</a>
+        <div class="eyebrow">Interactive Artifact</div>
+        <input type="text" id="sidebar-search" placeholder="Search document… (/)">
+        <div class="search-meta"><span id="match-count"></span></div>
+    </div>
+    <nav id="nav"></nav>
+    <div class="sidebar-footer">
+        <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode (t)">
+            <span class="icon" id="theme-icon">◐</span> Theme
+            <span class="kb-hint">t</span>
+        </button>
+    </div>
+</aside>
+<main id="main-content">
+    <div class="wrap">
+        <header>
+            <h1 id="title-main">{{title}}</h1>
+            <p class="intro" id="intro-text"></p>
+        </header>
+        <div id="content"></div>
+    </div>
+</main>
+<button id="back-to-top" title="Back to top">↑</button>
+
+<script>
+const rawContent = `{{content}}`;
+const contentDiv = document.getElementById('content');
+contentDiv.innerHTML = marked.parse(rawContent);
+
+// Move first paragraph to intro
+const firstP = contentDiv.querySelector('p');
+if (firstP && firstP === contentDiv.firstElementChild) {
+    document.getElementById('intro-text').innerHTML = firstP.innerHTML;
+    firstP.remove();
+}
+
+// Add reveal classes
+contentDiv.querySelectorAll('h2,h3,.card,.pane,pre,table,blockquote').forEach(el => {
+    if (!el.closest('.card') && !el.closest('.pane')) el.classList.add('reveal');
+});
+
+// Generate nested TOC
+const nav = document.getElementById('nav');
+const h2s = contentDiv.querySelectorAll('h2');
+let currentGroup = null;
+let currentGroupNav = null;
+
+h2s.forEach((h, i) => {
+    const id = h.id || `section-${i}`;
+    h.id = id;
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'nav-group';
+    const header = document.createElement('div');
+    header.className = 'nav-group-header';
+    // Link navigates to the heading
+    const link = document.createElement('a');
+    link.className = 'nav-group-link';
+    link.href = '#' + id;
+    link.textContent = h.textContent;
+    link.title = h.textContent;
+    header.appendChild(link);
+    // Chevron toggles collapse
+    const toggle = document.createElement('button');
+    toggle.className = 'nav-group-toggle';
+    toggle.textContent = '▾';
+    toggle.title = 'Toggle sections';
+    toggle.onclick = (e) => {
+        e.preventDefault();
+        groupDiv.classList.toggle('collapsed');
+        localStorage.setItem('nav-' + id, groupDiv.classList.contains('collapsed'));
+    };
+    header.appendChild(toggle);
+    groupDiv.appendChild(header);
+    const subNav = document.createElement('nav');
+    groupDiv.appendChild(subNav);
+    nav.appendChild(groupDiv);
+    currentGroup = groupDiv;
+    currentGroupNav = subNav;
+
+    // Restore collapse state (default collapsed)
+    const stored = localStorage.getItem('nav-' + id);
+    if (stored === null || stored === 'true') {
+        groupDiv.classList.add('collapsed');
+    }
+});
+
+// Add h3 links under their parent h2
+contentDiv.querySelectorAll('h3').forEach((h, i) => {
+    const id = h.id || 'h3-' + i;
+    h.id = id;
+    // Find the parent h2
+    let prev = h.previousElementSibling;
+    while (prev && prev.tagName !== 'H2') prev = prev.previousElementSibling;
+    if (prev && prev.id) {
+        const navGroup = nav.querySelector('.nav-group:has(.nav-group-link[href="#' + prev.id + '"])');
+        const subNav = navGroup ? navGroup.querySelector('nav') : nav;
+        if (navGroup) navGroup.classList.add('has-children');
+        if (subNav) {
+            const a = document.createElement('a');
+            a.href = '#' + id;
+            a.className = 'h3-link';
+            a.textContent = h.textContent;
+            a.title = h.textContent;
+            subNav.appendChild(a);
+        }
+    }
+});
+
+// Mermaid preprocessing
+contentDiv.querySelectorAll('pre code.language-mermaid').forEach((codeBlock, idx) => {
+    const pre = codeBlock.parentElement;
+    const diagram = codeBlock.textContent;
+    const container = document.createElement('div');
+    container.className = 'mermaid-container';
+    const controls = document.createElement('div');
+    controls.className = 'mermaid-controls';
+    controls.innerHTML = '<button class="mermaid-btn" data-idx="'+idx+'">Reset</button><button class="mermaid-btn" data-idx="'+idx+'">Fit</button>';
+    const mermaidDiv = document.createElement('div');
+    mermaidDiv.className = 'mermaid';
+    mermaidDiv.id = 'mermaid-' + idx;
+    mermaidDiv.textContent = diagram;
+    mermaidDiv.dataset.diagram = diagram;  // stored for theme re-render
+    container.appendChild(controls);
+    container.appendChild(mermaidDiv);
+    pre.replaceWith(container);
+});
+
+// Add copy buttons to code blocks
+contentDiv.querySelectorAll('pre:not(.mermaid-container pre)').forEach(pre => {
+    if (pre.querySelector('.copy-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.onclick = () => {
+        navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 1500);
+        });
+    };
+    pre.appendChild(btn);
+});
+
+// Mermaid rendering (reusable — called on load and on theme change)
+const zoomInstances = {};
+const renderMermaidDiagrams = (theme) => {
+    // Reset each mermaid div to its original text (clears old SVG)
+    document.querySelectorAll('.mermaid').forEach(div => {
+        div.textContent = div.dataset.diagram || '';
+        div.removeAttribute('data-processed');
+    });
+    // Destroy old zoom instances
+    Object.values(zoomInstances).forEach(z => { try { z.destroy(); } catch(e) {} });
+    for (const k in zoomInstances) delete zoomInstances[k];
+
+    mermaid.initialize({ startOnLoad: false, theme: theme || 'neutral' });
+    return mermaid.run({ querySelector: '.mermaid' }).then(() => {
+        document.querySelectorAll('.mermaid svg').forEach((svg, idx) => {
+            svg.style.height = '100%'; svg.style.width = '100%';
+            zoomInstances[idx] = svgPanZoom(svg, {
+                zoomEnabled: true, controlIconsEnabled: false,
+                fit: true, center: true, minZoom: 0.1, maxZoom: 10
+            });
+        });
+    });
+};
+
+// Initial render
+renderMermaidDiagrams('neutral');
+
+// Syntax highlighting
+hljs.highlightAll();
+
+// Mermaid controls
+document.querySelectorAll('.mermaid-btn').forEach(btn => {
+    btn.onclick = () => {
+        const idx = parseInt(btn.dataset.idx);
+        if (!zoomInstances[idx]) return;
+        if (btn.textContent === 'Reset') { zoomInstances[idx].resetZoom(); zoomInstances[idx].center(); }
+        if (btn.textContent === 'Fit') { zoomInstances[idx].fit(); zoomInstances[idx].center(); }
+    };
+});
+
+// Progress bar
+const main = document.getElementById('main-content');
+main.addEventListener('scroll', () => {
+    const scrollTop = main.scrollTop;
+    const docHeight = main.scrollHeight - main.clientHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    document.documentElement.style.setProperty('--progress', progress + '%');
+});
+
+// Back to top
+const backToTop = document.getElementById('back-to-top');
+main.addEventListener('scroll', () => {
+    backToTop.classList.toggle('visible', main.scrollTop > 800);
+});
+backToTop.onclick = () => main.scrollTo({ top: 0, behavior: 'smooth' });
+
+// Reveal animations
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// Active section tracking
+const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            document.querySelectorAll('nav a.active, .nav-group-link.active, .nav-group-link.active-parent').forEach(a => a.classList.remove('active', 'active-parent'));
+            const target = document.querySelector('nav a[href="#' + entry.target.id + '"], .nav-group-link[href="#' + entry.target.id + '"]');
+            if (target) {
+                target.classList.add('active');
+                // If this is a nested h3-link, also highlight and expand the parent group
+                const parentGroup = target.closest('.nav-group');
+                if (parentGroup && target.classList.contains('h3-link')) {
+                    const parentLink = parentGroup.querySelector('.nav-group-link');
+                    if (parentLink) parentLink.classList.add('active-parent');
+                    parentGroup.classList.remove('collapsed');
+                }
+            }
+        }
+    });
+}, { threshold: 0.2, rootMargin: '-80px 0px -20% 0px' });
+contentDiv.querySelectorAll('h2,h3').forEach(h => sectionObserver.observe(h));
+
+// Theme toggle
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
+const getTheme = () => localStorage.getItem('theme') || 'auto';
+
+// Highlight.js theme switching
+const hljsLight = document.getElementById('hljs-light-theme');
+const hljsDark = document.getElementById('hljs-dark-theme');
+const setHljsTheme = t => {
+    if (t === 'dark') { hljsLight.disabled = true; hljsDark.disabled = false; }
+    else { hljsLight.disabled = false; hljsDark.disabled = true; }
+};
+
+const applyTheme = (t) => {
+    document.documentElement.removeAttribute('data-theme');
+    const isDark = t === 'dark' || (t === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (isDark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        setHljsTheme('dark');
+        renderMermaidDiagrams('dark');
+    } else {
+        if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+        setHljsTheme('light');
+        renderMermaidDiagrams('neutral');
+    }
+    themeIcon.textContent = isDark ? '◑' : '◐';
+};
+applyTheme(getTheme());
+themeToggle.onclick = () => {
+    const current = getTheme();
+    const next = current === 'auto' ? 'dark' : current === 'dark' ? 'light' : 'auto';
+    localStorage.setItem('theme', next);
+    applyTheme(next);
+};
+
+// Search
+const searchInput = document.getElementById('sidebar-search');
+const matchCount = document.getElementById('match-count');
+let searchHighlights = [];
+let currentHighlight = -1;
+
+searchInput.addEventListener('input', () => {
+    const term = searchInput.value.toLowerCase().trim();
+    clearHighlights();
+    // Filter TOC
+    document.querySelectorAll('nav a, .nav-group-link').forEach(a => {
+        a.classList.toggle('hidden', term ? !a.textContent.toLowerCase().includes(term) : false);
+    });
+    // Highlight in content
+    if (term && term.length > 1) {
+        highlightInContent(term);
+    }
+    matchCount.textContent = searchHighlights.length ? searchHighlights.length + ' matches' : '';
+});
+
+function clearHighlights() {
+    searchHighlights.forEach(h => {
+        const parent = h.parentNode;
+        parent.replaceChild(document.createTextNode(h.textContent), h);
+        parent.normalize();
+    });
+    searchHighlights = [];
+    currentHighlight = -1;
+    matchCount.textContent = '';
+}
+
+function highlightInContent(term) {
+    const walker = document.createTreeWalker(contentDiv, NodeFilter.SHOW_TEXT, {
+        acceptNode: n => n.parentElement.closest('pre,code,script,style,.mermaid') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT
+    });
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+    textNodes.forEach(node => {
+        const text = node.textContent;
+        const lower = text.toLowerCase();
+        let idx = lower.indexOf(term);
+        if (idx === -1) return;
+        const fragment = document.createDocumentFragment();
+        let lastIdx = 0;
+        while (idx !== -1) {
+            if (idx > lastIdx) fragment.appendChild(document.createTextNode(text.slice(lastIdx, idx)));
+            const mark = document.createElement('mark');
+            mark.className = 'search-highlight';
+            mark.textContent = text.slice(idx, idx + term.length);
+            fragment.appendChild(mark);
+            searchHighlights.push(mark);
+            lastIdx = idx + term.length;
+            idx = lower.indexOf(term, lastIdx);
+        }
+        if (lastIdx < text.length) fragment.appendChild(document.createTextNode(text.slice(lastIdx)));
+        node.parentNode.replaceChild(fragment, node);
+    });
+    if (searchHighlights.length) {
+        currentHighlight = 0;
+        searchHighlights[0].classList.add('current');
+        searchHighlights[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select();
+    }
+    if (e.key === 't' && !e.ctrlKey && !e.metaKey) {
+        themeToggle.click();
+    }
+    if (e.key === 'Escape') {
+        clearHighlights();
+        searchInput.value = '';
+        searchInput.blur();
+        document.querySelectorAll('nav a.hidden, .nav-group-link.hidden').forEach(a => a.classList.remove('hidden'));
+        matchCount.textContent = '';
+    }
+    if (e.key === 'ArrowDown' && searchHighlights.length) {
+        e.preventDefault();
+        navigateHighlight(1);
+    }
+    if (e.key === 'ArrowUp' && searchHighlights.length) {
+        e.preventDefault();
+        navigateHighlight(-1);
+    }
+});
+
+function navigateHighlight(dir) {
+    if (!searchHighlights.length) return;
+    searchHighlights[currentHighlight].classList.remove('current');
+    currentHighlight = (currentHighlight + dir + searchHighlights.length) % searchHighlights.length;
+    searchHighlights[currentHighlight].classList.add('current');
+    searchHighlights[currentHighlight].scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// Sortable tables
+contentDiv.querySelectorAll('table').forEach(table => {
+    table.querySelectorAll('th').forEach((th, colIdx) => {
+        th.classList.add('sortable');
+        th.onclick = () => {
+            const tbody = table.querySelector('tbody') || table;
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r.querySelector('td'));
+            const asc = !th.classList.contains('asc');
+            table.querySelectorAll('th').forEach(h => h.classList.remove('asc', 'desc'));
+            th.classList.add(asc ? 'asc' : 'desc');
+            rows.sort((a, b) => {
+                const aVal = (a.children[colIdx]?.textContent || '').trim();
+                const bVal = (b.children[colIdx]?.textContent || '').trim();
+                const aNum = parseFloat(aVal), bNum = parseFloat(bVal);
+                if (!isNaN(aNum) && !isNaN(bNum)) return asc ? aNum - bNum : bNum - aNum;
+                return asc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+            });
+            rows.forEach(r => tbody.appendChild(r));
+        };
+    });
+});
+
+function copyToClipboard(text, el) {
+    navigator.clipboard.writeText(text).then(() => {
+        const orig = el.textContent;
+        el.textContent = 'Copied';
+        setTimeout(() => el.textContent = orig, 2000);
+    });
+}
+</script>
+</body>
+</html>

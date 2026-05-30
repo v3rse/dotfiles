@@ -112,6 +112,19 @@ The **scoring, multi-source corroboration, tastemaker attribution, dedup, and bu
 - **Re-bucket** freely — a `radar` item can become a top story if it's genuinely significant; a `top` item can drop to `engineering` if it's just multi-sourced noise
 - **Skip entirely** anything that hits the ignore rules in spirit even if not in letter
 
+> **Non-English feeds**: `rank.py` scores against English keywords only. For Chinese-language sources (or any non-English feed domain), the ranked output will be nearly useless — items score 0 and fall to `radar` regardless of importance. When running a domain-specific catchup that includes non-English feeds, **also** filter the fresh JSONL directly by feed domain and curate those items manually before writing the digest:
+> ```python
+> python3 -c "
+> import json
+> domains = {'36kr.com','tmtpost.com','leiphone.com','ifanr.com'}  # adjust per run
+> items = [json.loads(l) for l in open('/tmp/catchup.fresh.jsonl')]
+> for i in sorted([x for x in items if any(d in x.get('feed','') for d in domains)],
+>                 key=lambda x: x.get('published',''), reverse=True):
+>     print(i['published'][:10], i['feed'].split('/')[2], i['title'][:70])
+> "
+> ```
+> Translate titles inline if needed, then apply the same Demote/Promote/Re-bucket judgment.
+
 Then write the one-sentence "why it matters" lines and group into the output template.
 
 #### About the cache

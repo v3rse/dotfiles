@@ -15,6 +15,8 @@ All scripts live in `scripts/` alongside this file. Replace `<skill-dir>` with t
 | `find-related.py <keyword> [...]` | Find pages by keyword, output slugs | Steps 3 & 6 |
 | `reindex.py` | Regenerate index.md | After every page write/update |
 | `validate.py` | Check all pages against checklist | End of every session |
+| `backlinks.py [--orphans] [--unlinked]` | Find orphan pages and unlinked mentions | Step 3, periodic lint |
+| `log-session.py <wiki-root> "<desc>" [--created slugs] [--updated slugs]` | Append session entry to log.md | Step 10 (final step) |
 
 Extract durable knowledge from a session (research findings, tool comparisons, design decisions, learned patterns, debugging conclusions) and save it as atomic markdown pages in a wiki. The wiki is the **persistent layer** above ephemeral agent chats — small enough to grep, structured enough to feed back into LLM context.
 
@@ -25,6 +27,31 @@ Extract durable knowledge from a session (research findings, tool comparisons, d
 - **Flat structure, plain markdown.** No nested folders by default. `rg` is the index. Frontmatter carries metadata. Cross-links are relative markdown links.
 - **Merge, don't duplicate.** If a relevant page already exists, update it (append new info, bump `updated`, add sources) instead of creating a near-duplicate.
 - **Sources are mandatory.** Every claim should be traceable back to a URL, a session, a commit, or a file path.
+- **log.md is append-only.** Never edit past entries. It is the temporal record of what was researched and when.
+
+## Frontmatter schema
+
+Every page must have these fields:
+
+```yaml
+title: Human-readable Title
+slug: kebab-case-stable-id
+tags: [tag1, tag2]
+status: stub | draft | permanent
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+sources:
+  - url or session reference
+related:
+  - other-slug
+```
+
+**`status` values:**
+- `stub` — scaffolded; key points only; needs fleshing out. `validate.py` warns if a stub is >30 days old.
+- `draft` — reasonably complete from a single session; may be revised as more is learned.
+- `permanent` — stable, well-sourced, cross-linked, unlikely to change structurally. Promote from `draft` deliberately.
+
+Set `status: stub` when scaffolding. Set `status: draft` when the page body is written in one session. Promote to `status: permanent` only when the page has been reviewed, cross-linked thoroughly, and stood the test of at least one follow-up session without needing structural changes.
 
 ## Step 1: Determine wiki scope
 
@@ -43,10 +70,17 @@ Resolve `<repo-root>` with `git rev-parse --show-toplevel`. Create the directory
 If creating for the first time, also seed:
 - `README.md` — human entry point (see template below)
 - `index.md` — auto-maintained tag/page index
+- `log.md` — auto-created by `log-session.py` on first use
 
 ## Step 2: Identify atomic concepts
 
-Read the source material (current session, named session file, or explicit content the user pasted). Extract **atomic concepts** — discrete topics each worth their own page.
+**First, scan `log.md` for recent sessions covering the same topic:**
+```bash
+grep '^\#\# \[' <wiki-root>/log.md | tail -20
+```
+If a recent session already produced pages on this topic, you may be updating rather than creating. Check those pages before proceeding.
+
+Then read the source material (current session, named session file, or explicit content the user pasted). Extract **atomic concepts** — discrete topics each worth their own page.
 
 Good atomic concepts (one page each):
 - "Parallel coding agent workflow"
@@ -63,17 +97,20 @@ For each concept, decide a **slug**: kebab-case, descriptive, stable. The slug i
 
 ## Step 3: Check for existing pages
 
-Before writing anything new:
+Before writing anything new, run both checks:
 
 ```bash
+# keyword search — finds existing pages covering similar concepts
 python3 <skill-dir>/scripts/find-related.py <concept-keyword> [keyword2] --wiki <wiki-root>
-```
 
-This returns matching slugs, titles, tags, and matched lines — ready to paste into `related:` fields. Fall back to `rg -l` for raw text search if needed.
+# backlinks — find pages that already mention this concept without a link
+python3 <skill-dir>/scripts/backlinks.py <wiki-root> --unlinked
+```
 
 For each atomic concept:
 - **Existing page on same topic** → update mode (Step 5)
 - **Existing related pages** → record their slugs to add to `related:` field
+- **Unlinked mentions found** → those pages will need a `related:` entry added in Step 6
 - **No matches** → new page mode (Step 4)
 
 Also scan for pages that should now link **to** the new page, and update them in Step 6.
@@ -86,13 +123,14 @@ Scaffold the file first, then fill it in:
 python3 <skill-dir>/scripts/scaffold.py <slug> "<Title>" tag1,tag2 --wiki <wiki-root>
 ```
 
-This writes the page with correct frontmatter and today's dates. Then fill in the body. Template:
+This writes the page with correct frontmatter (including `status: stub`) and today's dates. Fill in the body, then set `status: draft` when the body is complete. Template:
 
 ```markdown
 ---
 title: <Human-readable Title>
 slug: <slug>
 tags: [tag1, tag2, tag3]
+status: draft
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 sources:
@@ -151,6 +189,7 @@ When merging into an existing page:
 5. Update `updated:` to today's date. **Never change `created:`.**
 6. Add new tags only if they capture a real new dimension; don't sprawl the tag set.
 7. If the new content meaningfully shifts the framing, rewrite the **Summary** to reflect the merged understanding — but keep it tight.
+8. If the page was `stub` or `draft` and is now well-developed, promote `status` accordingly.
 
 ## Step 6: Update cross-links
 
@@ -171,7 +210,12 @@ Update only pages where the link is genuinely useful — don't link-spam.
 python3 <skill-dir>/scripts/reindex.py <wiki-root>
 ```
 
-Reads all `*.md` frontmatter and lead lines, writes `index.md` grouped by tag then alphabetically. Always run this after any page is created or updated.
+Writes `index.md` with three sections:
+1. **Quick navigation (compact)** — one line per page, alphabetical, with `stub` badges. Load this section for LLM navigation (stays compact even at 200+ pages).
+2. **By tag** — full entries with lead sentences, for human browsing.
+3. **Stubs** — all `status: stub` pages listed together as a work queue.
+
+Always run this after any page is created or updated.
 
 ## Step 8: Seed README.md (first-time only)
 
@@ -182,38 +226,63 @@ If `<wiki-root>/README.md` doesn't exist yet, write:
 
 Personal LLM-readable knowledge base. Plain markdown, flat structure, one page per concept.
 
-- [Index](index.md) — all pages by tag
+- [Index](index.md) — all pages by tag, plus compact navigation section
+- [Log](log.md) — append-only session history
 - Pages live as `<slug>.md` in this directory
-- Each page has frontmatter: `title`, `tags`, `created`, `updated`, `sources`, `related`
-- To feed into an LLM: cat the relevant pages, or load `index.md` to find what to read
+- Each page has frontmatter: `title`, `tags`, `status`, `created`, `updated`, `sources`, `related`
+- To feed into an LLM: load `index.md` (compact section) to navigate, then read individual pages
 
 Built and maintained via the `wiki-builder` skill.
 ```
 
 Do not regenerate this file on subsequent runs.
 
-## Step 9: Report
+## Step 9: Validate
 
-Tell the user concisely:
-- Which pages were created (with paths)
-- Which pages were updated (with what was added)
-- Any cross-links added
-- Whether the index was regenerated
-
-Example:
+```bash
+python3 <skill-dir>/scripts/validate.py <wiki-root>
 ```
-Wiki updated at ~/org/wiki/
 
-Created:
-  - parallel-coding-agents.md (tags: ai-coding, workflow)
-  - tmux-workflow-for-agents.md (tags: tmux, ai-coding, workflow)
+Checks all pages for:
+- Required frontmatter fields (title, slug, tags, **status**, created, updated, sources)
+- Valid `status` value (stub | draft | permanent)
+- Stale stubs: `status: stub` pages older than 30 days → warning
+- Valid ISO dates
+- At least one source
+- All `related:` slugs resolve to existing files
+- Index coverage (warns on unlisted pages)
+- Mega-pages (>400 lines)
 
-Updated:
-  - git-worktrees.md (added incident.io `w` helper, +1 source)
+Exits 0 if clean. Fix any errors before reporting done.
 
-Cross-links: parallel-coding-agents ↔ tmux-workflow-for-agents ↔ git-worktrees
-Index regenerated (12 pages total).
+## Step 10: Append to log
+
+Always the final step. Record what happened:
+
+```bash
+python3 <skill-dir>/scripts/log-session.py <wiki-root> "<session description>" \
+  --created "slug1,slug2,slug3" \
+  --updated "slug4,slug5"
 ```
+
+The description should be a short noun phrase: "Linux cryptography deep dive", "JWT security research", "SSH 1Password workflow".
+
+`log.md` is append-only. Never edit past entries. It enables:
+- Checking `log.md` in Step 2 to avoid re-researching covered topics
+- Answering "when did I last look at X?"
+- Auditing the wiki's evolution over time
+
+## Periodic lint (run every ~10 sessions)
+
+```bash
+# Find orphan pages (nothing links to them)
+python3 <skill-dir>/scripts/backlinks.py <wiki-root> --orphans
+
+# Find unlinked mentions (plain-text references that should be links)
+python3 <skill-dir>/scripts/backlinks.py <wiki-root> --unlinked
+```
+
+Orphans aren't always wrong — some pages are genuinely standalone. But most orphans indicate a missing cross-link. Act on unlinked mentions by adding `related:` entries.
 
 ## Anti-patterns to avoid
 
@@ -224,21 +293,10 @@ Index regenerated (12 pages total).
 - **Lossy summaries.** The page must contain the actual knowledge, not just a pointer to "go read the session."
 - **Unsourced claims.** Every page needs at least one entry in `sources:`.
 - **Renaming slugs.** Slugs are stable ids. If a title needs to change, update `title:` but keep the slug (or do a proper rename: update the file, every `related:` reference, and every link in other pages' bodies).
+- **Skipping the log.** Don't end a session without appending to `log.md`. Future sessions depend on it.
 
-## Validation
+## Scaling notes
 
-```bash
-python3 <skill-dir>/scripts/validate.py <wiki-root>
-```
-
-Checks all pages for:
-- Required frontmatter fields (title, slug, tags, created, updated, sources)
-- Valid ISO dates
-- At least one source
-- All `related:` slugs resolve to existing files
-- Index coverage (warns on unlisted pages)
-- Mega-pages (>400 lines)
-
-Exits 0 if clean. Fix any errors before reporting done.
-
-Still check manually: no two pages cover the same atomic concept (would-be duplicates were merged).
+- **< 100 pages:** load the full compact navigation section of `index.md` for LLM navigation
+- **100–200 pages:** load only the compact section (not the by-tag section); use `find-related.py` for targeted lookup
+- **200+ pages:** consider adding [qmd](https://github.com/tobi/qmd) — local BM25+vector search for markdown with MCP server support. Document in SKILL.md when installed.

@@ -224,7 +224,7 @@ def parse_feed(url: str, body: bytes) -> tuple[str, list[dict]]:
     and 'summary_html' (raw HTML, if available from content:encoded or atom:content).
     """
     try:
-        root = ET.fromstring(body)
+        root = ET.fromstring(body.lstrip())  # strip leading whitespace before <?xml
     except ET.ParseError as e:
         raise ValueError(f"xml parse: {e}")
 
@@ -232,17 +232,30 @@ def parse_feed(url: str, body: bytes) -> tuple[str, list[dict]]:
     feed_title = ""
 
     # RSS 2.0 / RDF
+    RSS1 = "http://purl.org/rss/1.0/"
+    RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     if root.tag.lower().endswith("rss") or root.tag.endswith("}RDF"):
-        channel = root.find("channel") or root.find("{http://purl.org/rss/1.0/}channel") or root
+        _ch = root.find("channel")
+        if _ch is None:
+            _ch = root.find("{http://purl.org/rss/1.0/}channel")
+        channel = _ch if _ch is not None else root
         ft = channel.find("title")
+        if ft is None:
+            ft = channel.find(f"{{{RSS1}}}title")
         if ft is not None and ft.text:
             feed_title = ft.text.strip()
         for item in root.iter():
             tag = item.tag.split("}")[-1]
             if tag != "item":
                 continue
-            title = (item.findtext("title") or "").strip()
-            raw_link = (item.findtext("link") or "").strip()
+            # RSS 1.0 puts title/link in the rss1.0 namespace; try both
+            title = (item.findtext("title") or item.findtext(f"{{{RSS1}}}title") or "").strip()
+            raw_link = (
+                item.findtext("link")
+                or item.findtext(f"{{{RSS1}}}link")
+                or item.get(f"{{{RDF_NS}}}about")  # rdf:about as fallback
+                or ""
+            ).strip()
             pub = (item.findtext("pubDate")
                    or item.findtext("{http://purl.org/dc/elements/1.1/}date")
                    or "")
@@ -320,8 +333,12 @@ def process(url: str, since: datetime, max_items: int, timeout: int,
     feed_endorsements: dict[str, list[str]] = {}
     for it in items:
         dt = parse_date(it["published"])
-        if dt and dt < since:
-            continue
+        if dt:
+            # Normalise naive datetimes (some feeds omit timezone) to UTC
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            if dt < since:
+                continue
         it["published"] = dt.isoformat() if dt else ""
         it["feed"] = url
         it["feed_title"] = feed_title

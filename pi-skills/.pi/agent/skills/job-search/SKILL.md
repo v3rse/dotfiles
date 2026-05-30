@@ -1,6 +1,6 @@
 ---
 name: job-search
-description: Run a targeted job search for Senior/Staff backend and platform engineering roles. Use when asked to "search for jobs", "find me work", "job search", "look for roles", "find backend jobs", "search remote Germany", "find work", "job hunt", "apply for jobs", or "find engineering roles". Loads the user's career profile from ~/org/career/, searches live listings, filters for English-speaking roles in Germany or remote-from-Germany, scores fit against the profile, and outputs a tiered report with Blue Card safety notes.
+description: Run a targeted job search for Senior/Staff backend, platform, and product SaaS engineering roles. Use when asked to "search for jobs", "find me work", "job search", "look for roles", "find backend jobs", "search remote Germany", "find work", "job hunt", "apply for jobs", or "find engineering roles". Supports --narrow (search only target-companies.org) and --broad (open market, ignore company list) modes. Covers platform/infrastructure roles and product SaaS backend roles (TypeScript/Node.js-heavy B2B SaaS). Loads the user's career profile from ~/org/career/, searches live listings, filters for English-speaking roles in Germany or remote-from-Germany, scores fit against the profile, and outputs a tiered report with Blue Card safety notes.
 allowed-tools: Read, Bash, web_search, web_fetch
 ---
 
@@ -26,27 +26,61 @@ Ask the user for search parameters. Use these defaults from the profile if not s
 | Parameter | Default |
 |-----------|---------|
 | Role level | Senior / Staff Engineer |
-| Domain | Backend / Platform / Distributed Systems |
+| Domain | Backend / Platform / Distributed Systems / Product SaaS |
 | Location | Germany — remote or Cologne |
 | Language | English-speaking |
 | Blue Card | Must keep — prioritize German payroll |
+| **Search Mode** | `--narrow` |
+
+**Search Mode** controls how Step 3 runs:
+
+| Flag | Behaviour |
+|------|-----------|
+| `--narrow` | Search only the companies listed in `target-companies.org`. Direct career-page + job-board queries per company. |
+| `--broad` | Ignore the target-companies list. Search open market via job boards, HN hiring threads, and stack/role queries only. |
+
+If the user says "broad", "open market", "don't limit to my list", "wider search", or similar — default to `--broad` automatically.
 
 Confirm with the user before proceeding.
 
 ## Step 3: Execute Search
 
-Run 4–6 parallel `web_search` calls covering:
+Run 4–6 parallel `web_search` calls. Which queries to run depends on the **Search Mode** selected in Step 2:
 
-1. **Tier 1 targets** — Search the user's Tier 1 companies from `target-companies.org` for open roles matching the criteria. Example queries:
+### `--narrow` mode (target-companies list only)
+
+1. **Tier 1 targets** — For each Tier 1 company in `target-companies.org`:
    - `"<company>" "senior backend engineer" Germany remote 2026`
    - `site:greenhouse.io OR site:jobs.ashbyhq.com OR site:workable.com "<company>" backend engineer remote Germany`
 
-2. **Broad market** — Search general job boards and HN hiring threads:
-   - `"senior backend engineer" OR "staff engineer" remote Germany English TypeScript Node.js AWS 2026`
-   - `site:hnhiring.com backend engineer remote Europe Germany May 2026`
+2. **Tier 2 targets** — Same pattern for Tier 2 companies.
 
-3. **Specific stack** — Search for the user's core technologies:
-   - `"platform engineer" OR "reliability engineer" Germany remote Kubernetes AWS 2026`
+3. **Specific stack within targets** — Narrow to user's core technologies at those companies:
+   - `"<company>" "platform engineer" OR "reliability engineer" Germany remote Kubernetes AWS 2026`
+
+### `--broad` mode (open market, ignore company list)
+
+1. **General role search** — Job boards and HN hiring threads:
+   - `"senior backend engineer" OR "staff engineer" remote Germany English TypeScript Node.js AWS 2026`
+   - `site:hnhiring.com backend engineer remote Europe Germany 2026`
+
+2. **Platform/reliability focus** — Broader role titles:
+   - `"platform engineer" OR "reliability engineer" OR "infrastructure engineer" Germany remote Kubernetes AWS 2026`
+
+3. **Job board sweep** — Structured board queries:
+   - `site:greenhouse.io OR site:jobs.ashbyhq.com OR site:lever.co "backend engineer" Germany remote 2026`
+   - `site:linkedin.com/jobs "senior backend engineer" Germany remote TypeScript 2026`
+
+4. **Stack-specific sweep** — Find roles by tech, not title:
+   - `"NestJS" OR "Node.js" "senior engineer" Germany remote platform distributed 2026`
+
+5. **Product SaaS sweep** — B2B SaaS backend roles with TypeScript/Node.js stack:
+   - `"senior backend engineer" TypeScript Node.js "B2B" OR "SaaS" Germany remote 2026`
+   - `site:jobs.ashbyhq.com OR site:greenhouse.io "senior backend engineer" OR "staff engineer" TypeScript remote Germany 2026`
+   - `site:hnhiring.com TypeScript Node.js "senior" backend remote Europe 2026`
+
+6. **SaaS company direct search** — Known TypeScript-heavy B2B SaaS companies with EU presence:
+   - Query careers pages of: Ashby, Brandfetch, Contentful, Customer.io, Klaviyo, n8n, Personio, HiBob
 
 Use `maxResults: 10` per search. Prefer specific queries over broad ones.
 
@@ -64,9 +98,10 @@ Score each role against the user's profile using these criteria:
 
 | Score | Criteria |
 |-------|----------|
-| **Strong fit** | JD mentions ≥3 of: distributed systems, event-driven architecture, platform/infrastructure ownership, reliability/SRE accountability, AWS/Kubernetes, design doc/ADR culture. Stack includes TypeScript/Node.js or adjacent. |
-| **Moderate fit** | JD mentions 2 of the above, or stack is close (Go/Python with platform focus). |
-| **Weak fit** | Generic "full stack" with unclear ownership, no operational accountability, or stack mismatch. |
+| **Strong fit (platform)** | JD mentions ≥3 of: distributed systems, event-driven architecture, platform/infrastructure ownership, reliability/SRE accountability, AWS/Kubernetes, design doc/ADR culture. Stack includes TypeScript/Node.js or adjacent. |
+| **Strong fit (SaaS)** | B2B SaaS product with real backend complexity. JD mentions ≥3 of: TypeScript/Node.js stack, end-to-end feature ownership, API/integration depth, async/event-driven patterns, meaningful scale (users/data), Senior+ technical influence. Company has strong engineering culture signal (public ADR/RFC practice, incident culture, or known engineering brand). |
+| **Moderate fit** | JD mentions 2 of the above criteria (either track), or stack is close (Go/Python with platform focus, or SaaS with partial TypeScript). |
+| **Weak fit** | Generic "full stack" with unclear ownership, no operational accountability, stack mismatch, or pure frontend-heavy SaaS with no backend depth. |
 
 **Blue Card safety filter:**
 

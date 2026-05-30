@@ -1,3 +1,19 @@
 __pycache__/
 *.pyc
 *.pyo
+
+# Self-referential symlink artifacts (created by old install script running
+# link_skills against a stow-folded ~/.pi/agent/skills path).
+# Add new skill names here whenever they appear as untracked.
+.pi/agent/skills/blindspots/blindspots
+.pi/agent/skills/codecrafters/codecrafters
+.pi/agent/skills/deal-hunter/deal-hunter
+.pi/agent/skills/interview-prep/interview-prep
+.pi/agent/skills/job-search/job-search
+.pi/agent/skills/tech-catchup/tech-catchup
+.pi/agent/skills/visualizer/visualizer
+.pi/agent/skills/wiki-builder/wiki-builder
+.pi/agent/skills/wiki-explorer/wiki-explorer
+
+# Stow zip artifacts
+*.skill

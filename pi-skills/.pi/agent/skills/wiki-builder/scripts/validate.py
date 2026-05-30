@@ -14,10 +14,13 @@ Checks:
 Exits 0 if clean, 1 if any errors found.
 """
 import os, re, sys
-from datetime import date
+from datetime import date, timedelta
+
+STUB_AGE_DAYS = 30  # warn if stub older than this
 
 wiki_dir = os.path.expanduser(sys.argv[1] if len(sys.argv) > 1 else "~/org/wiki")
-REQUIRED_FIELDS = ["title", "slug", "tags", "created", "updated", "sources"]
+REQUIRED_FIELDS = ["title", "slug", "tags", "status", "created", "updated", "sources"]
+VALID_STATUSES = {"stub", "draft", "permanent"}
 DATE_RE = re.compile(r'^\d{4}-\d{2}-\d{2}$')
 
 errors = []
@@ -26,7 +29,7 @@ pages = {}
 
 # --- load all pages ---
 for fname in sorted(os.listdir(wiki_dir)):
-    if not fname.endswith(".md") or fname in ("README.md", "index.md"):
+    if not fname.endswith(".md") or fname in ("README.md", "index.md", "log.md"):
         continue
     path = os.path.join(wiki_dir, fname)
     with open(path) as f:
@@ -69,6 +72,20 @@ for slug, page in pages.items():
             ref = line.strip().lstrip('- ').strip()
             if ref and ref not in pages:
                 errors.append(f"{prefix}: related slug '{ref}' has no matching file")
+
+    # status field validation
+    status_m = re.search(r'^status:\s*(.+)$', fm, re.MULTILINE)
+    if status_m:
+        status_val = status_m.group(1).strip()
+        if status_val not in VALID_STATUSES:
+            errors.append(f"{prefix}: invalid status '{status_val}' — must be stub|draft|permanent")
+        elif status_val == "stub":
+            created_m = re.search(r'^created:\s*(.+)$', fm, re.MULTILINE)
+            if created_m and DATE_RE.match(created_m.group(1).strip()):
+                created_dt = date.fromisoformat(created_m.group(1).strip())
+                age = (date.today() - created_dt).days
+                if age > STUB_AGE_DAYS:
+                    warnings.append(f"{prefix}: stub is {age} days old — consider fleshing out or promoting to draft")
 
     # mega-page warning
     line_count = content.count('\n')

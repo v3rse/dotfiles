@@ -37,6 +37,7 @@ template = f"""\
 title: {title}
 slug: {slug}
 tags: [{tags_inline}]
+status: stub
 created: {today}
 updated: {today}
 sources:

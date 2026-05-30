@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{title}}</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css" id="hljs-light-theme">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" id="hljs-dark-theme" disabled>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+<style>
+:root {
+    --ivory: #FAF9F5; --paper: #FFFFFF; --slate: #141413;
+    --clay: #D97757; --clay-d: #B85C3E; --olive: #788C5D;
+    --g100: #F0EEE6; --g200: #E6E3DA; --g300: #D1CFC5; --g500: #87867F; --g700: #3D3D3A;
+    --serif: ui-serif, Georgia, "Times New Roman", Times, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+    --bg: var(--ivory); --text: var(--slate);
+    --border: var(--g300); --shadow: 0 12px 32px rgba(20,20,19,0.08);
+}
+[data-theme="dark"] {
+    --bg: #141413; --text: #F0EEE6;
+    --paper: #1e1e1c; --border: #3D3D3A;
+    --g100: #1e1e1c; --g200: #2a2a28; --g300: #3D3D3A;
+    --g500: #87867F; --g700: #D1CFC5; --slate: #F0EEE6;
+    --shadow: 0 12px 32px rgba(0,0,0,0.3);
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg: #141413; --text: #F0EEE6;
+        --paper: #1e1e1c; --border: #3D3D3A;
+        --g100: #1e1e1c; --g200: #2a2a28; --g300: #3D3D3A;
+        --g500: #87867F; --g700: #D1CFC5; --slate: #F0EEE6;
+        --shadow: 0 12px 32px rgba(0,0,0,0.3);
+    }
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased;overflow:hidden;height:100vh}
+
+/* Slide container */
+#deck{height:100vh;width:100%;overflow:hidden;position:relative}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:4rem;opacity:0;transform:scale(0.98);transition:opacity 300ms ease,transform 300ms ease;pointer-events:none}
+.slide.active{opacity:1;transform:scale(1);pointer-events:auto}
+.slide-content{max-width:900px;width:100%;max-height:80vh;overflow-y:auto}
+
+/* Title slide */
+.slide-title{text-align:center}
+.slide-title h1{font-family:var(--serif);font-weight:500;font-size:clamp(32px,6vw,64px);line-height:1.1;letter-spacing:-0.02em;margin-bottom:1rem;color:var(--text)}
+.slide-title .deck-subtitle{font-family:var(--mono);font-size:14px;color:var(--g500);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3rem}
+.slide-title .deck-meta{font-family:var(--mono);font-size:12px;color:var(--g500)}
+
+/* Content slides */
+.slide h2{font-family:var(--serif);font-weight:500;font-size:32px;line-height:1.2;letter-spacing:-0.012em;margin:0 0 2rem;color:var(--text);display:flex;align-items:baseline;gap:16px}
+.slide h2::before{content:"•";color:var(--clay);font-size:1.1em}
+.slide h3{font-family:var(--serif);font-size:22px;font-weight:500;margin:1rem 0;color:var(--text)}
+.slide p{font-size:17px;color:var(--g700);line-height:1.65;margin:0 0 1.5rem}
+.slide ul,.slide ol{font-size:16px;line-height:1.8;margin:0 0 1.5rem;padding-left:1.5rem}
+.slide li{margin-bottom:0.5rem}
+.slide li::marker{color:var(--clay)}
+/* Code — distinct bg for contrast */
+.slide pre,pre{background:var(--g200);padding:20px;border-radius:10px;font-size:13.5px;line-height:1.6;overflow-x:auto;border:1.5px solid var(--border);margin:1rem 0;position:relative;font-family:var(--mono);color:var(--text)}
+pre code{font-family:var(--mono);color:var(--text)}
+[data-theme="dark"] pre code.hljs{background:var(--g200)}
+pre .copy-btn{position:absolute;top:8px;right:8px;font-family:var(--mono);font-size:10px;background:var(--paper);border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;color:var(--g500);opacity:0;transition:opacity 150ms ease}
+pre:hover .copy-btn{opacity:1}
+pre .copy-btn:hover{color:var(--clay);border-color:var(--clay)}
+
+/* Mermaid */
+.mermaid-container{position:relative;margin:1rem 0;background:var(--paper);border-radius:14px;border:1.5px solid var(--border);overflow:hidden;height:400px}
+.mermaid-controls{position:absolute;top:0.5rem;right:0.5rem;display:flex;gap:0.5rem;z-index:10}
+.mermaid-btn{background:var(--bg);border:1.5px solid var(--border);padding:2px 8px;border-radius:6px;cursor:pointer;font-size:11px;color:var(--g500);font-family:var(--sans)}
+.mermaid-btn:hover{border-color:var(--clay);color:var(--clay)}
+.mermaid{height:100%;width:100%;display:flex;justify-content:center;align-items:center}
+.slide table{width:100%;border-collapse:collapse;font-size:14px;margin:1rem 0}
+.slide th{text-align:left;padding:10px;border-bottom:2px solid var(--text);font-weight:600;font-family:var(--mono);font-size:10px;text-transform:uppercase}
+.slide td{padding:10px;border-bottom:1px solid var(--border)}
+.slide blockquote{font-size:18px;font-style:italic;color:var(--g700);border-left:4px solid var(--clay);padding-left:20px;margin:1.5rem 0}
+.slide .big-number{font-family:var(--serif);font-size:72px;font-weight:500;color:var(--clay);line-height:1;margin-bottom:0.5rem}
+.slide .big-label{font-family:var(--mono);font-size:13px;color:var(--g500);text-transform:uppercase;letter-spacing:0.05em}
+
+/* Controls bar */
+#controls{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1.5px solid var(--border);padding:12px 2rem;display:flex;justify-content:space-between;align-items:center;z-index:10;font-family:var(--mono);font-size:11px;color:var(--g500)}
+#controls button{font-family:var(--mono);font-size:11px;background:var(--paper);border:1.5px solid var(--border);padding:6px 14px;border-radius:8px;cursor:pointer;color:var(--g500);transition:all 150ms ease}
+#controls button:hover{border-color:var(--clay);color:var(--clay)}
+#controls button:disabled{opacity:0.3;cursor:default}
+#slide-counter{font-weight:600}
+#progress-dots{display:flex;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--g300);transition:all 150ms ease;cursor:pointer}
+.dot.active{background:var(--clay);transform:scale(1.3)}
+.dot:hover{background:var(--g500)}
+
+/* Top bar */
+#slide-top-bar{position:fixed;top:0;left:0;right:0;padding:8px 2rem;display:flex;justify-content:flex-end;z-index:10}
+#slide-top-bar button{font-family:var(--mono);font-size:10px;background:none;border:none;color:var(--g500);cursor:pointer;padding:4px 8px}
+#slide-top-bar button:hover{color:var(--clay)}
+.gallery-link{font-family:var(--mono);font-size:10px;color:var(--clay);text-decoration:none;font-weight:600;position:fixed;top:8px;left:2rem;z-index:10}
+.gallery-link:hover{color:var(--clay-d)} .gallery-link::before{content:"← "}
+
+@media (max-width:768px){
+    .slide{padding:2rem}
+    .slide h2{font-size:24px}
+    .slide p{font-size:15px}
+    .slide .big-number{font-size:48px}
+    #controls{padding:10px 1rem}
+    #progress-dots{display:none}
+}
+@media print{
+    .slide{position:relative;opacity:1;transform:none;page-break-after:always;display:flex!important;pointer-events:auto}
+    #controls,#slide-top-bar,.gallery-link{display:none!important}
+    body{overflow:visible;height:auto}
+}
+</style>
+</head>
+<body>
+<a href="index.html" class="gallery-link">Gallery</a>
+<div id="slide-top-bar">
+    <button id="theme-toggle-mini" title="Toggle theme">◐</button>
+</div>
+<div id="deck"></div>
+<div id="controls">
+    <button id="prev-btn" disabled>← Prev</button>
+    <div id="progress-dots"></div>
+    <span id="slide-counter">1 / 1</span>
+    <button id="next-btn">Next →</button>
+</div>
+
+<script>
+const rawContent = `{{content}}`;
+const rawTitle = `{{title}}`;
+
+// Parse content
+const parser = document.createElement('div');
+parser.innerHTML = marked.parse(rawContent);
+
+// Build slides: title slide + one per h2
+const slides = [];
+const deck = document.getElementById('deck');
+const dotsContainer = document.getElementById('progress-dots');
+const counter = document.getElementById('slide-counter');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+let currentSlide = 0;
+
+// Title slide
+const titleSlide = document.createElement('div');
+titleSlide.className = 'slide slide-title active';
+titleSlide.innerHTML = '<div class="slide-content">' +
+    '<div class="deck-subtitle">Presentation</div>' +
+    '<h1>'+rawTitle+'</h1>' +
+    (parser.querySelector('p') ? '<div class="deck-meta">'+parser.querySelector('p').innerHTML+'</div>' : '') +
+    '</div>';
+slides.push(titleSlide);
+deck.appendChild(titleSlide);
+
+// Content slides from h2 sections
+const h2s = parser.querySelectorAll('h2');
+h2s.forEach((h2, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'slide';
+    let content = h2.outerHTML;
+    let sibling = h2.nextElementSibling;
+    // Gather content until next h2
+    while (sibling && sibling.tagName !== 'H2') {
+        content += sibling.outerHTML;
+        sibling = sibling.nextElementSibling;
+    }
+    slide.innerHTML = '<div class="slide-content">'+content+'</div>';
+    slides.push(slide);
+    deck.appendChild(slide);
+});
+
+// Build dots
+slides.forEach((_, i) => {
+    const dot = document.createElement('span');
+    dot.className = 'dot' + (i===0?' active':'');
+    dot.onclick = () => goToSlide(i);
+    dotsContainer.appendChild(dot);
+});
+
+function goToSlide(idx) {
+    slides[currentSlide].classList.remove('active');
+    dotsContainer.children[currentSlide].classList.remove('active');
+    currentSlide = idx;
+    slides[currentSlide].classList.add('active');
+    dotsContainer.children[currentSlide].classList.add('active');
+    counter.textContent = (currentSlide+1) + ' / ' + slides.length;
+    prevBtn.disabled = currentSlide === 0;
+    nextBtn.disabled = currentSlide === slides.length - 1;
+}
+
+prevBtn.onclick = () => { if (currentSlide > 0) goToSlide(currentSlide - 1); };
+nextBtn.onclick = () => { if (currentSlide < slides.length - 1) goToSlide(currentSlide + 1); };
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        if (currentSlide < slides.length - 1) goToSlide(currentSlide + 1);
+    }
+    if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (currentSlide > 0) goToSlide(currentSlide - 1);
+    }
+    if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+    if (e.key === 'End') { e.preventDefault(); goToSlide(slides.length - 1); }
+    if (e.key === 't' && !e.ctrlKey && !e.metaKey) toggleTheme();
+});
+
+// Touch swipe
+let touchStartX = 0;
+deck.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+deck.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+        if (diff > 0 && currentSlide < slides.length - 1) goToSlide(currentSlide + 1);
+        else if (diff < 0 && currentSlide > 0) goToSlide(currentSlide - 1);
+    }
+});
+
+// Theme
+const getTheme = () => localStorage.getItem('theme') || 'auto';
+const applyTheme = t => {
+    document.documentElement.removeAttribute('data-theme');
+    const isDark = t === 'dark' || (t === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (isDark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        setHljsTheme('dark');
+        renderMermaidDiagrams('dark');
+    } else {
+        if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+        setHljsTheme('light');
+        renderMermaidDiagrams('neutral');
+    }
+    document.getElementById('theme-toggle-mini').textContent = isDark ? '◑' : '◐';
+};
+function toggleTheme() {
+    const c = getTheme(), n = c === 'auto' ? 'dark' : c === 'dark' ? 'light' : 'auto';
+    localStorage.setItem('theme', n); applyTheme(n);
+}
+applyTheme(getTheme());
+document.getElementById('theme-toggle-mini').onclick = toggleTheme;
+
+// Init
+counter.textContent = '1 / ' + slides.length;
+nextBtn.disabled = slides.length <= 1;
+
+// ── Mermaid preprocessing (on live #deck) ──
+const processMermaid = (root) => {
+    root.querySelectorAll('pre code.language-mermaid').forEach((codeBlock, idx) => {
+        const pre = codeBlock.parentElement;
+        const diagram = codeBlock.textContent;
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        const controls = document.createElement('div');
+        controls.className = 'mermaid-controls';
+        controls.innerHTML = '<button class="mermaid-btn" data-idx="'+idx+'">Reset</button><button class="mermaid-btn" data-idx="'+idx+'">Fit</button>';
+        const mermaidDiv = document.createElement('div');
+        mermaidDiv.className = 'mermaid';
+        mermaidDiv.id = 'deck-mermaid-' + idx;
+        mermaidDiv.textContent = diagram;
+        mermaidDiv.dataset.diagram = diagram;
+        container.appendChild(controls);
+        container.appendChild(mermaidDiv);
+        pre.replaceWith(container);
+    });
+};
+processMermaid(document.getElementById('deck'));
+
+// Copy buttons on all pre blocks in deck
+document.querySelectorAll('#deck pre:not(.mermaid-container pre)').forEach(pre => {
+    if (pre.querySelector('.copy-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn'; btn.textContent = 'Copy';
+    btn.onclick = () => {
+        navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 1500);
+        });
+    };
+    pre.appendChild(btn);
+});
+
+// Mermaid rendering (reusable)
+const zoomInstances = {};
+const renderMermaidDiagrams = (theme) => {
+    document.querySelectorAll('#deck .mermaid').forEach(div => {
+        div.textContent = div.dataset.diagram || '';
+        div.removeAttribute('data-processed');
+    });
+    Object.values(zoomInstances).forEach(z => { try { z.destroy(); } catch(e) {} });
+    for (const k in zoomInstances) delete zoomInstances[k];
+    mermaid.initialize({ startOnLoad: false, theme: theme || 'neutral' });
+    return mermaid.run({ querySelector: '#deck .mermaid' }).then(() => {
+        document.querySelectorAll('#deck .mermaid svg').forEach((svg, idx) => {
+            svg.style.height = '100%'; svg.style.width = '100%';
+            zoomInstances[idx] = svgPanZoom(svg, {
+                zoomEnabled: true, controlIconsEnabled: false,
+                fit: true, center: true, minZoom: 0.1, maxZoom: 10
+            });
+        });
+    });
+};
+renderMermaidDiagrams('neutral');
+
+// Mermaid controls
+document.querySelectorAll('#deck .mermaid-btn').forEach(btn => {
+    btn.onclick = () => {
+        const idx = parseInt(btn.dataset.idx);
+        if (!zoomInstances[idx]) return;
+        if (btn.textContent === 'Reset') { zoomInstances[idx].resetZoom(); zoomInstances[idx].center(); }
+        if (btn.textContent === 'Fit') { zoomInstances[idx].fit(); zoomInstances[idx].center(); }
+    };
+});
+
+// Syntax highlighting
+hljs.highlightAll();
+
+// Highlight.js theme switching
+const hljsLight = document.getElementById('hljs-light-theme');
+const hljsDark = document.getElementById('hljs-dark-theme');
+const setHljsTheme = t => {
+    if (t === 'dark') { hljsLight.disabled = true; hljsDark.disabled = false; }
+    else { hljsLight.disabled = false; hljsDark.disabled = true; }
+};
+</script>
+</body>
+</html>

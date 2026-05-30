@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{title}}</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css" id="hljs-light-theme">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" id="hljs-dark-theme" disabled>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+<style>
+:root {
+    --ivory: #FAF9F5; --paper: #FFFFFF; --slate: #141413;
+    --clay: #D97757; --clay-d: #B85C3E; --olive: #788C5D;
+    --g100: #F0EEE6; --g200: #E6E3DA; --g300: #D1CFC5; --g500: #87867F; --g700: #3D3D3A;
+    --serif: ui-serif, Georgia, "Times New Roman", Times, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+    --bg: var(--ivory); --text: var(--slate); --header-text: var(--slate);
+    --border: var(--g300); --shadow: 0 8px 24px rgba(20,20,19,0.06);
+    --risk-high: var(--clay); --risk-med: #C4A43E; --risk-low: var(--olive);
+}
+[data-theme="dark"] {
+    --bg: #141413; --text: #F0EEE6; --header-text: #F0EEE6;
+    --paper: #1e1e1c; --border: #3D3D3A;
+    --g100: #1e1e1c; --g200: #2a2a28; --g300: #3D3D3A;
+    --g500: #87867F; --g700: #D1CFC5; --slate: #F0EEE6;
+    --shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg: #141413; --text: #F0EEE6; --header-text: #F0EEE6;
+        --paper: #1e1e1c; --border: #3D3D3A;
+        --g100: #1e1e1c; --g200: #2a2a28; --g300: #3D3D3A;
+        --g500: #87867F; --g700: #D1CFC5; --slate: #F0EEE6;
+        --shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+}
+
+* { box-sizing: border-box; }
+body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--sans); line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    padding: 0 0 6rem;
+}
+
+/* Top bar */
+.top-bar {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 24px 0;
+    flex-wrap: wrap; gap: 12px;
+}
+.gallery-link {
+    font-family: var(--mono); font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--clay); text-decoration: none; font-weight: 600;
+}
+.gallery-link:hover { color: var(--clay-d); } .gallery-link::before { content: "← "; }
+.theme-toggle {
+    font-family: var(--mono); font-size: 11px; color: var(--g500);
+    cursor: pointer; background: none; border: none; padding: 0;
+    display: flex; align-items: center; gap: 6px;
+}
+.theme-toggle:hover { color: var(--clay); }
+.theme-toggle .icon { font-size: 12px; }
+
+/* Meta strip */
+.meta-strip {
+    max-width: 1100px; margin: 0 auto;
+    padding: 16px 24px 0;
+    display: flex; flex-wrap: wrap; gap: 20px;
+    align-items: center;
+}
+.meta-strip .meta-item {
+    font-family: var(--mono); font-size: 11px; color: var(--g500);
+    letter-spacing: 0.05em;
+}
+.meta-strip .meta-item strong {
+    color: var(--text); font-weight: 600;
+}
+
+/* Header */
+header {
+    max-width: 1100px; margin: 0 auto;
+    padding: 32px 24px;
+}
+.subtitle {
+    font-family: var(--mono); font-size: 12px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--g500); margin-bottom: 8px;
+}
+h1 {
+    font-family: var(--serif); font-weight: 500;
+    font-size: clamp(28px, 4.5vw, 48px);
+    line-height: 1.1; letter-spacing: -0.02em;
+    margin: 0; color: var(--header-text);
+}
+.intro {
+    font-size: 16px; color: var(--g700);
+    max-width: 720px; margin-top: 16px; line-height: 1.65;
+}
+
+/* Timeline */
+.timeline {
+    max-width: 1100px; margin: 0 auto;
+    padding: 0 24px 40px;
+}
+.timeline h2 {
+    font-family: var(--serif); font-size: 22px; font-weight: 500;
+    margin: 0 0 24px; color: var(--header-text);
+    display: flex; align-items: baseline; gap: 12px;
+}
+.timeline h2::before { content: "•"; color: var(--clay); }
+
+.timeline-bar {
+    position: relative;
+    padding-left: 32px;
+    border-left: 2px solid var(--g300);
+}
+.tl-slice {
+    position: relative;
+    padding: 16px 0 24px 28px;
+    border-left: 3px solid var(--border);
+    margin-left: -1.5px;
+}
+.tl-slice::before {
+    content: ""; position: absolute;
+    left: -9px; top: 20px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--paper); border: 2px solid var(--g300);
+}
+.tl-slice.active::before { background: var(--clay); border-color: var(--clay); }
+.tl-slice.done::before { background: var(--olive); border-color: var(--olive); }
+.tl-slice .tl-date {
+    font-family: var(--mono); font-size: 11px; color: var(--g500);
+    letter-spacing: 0.05em; margin-bottom: 4px;
+}
+.tl-slice .tl-label {
+    font-family: var(--serif); font-size: 18px; font-weight: 500;
+    color: var(--header-text); margin-bottom: 6px;
+}
+.tl-slice .tl-desc {
+    font-size: 14px; color: var(--g700); line-height: 1.6;
+}
+.tl-slice .tl-packages {
+    display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;
+}
+.tl-slice .tl-pkg {
+    font-family: var(--mono); font-size: 10px; color: var(--g500);
+    background: var(--g100); padding: 2px 8px; border-radius: 4px;
+    border: 1px solid var(--border);
+}
+
+/* Divider */
+.section {
+    max-width: 1100px; margin: 0 auto;
+    padding: 0 24px 40px;
+}
+
+/* Risk table */
+.risk-table {
+    width: 100%; border-collapse: collapse;
+    margin: 16px 0; font-size: 14px;
+}
+.risk-table th {
+    text-align: left; padding: 12px 16px;
+    border-bottom: 2px solid var(--slate);
+    font-family: var(--mono); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--g500);
+}
+.risk-table td {
+    padding: 12px 16px; border-bottom: 1.5px solid var(--border);
+    vertical-align: top; line-height: 1.55;
+}
+.risk-table tr:hover td { background: var(--g100); }
+.risk-high { color: var(--risk-high); font-weight: 700; }
+.risk-med { color: var(--risk-med); font-weight: 600; }
+.risk-low { color: var(--risk-low); font-weight: 600; }
+
+/* Code — distinct bg for contrast against page */
+pre {
+    background: var(--g200);
+    padding: 24px; border-radius: 12px;
+    overflow-x: auto; border: 1.5px solid var(--border);
+    font-size: 13.5px; line-height: 1.6;
+    margin: 2rem 0; position: relative;
+    font-family: var(--mono); color: var(--text);
+}
+pre code { font-family: var(--mono); color: var(--text); }
+[data-theme="dark"] pre code.hljs { background: var(--g200); }
+pre .copy-btn {
+    position: absolute; top: 8px; right: 8px;
+    font-family: var(--mono); font-size: 10px;
+    background: var(--paper); border: 1px solid var(--border);
+    border-radius: 6px; padding: 4px 10px;
+    cursor: pointer; color: var(--g500);
+    opacity: 0; transition: opacity 150ms ease;
+}
+pre:hover .copy-btn { opacity: 1; }
+pre .copy-btn:hover { color: var(--clay); border-color: var(--clay); }
+
+/* Mermaid */
+.mermaid-container {
+    position: relative; margin: 4rem 0;
+    background: var(--paper); border-radius: 14px;
+    border: 1.5px solid var(--border); overflow: hidden;
+    height: 500px;
+}
+.mermaid-controls {
+    position: absolute; top: 1rem; right: 1rem;
+    display: flex; gap: 0.5rem; z-index: 10;
+}
+.mermaid-btn {
+    background: var(--bg); border: 1.5px solid var(--border);
+    padding: 4px 10px; border-radius: 6px;
+    cursor: pointer; font-size: 12px; color: var(--g500);
+    font-family: var(--sans);
+}
+.mermaid-btn:hover { border-color: var(--clay); color: var(--clay); }
+.mermaid {
+    height: 100%; width: 100%;
+    display: flex; justify-content: center; align-items: center;
+}
+
+/* Decisions */
+.decision-card {
+    background: var(--paper); border: 1.5px solid var(--olive);
+    border-left: 4px solid var(--olive);
+    border-radius: 12px; padding: 24px;
+    margin: 16px 0;
+    box-shadow: var(--shadow);
+}
+.decision-card h4 {
+    font-family: var(--mono); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--olive); margin: 0 0 8px;
+}
+.decision-card p { font-size: 14.5px; color: var(--g700); margin: 0 0 12px; line-height: 1.6; }
+.decision-card .options {
+    display: flex; gap: 8px; flex-wrap: wrap;
+}
+.decision-card .option-tag {
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    padding: 6px 14px; border-radius: 8px;
+    border: 1.5px solid var(--border); background: var(--bg);
+    color: var(--text); cursor: default;
+}
+.decision-card .option-tag.pick {
+    border-color: var(--olive); background: var(--olive); color: #fff;
+}
+
+/* Mockup placeholder */
+.mockup {
+    background: var(--paper); border: 2px dashed var(--border);
+    border-radius: 14px; padding: 40px; text-align: center;
+    margin: 24px 0;
+    color: var(--g500); font-family: var(--mono);
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.mockup img { max-width: 100%; border-radius: 8px; }
+
+/* Content sections */
+h2 { font-family: var(--serif); font-size: 24px; font-weight: 500; margin: 24px 0 16px; color: var(--header-text); }
+h3 { font-family: var(--serif); font-size: 18px; font-weight: 500; margin: 20px 0 10px; color: var(--header-text); }
+p { font-size: 15px; color: var(--g700); line-height: 1.65; margin: 0 0 16px; }
+ul, ol { font-size: 15px; color: var(--g700); line-height: 1.65; padding-left: 24px; }
+li { margin-bottom: 6px; }
+table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+th { text-align: left; padding: 12px 16px; border-bottom: 2px solid var(--slate); }
+td { padding: 12px 16px; border-bottom: 1.5px solid var(--border); }
+tr:hover td { background: var(--g100); }
+
+@media (max-width: 768px) {
+    body { padding-bottom: 3rem; }
+    .tl-slice { padding-left: 16px; }
+    .timeline-bar { padding-left: 16px; }
+}
+@media print {
+    .top-bar, .theme-toggle, .gallery-link { display: none !important; }
+    body { background: #fff; color: #000; padding: 0; }
+}
+</style>
+</head>
+<body>
+<div class="top-bar">
+    <a href="index.html" class="gallery-link">Gallery</a>
+    <button class="theme-toggle" id="theme-toggle"><span class="icon" id="theme-icon">◐</span> Theme</button>
+</div>
+
+<header>
+    <div class="subtitle">{{subtitle}}</div>
+    <h1>{{title}}</h1>
+    <div class="intro" id="intro-text"></div>
+</header>
+
+<div class="section" id="meta-strip-container"></div>
+<div class="timeline" id="timeline-section"><h2>Slices</h2><div class="timeline-bar" id="timeline-bar"></div></div>
+<div class="section" id="content-section"></div>
+
+<script>
+const rawContent = `{{content}}`;
+const contentDiv = document.createElement('div');
+contentDiv.innerHTML = marked.parse(rawContent);
+
+// Move first paragraph to intro
+const firstP = contentDiv.querySelector('p');
+if (firstP && firstP === contentDiv.firstElementChild) {
+    document.getElementById('intro-text').innerHTML = firstP.innerHTML;
+    firstP.remove();
+}
+
+// Parse meta strip: tables with meta-like data
+const metaStrip = document.getElementById('meta-strip-container');
+const metaTable = contentDiv.querySelector('table');
+if (metaTable && metaTable.querySelectorAll('tr').length <= 4) {
+    // Likely a meta table
+    const items = [];
+    metaTable.querySelectorAll('tr').forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length === 2) {
+            items.push('<div class="meta-item">' + cells[0].textContent.trim() + ' <strong>' + cells[1].textContent.trim() + '</strong></div>');
+        }
+    });
+    if (items.length > 0) {
+        metaStrip.innerHTML = '<div class="meta-strip">' + items.join('') + '</div>';
+    }
+}
+
+// Parse timeline: look for h2 with "slice" or "week" then list items
+const timelineBar = document.getElementById('timeline-bar');
+const sliceHeadings = Array.from(contentDiv.querySelectorAll('h2, h3'))
+    .filter(h => /slice|week|phase|milestone|step/i.test(h.textContent));
+
+if (sliceHeadings.length > 0) {
+    sliceHeadings.forEach((h, i) => {
+        const slice = document.createElement('div');
+        slice.className = 'tl-slice';
+
+        // Try to extract date from heading text
+        const text = h.textContent;
+        const dateMatch = text.match(/(\w+ \d+|Q\d|Week \d+|Mon|Tue|Wed|Thu|Fri)/i);
+        const date = dateMatch ? dateMatch[0] : '';
+        const label = text.replace(date, '').replace(/[-–—:]/g, '').trim();
+
+        // Collect packages mentioned after this heading
+        const packages = [];
+        let sibling = h.nextElementSibling;
+        let desc = '';
+        while (sibling && !['H2','H3'].includes(sibling.tagName)) {
+            if (sibling.tagName === 'P' && !desc) desc = sibling.textContent;
+            sibling.querySelectorAll('code').forEach(c => packages.push(c.textContent));
+            sibling = sibling.nextElementSibling;
+        }
+
+        slice.innerHTML = `
+            ${date ? '<div class="tl-date">' + date + '</div>' : ''}
+            <div class="tl-label">${label || 'Slice ' + (i+1)}</div>
+            ${desc ? '<div class="tl-desc">' + desc + '</div>' : ''}
+            ${packages.length > 0 ? '<div class="tl-packages">' + packages.map(p => '<span class="tl-pkg">' + p + '</span>').join('') + '</div>' : ''}
+        `;
+        timelineBar.appendChild(slice);
+    });
+    document.getElementById('timeline-section').style.display = '';
+} else {
+    document.getElementById('timeline-section').style.display = 'none';
+}
+
+// Rest of content — move to DOM FIRST so mermaid/copy-target queries hit the live document
+document.getElementById('content-section').innerHTML = contentDiv.innerHTML;
+const contentSection = document.getElementById('content-section');
+
+// Mermaid preprocessing (on live DOM)
+contentSection.querySelectorAll('pre code.language-mermaid').forEach((codeBlock, idx) => {
+    const pre = codeBlock.parentElement;
+    const diagram = codeBlock.textContent;
+    const container = document.createElement('div');
+    container.className = 'mermaid-container';
+    const controls = document.createElement('div');
+    controls.className = 'mermaid-controls';
+    controls.innerHTML = '<button class="mermaid-btn" data-idx="'+idx+'">Reset</button><button class="mermaid-btn" data-idx="'+idx+'">Fit</button>';
+    const mermaidDiv = document.createElement('div');
+    mermaidDiv.className = 'mermaid';
+    mermaidDiv.id = 'mermaid-' + idx;
+    mermaidDiv.textContent = diagram;
+    mermaidDiv.dataset.diagram = diagram;  // stored for theme re-render
+    container.appendChild(controls);
+    container.appendChild(mermaidDiv);
+    pre.replaceWith(container);
+});
+
+// Add copy buttons to code blocks (on live DOM)
+contentSection.querySelectorAll('pre:not(.mermaid-container pre)').forEach(pre => {
+    if (pre.querySelector('.copy-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.onclick = () => {
+        navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 1500);
+        });
+    };
+    pre.appendChild(btn);
+});
+
+// Mermaid rendering (reusable — called on load and on theme change)
+const zoomInstances = {};
+const renderMermaidDiagrams = (theme) => {
+    // Reset each mermaid div to its original text (clears old SVG)
+    document.querySelectorAll('.mermaid').forEach(div => {
+        div.textContent = div.dataset.diagram || '';
+        div.removeAttribute('data-processed');
+    });
+    // Destroy old zoom instances
+    Object.values(zoomInstances).forEach(z => { try { z.destroy(); } catch(e) {} });
+    for (const k in zoomInstances) delete zoomInstances[k];
+
+    mermaid.initialize({ startOnLoad: false, theme: theme || 'neutral' });
+    return mermaid.run({ querySelector: '.mermaid' }).then(() => {
+        document.querySelectorAll('.mermaid svg').forEach((svg, idx) => {
+            svg.style.height = '100%'; svg.style.width = '100%';
+            zoomInstances[idx] = svgPanZoom(svg, {
+                zoomEnabled: true, controlIconsEnabled: false,
+                fit: true, center: true, minZoom: 0.1, maxZoom: 10
+            });
+        });
+    });
+};
+
+// Initial render (neutral works on both light/dark backgrounds)
+renderMermaidDiagrams('neutral');
+
+// Mermaid controls (on live DOM)
+document.querySelectorAll('.mermaid-btn').forEach(btn => {
+    btn.onclick = () => {
+        const idx = parseInt(btn.dataset.idx);
+        if (!zoomInstances[idx]) return;
+        if (btn.textContent === 'Reset') { zoomInstances[idx].resetZoom(); zoomInstances[idx].center(); }
+        if (btn.textContent === 'Fit') { zoomInstances[idx].fit(); zoomInstances[idx].center(); }
+    };
+});
+
+// Syntax highlighting
+hljs.highlightAll();
+
+// Highlight.js theme switching helpers
+const hljsLight = document.getElementById('hljs-light-theme');
+const hljsDark = document.getElementById('hljs-dark-theme');
+const setHljsTheme = t => {
+    if (t === 'dark') { hljsLight.disabled = true; hljsDark.disabled = false; }
+    else { hljsLight.disabled = false; hljsDark.disabled = true; }
+};
+
+// Theme
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
+const getTheme = () => localStorage.getItem('theme') || 'auto';
+const applyTheme = t => {
+    document.documentElement.removeAttribute('data-theme');
+    const isDark = t === 'dark' || (t === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (isDark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        setHljsTheme('dark');
+        renderMermaidDiagrams('dark');
+    } else {
+        if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+        setHljsTheme('light');
+        renderMermaidDiagrams('neutral');
+    }
+    themeIcon.textContent = isDark ? '◑' : '◐';
+};
+applyTheme(getTheme());
+themeToggle.onclick = () => {
+    const c = getTheme();
+    const n = c === 'auto' ? 'dark' : c === 'dark' ? 'light' : 'auto';
+    localStorage.setItem('theme', n);
+    applyTheme(n);
+};
+document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 't' && !e.ctrlKey && !e.metaKey) themeToggle.click();
+});
+</script>
+</body>
+</html>

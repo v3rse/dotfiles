@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artifact Gallery</title>
+<style>
+:root {
+    --ivory: #FAF9F5; --paper: #FFFFFF; --slate: #141413;
+    --clay: #D97757; --clay-d: #B85C3E;
+    --g100: #F0EEE6; --g300: #D1CFC5; --g500: #87867F;
+    --serif: ui-serif, Georgia, "Times New Roman", Times, serif;
+    --sans: system-ui, -apple-system, sans-serif;
+    --mono: ui-monospace, "SF Mono", monospace;
+}
+[data-theme="dark"] {
+    --ivory: #141413; --paper: #1e1e1c; --slate: #F0EEE6;
+    --g100: #2a2a28; --g300: #3D3D3A;
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --ivory: #141413; --paper: #1e1e1c; --slate: #F0EEE6;
+        --g100: #2a2a28; --g300: #3D3D3A;
+    }
+}
+
+* { box-sizing: border-box; }
+body {
+    margin: 0; background: var(--ivory); color: var(--slate);
+    font-family: var(--sans); line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    padding: 3rem 2rem 5rem;
+}
+.container { max-width: 1100px; margin: 0 auto; }
+
+/* Header */
+.eyebrow {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--g500); margin-bottom: 0.75rem;
+    display: flex; align-items: center; gap: 12px;
+}
+.eyebrow::before { content: ""; width: 24px; height: 1.5px; background: var(--clay); }
+
+h1 {
+    font-family: var(--serif); font-size: 44px; font-weight: 500;
+    margin-bottom: 2rem; letter-spacing: -0.02em;
+}
+
+/* Controls */
+.controls {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    margin-bottom: 2.5rem;
+}
+#gallery-search {
+    flex: 1; min-width: 200px; max-width: 360px;
+    padding: 10px 16px; border: 1.5px solid var(--g300); border-radius: 10px;
+    background: var(--paper); color: var(--slate);
+    font-family: var(--sans); font-size: 14px; outline: none;
+}
+#gallery-search:focus { border-color: var(--clay); }
+.control-btn {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
+    text-transform: uppercase; padding: 8px 14px;
+    border: 1.5px solid var(--g300); border-radius: 8px;
+    background: var(--paper); color: var(--g500); cursor: pointer;
+    font-weight: 600; transition: all 150ms ease;
+}
+.control-btn:hover { border-color: var(--slate); color: var(--slate); }
+.control-btn.active { background: var(--slate); color: var(--ivory); border-color: var(--slate); }
+
+.sort-select {
+    font-family: var(--sans); font-size: 13px;
+    padding: 8px 12px; border: 1.5px solid var(--g300); border-radius: 8px;
+    background: var(--paper); color: var(--slate); cursor: pointer;
+}
+.result-count {
+    font-family: var(--mono); font-size: 11px; color: var(--g500);
+    margin-left: auto; padding-left: 12px;
+}
+.theme-toggle {
+    font-family: var(--mono); font-size: 11px; color: var(--g500);
+    cursor: pointer; background: none; border: none; padding: 0;
+    display: flex; align-items: center; gap: 6px; margin-left: 12px;
+}
+.theme-toggle:hover { color: var(--clay); }
+
+/* Section titles */
+.section-title {
+    font-family: var(--serif); font-size: 22px; font-weight: 500;
+    margin: 3rem 0 1.25rem; border-bottom: 1.5px solid var(--g300);
+    padding-bottom: 0.5rem; display: flex; align-items: center; gap: 10px;
+}
+
+/* Grid */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Card */
+.card {
+    background: var(--paper); border: 1.5px solid var(--g300);
+    border-radius: 14px; padding: 24px; text-decoration: none; color: inherit;
+    transition: all 150ms ease; display: flex; flex-direction: column;
+    position: relative;
+}
+.card:hover {
+    transform: translateY(-4px); border-color: var(--slate);
+    box-shadow: 0 12px 32px rgba(20,20,19,0.08);
+}
+.card.important { border-left: 4px solid var(--clay); }
+.card.hidden { display: none; }
+
+.card .type-badge {
+    position: absolute; top: 12px; right: 12px;
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 2px 8px; border-radius: 4px;
+    font-weight: 600;
+}
+.type-explainer, .type-Explainer { background: #788C5D; color: #fff; }
+.type-comparison, .type-Comparison { background: #C4A43E; color: #141413; }
+.type-plan, .type-Plan { background: #D97757; color: #fff; }
+.type-report, .type-Report { background: #5B7FA5; color: #fff; }
+.type-deck, .type-Deck { background: #8B5CF6; color: #fff; }
+.type-kanban, .type-Kanban { background: #EC4899; color: #fff; }
+.type-generic, .type-Document { background: var(--g300); color: var(--slate); }
+
+.card h3 {
+    font-family: var(--serif); font-size: 19px; font-weight: 500;
+    margin: 0 0 8px; padding-right: 60px; line-height: 1.3;
+}
+.card .meta {
+    font-family: var(--mono); font-size: 10px; color: var(--g500);
+    margin-bottom: 10px; display: flex; gap: 12px;
+}
+.card p {
+    font-size: 13.5px; color: var(--slate); opacity: 0.75;
+    margin: 0; flex: 1; line-height: 1.55;
+}
+
+.important-badge {
+    position: absolute; top: 12px; right: 12px;
+    font-family: var(--mono); font-size: 9px; background: var(--clay);
+    color: #fff; padding: 2px 6px; border-radius: 4px;
+    text-transform: uppercase;
+}
+.card.important .type-badge { right: 56px; }
+
+.empty-state {
+    grid-column: 1 / -1; text-align: center; padding: 4rem 2rem;
+    color: var(--g500); font-family: var(--mono); font-size: 14px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+
+@media (max-width: 768px) {
+    body { padding: 1.5rem 1rem; }
+    .controls { flex-wrap: wrap; }
+    #gallery-search { max-width: 100%; }
+    .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="eyebrow">Visualizer Output</div>
+    <h1>Artifact Gallery</h1>
+
+    <div class="controls">
+        <input type="text" id="gallery-search" placeholder="Search artifacts…">
+        <button class="control-btn active" data-filter="all" id="filter-all">All</button>
+        <button class="control-btn" data-filter="important" id="filter-featured">⭐ Featured</button>
+        <select class="sort-select" id="sort-select">
+            <option value="date-desc">Newest first</option>
+            <option value="date-asc">Oldest first</option>
+            <option value="title">A → Z</option>
+        </select>
+        <span class="result-count" id="result-count"></span>
+        <button class="theme-toggle" id="theme-toggle">◐ Theme</button>
+    </div>
+
+    <div id="type-filters" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem;"></div>
+
+    <div id="important-section" style="display:none;">
+        <h2 class="section-title">⭐ Featured</h2>
+        <div id="important-grid" class="grid"></div>
+    </div>
+
+    <h2 class="section-title">All Artifacts</h2>
+    <div id="all-grid" class="grid"></div>
+</div>
+
+<script>
+const artifacts = {{artifacts_json}};
+
+const importantGrid = document.getElementById('important-grid');
+const allGrid = document.getElementById('all-grid');
+const importantSection = document.getElementById('important-section');
+const typeFilters = document.getElementById('type-filters');
+const searchInput = document.getElementById('gallery-search');
+const sortSelect = document.getElementById('sort-select');
+const resultCount = document.getElementById('result-count');
+
+// Collect types for filter buttons
+const types = new Set(artifacts.map(a => a.type || 'generic'));
+const typeLabels = artifacts.reduce((acc, a) => {
+    acc[a.type || 'generic'] = a.typeLabel || (a.type || 'generic');
+    return acc;
+}, {});
+
+if (types.size > 1) {
+    typeFilters.innerHTML = Array.from(types).map(t =>
+        '<button class="control-btn type-filter" data-type="' + t + '">' +
+        (typeLabels[t] || t) + '</button>'
+    ).join('');
+}
+
+function createCard(a) {
+    const card = document.createElement('a');
+    card.href = a.path;
+    card.className = 'card' + (a.important ? ' important' : '');
+    card.dataset.type = a.type || 'generic';
+    card.dataset.title = (a.title || '').toLowerCase();
+    card.dataset.desc = (a.description || '').toLowerCase();
+    card.dataset.date = a.date || '';
+
+    const typeLabel = a.typeLabel || 'Document';
+    const typeClass = 'type-' + (a.type || 'generic');
+
+    card.innerHTML = `
+        ${a.important ? '<span class="important-badge">★</span>' : ''}
+        <span class="type-badge ${typeClass}">${typeLabel}</span>
+        <div class="meta"><span>${a.date || ''}</span></div>
+        <h3>${a.title || 'Untitled'}</h3>
+        <p>${a.description || ''}</p>
+    `;
+    return card;
+}
+
+function sortArtifacts(list, sortBy) {
+    const sorted = [...list];
+    switch (sortBy) {
+        case 'date-desc': sorted.sort((a,b) => (b.date||'').localeCompare(a.date||'')); break;
+        case 'date-asc':  sorted.sort((a,b) => (a.date||'').localeCompare(b.date||'')); break;
+        case 'title':     sorted.sort((a,b) => (a.title||'').localeCompare(b.title||'')); break;
+    }
+    return sorted;
+}
+
+function filterArtifacts() {
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    const activeTypeBtn = document.querySelector('.type-filter.active');
+    const activeType = activeTypeBtn ? activeTypeBtn.dataset.type : null;
+    const showFeatured = document.getElementById('filter-featured').classList.contains('active');
+    const sortBy = sortSelect.value;
+    const showAll = document.getElementById('filter-all').classList.contains('active');
+
+    let visible = showFeatured
+        ? artifacts.filter(a => a.important)
+        : artifacts;
+
+    // Type filter
+    if (activeType && !showFeatured) {
+        visible = visible.filter(a => (a.type || 'generic') === activeType);
+    }
+
+    // Search
+    if (searchTerm) {
+        visible = visible.filter(a =>
+            (a.title || '').toLowerCase().includes(searchTerm) ||
+            (a.description || '').toLowerCase().includes(searchTerm) ||
+            (a.typeLabel || '').toLowerCase().includes(searchTerm)
+        );
+    }
+
+    const sorted = sortArtifacts(visible, sortBy);
+    const important = sorted.filter(a => a.important);
+
+    // Render featured section
+    if (important.length > 0) {
+        importantSection.style.display = '';
+        importantGrid.innerHTML = '';
+        important.forEach(a => importantGrid.appendChild(createCard(a)));
+    } else {
+        importantSection.style.display = 'none';
+    }
+
+    // Render all grid
+    allGrid.innerHTML = '';
+    if (showFeatured) {
+        // Only show featured items
+        sorted.forEach(a => {
+            if (a.important) allGrid.appendChild(createCard(a));
+        });
+    } else {
+        sorted.forEach(a => allGrid.appendChild(createCard(a)));
+    }
+
+    // Update hidden state for search matches
+    document.querySelectorAll('.card').forEach(card => {
+        const term = searchTerm;
+        if (term) {
+            const matches = card.dataset.title.includes(term) || card.dataset.desc.includes(term);
+            // Cards are already filtered, so just leave them visible
+        }
+    });
+
+    resultCount.textContent = visible.length + ' artifact' + (visible.length !== 1 ? 's' : '');
+    if (visible.length === 0) {
+        allGrid.innerHTML = '<div class="empty-state">No artifacts match your filters</div>';
+    }
+}
+
+// Filter buttons
+document.querySelectorAll('.control-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (btn.dataset.filter === 'all') {
+            document.getElementById('filter-all').classList.add('active');
+            document.getElementById('filter-featured').classList.remove('active');
+        } else if (btn.dataset.filter === 'important') {
+            document.getElementById('filter-featured').classList.add('active');
+            document.getElementById('filter-all').classList.remove('active');
+        }
+        filterArtifacts();
+    });
+});
+
+// Type filters
+typeFilters.addEventListener('click', e => {
+    if (e.target.classList.contains('type-filter')) {
+        document.querySelectorAll('.type-filter').forEach(b => b.classList.remove('active'));
+        e.target.classList.toggle('active');
+        filterArtifacts();
+    }
+});
+
+// Double-click type filter to clear
+typeFilters.addEventListener('dblclick', e => {
+    if (e.target.classList.contains('type-filter')) {
+        document.querySelectorAll('.type-filter').forEach(b => b.classList.remove('active'));
+        filterArtifacts();
+    }
+});
+
+searchInput.addEventListener('input', filterArtifacts);
+sortSelect.addEventListener('change', filterArtifacts);
+
+// Theme
+const themeToggle = document.getElementById('theme-toggle');
+const getTheme = () => localStorage.getItem('theme') || 'auto';
+const applyTheme = t => {
+    document.documentElement.removeAttribute('data-theme');
+    if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+    themeToggle.textContent = t === 'dark' ? '◑ Theme' : t === 'light' ? '◐ Theme' : '◒ Theme';
+};
+applyTheme(getTheme());
+themeToggle.onclick = () => {
+    const c = getTheme();
+    const n = c === 'auto' ? 'dark' : c === 'dark' ? 'light' : 'auto';
+    localStorage.setItem('theme', n);
+    applyTheme(n);
+};
+
+document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+    if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select();
+    }
+    if (e.key === 't' && !e.ctrlKey && !e.metaKey) themeToggle.click();
+});
+
+// Init
+filterArtifacts();
+</script>
+</body>
+</html>
