@@ -15,6 +15,8 @@ All scripts live in `scripts/` alongside this file. Replace `<skill-dir>` with t
 | `find-related.py <keyword> [...]` | Find pages by keyword, output slugs | Steps 3 & 6 |
 | `reindex.py` | Regenerate index.md | After every page write/update |
 | `validate.py` | Check all pages against checklist | End of every session |
+| `archive.py <slug> <category>` | Move page to archive and reindex | When retiring a page |
+| `restore.py <slug>` | Move page from archive back to wiki | When de-archiving a page |
 | `backlinks.py [--orphans] [--unlinked]` | Find orphan pages and unlinked mentions | Step 3, periodic lint |
 | `log-session.py <wiki-root> "<desc>" [--created slugs] [--updated slugs]` | Append session entry to log.md | Step 10 (final step) |
 
@@ -293,6 +295,7 @@ Orphans aren't always wrong — some pages are genuinely standalone. But most or
 - **Lossy summaries.** The page must contain the actual knowledge, not just a pointer to "go read the session."
 - **Unsourced claims.** Every page needs at least one entry in `sources:`.
 - **Renaming slugs.** Slugs are stable ids. If a title needs to change, update `title:` but keep the slug (or do a proper rename: update the file, every `related:` reference, and every link in other pages' bodies).
+- **Archiving vs Deleting.** Never delete research. Use the `archive.py` script or manual `mv` to `archive/` folder to remove clutter from the index while keeping content searchable.
 - **Skipping the log.** Don't end a session without appending to `log.md`. Future sessions depend on it.
 
 ## Scaling notes
