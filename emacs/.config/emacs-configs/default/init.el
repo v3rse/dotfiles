@@ -801,7 +801,12 @@ ITEM is expected to be a string with the 'org-marker text property."
   :hook (prog-mode . highlight-indent-guides-mode)
   :custom
   (highlight-indent-guides-method 'character)
-  (highlight-indent-guides-responsive 'stack))
+  (highlight-indent-guides-responsive 'stack)
+  (highlight-indent-guides-auto-enabled nil)
+  :config
+  (set-face-background 'highlight-indent-guides-odd-face "gray30")
+  (set-face-background 'highlight-indent-guides-even-face "gray30")
+  (set-face-foreground 'highlight-indent-guides-character-face "gray30"))
 
 (use-package exec-path-from-shell
   :config
