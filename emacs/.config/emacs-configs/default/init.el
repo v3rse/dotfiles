@@ -216,6 +216,7 @@ ITEM is expected to be a string with the 'org-marker text property."
   (auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory))
   (auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
   (custom-file (locate-user-emacs-file "custom.el"))
+  (indent-tabs-mode nil)
   (tab-always-indent 'complete)
   (use-short-answers t)
   (epg-pinentry-mode 'loopback)
@@ -229,7 +230,7 @@ ITEM is expected to be a string with the 'org-marker text property."
   (let ((mono-spaced-font "JetBrains Mono")
         (proportionately-spaced-font "Aporetic Sans"))
 
-    (set-face-attribute 'default nil :family mono-spaced-font :height 110 :weight 'medium)
+    (set-face-attribute 'default nil :family mono-spaced-font :height 107 :weight 'regular)
     (when (eq system-type 'darwin)
       (set-face-attribute 'default nil :family mono-spaced-font :height 140))
   
@@ -245,6 +246,8 @@ ITEM is expected to be a string with the 'org-marker text property."
   (when scroll-bar-mode
     (scroll-bar-mode -1))
   (indent-tabs-mode -1)
+  (setq-default tab-width 2)
+  (setq-default indent-tabs-mode nil)
 
   ;; files and buffers
   (global-hl-line-mode 1)
@@ -265,7 +268,9 @@ ITEM is expected to be a string with the 'org-marker text property."
     (xterm-mouse-mode 1))
 
   :hook
-  ((prog-mode . display-line-numbers-mode)
+  ((prog-mode . (lambda ()
+                  (display-line-numbers-mode)
+                  (setq truncate-lines t)))
    (text-mode . visual-line-mode))
 
   :bind (("C-x C-r" . recentf-open-files)
@@ -792,6 +797,12 @@ ITEM is expected to be a string with the 'org-marker text property."
   (dired-mode . nerd-icons-dired-mode))
 
 ;;; Development & Programming
+(use-package highlight-indent-guides
+  :hook (prog-mode . highlight-indent-guides-mode)
+  :custom
+  (highlight-indent-guides-method 'character)
+  (highlight-indent-guides-responsive 'stack))
+
 (use-package exec-path-from-shell
   :config
   (when (memq window-system '(mac ns x))
