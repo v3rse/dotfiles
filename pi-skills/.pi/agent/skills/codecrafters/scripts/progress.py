@@ -18,8 +18,8 @@ from pathlib import Path
 DB_PATH    = Path.home() / ".local/share/codecrafters/progress.db"
 STAGES_DIR = Path.home() / "src/codecrafters/stages"
 
-CHALLENGES        = ["redis", "interpreter", "sqlite", "git", "http-server"]
-RECOMMENDED_ORDER = ["http-server", "redis", "interpreter", "sqlite", "git"]
+CHALLENGES        = ["http-server", "redis", "shell", "interpreter", "sqlite", "git", "docker", "grep", "bittorrent", "dns-server", "kafka"]
+RECOMMENDED_ORDER = ["http-server", "shell", "redis", "interpreter", "sqlite", "git", "docker", "grep", "bittorrent", "dns-server", "kafka"]
 
 # ── DB helpers ────────────────────────────────────────────────────────────────
 

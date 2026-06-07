@@ -1,6 +1,6 @@
 ---
 name: codecrafters
-description: Local CodeCrafters challenge runner at ~/src/codecrafters/. Tracks stage progress in SQLite, gives AI hints when stuck, browses GitHub solutions after passing, and shows a dashboard across all 5 challenges (redis, interpreter, sqlite, git, http-server). Use when: working on a coding challenge, "what's my next stage", "I'm stuck on stage X", "hint please", "show solutions for Y", "my progress", "start redis/git/sqlite/interpreter/http-server", "test stage X", "how am I doing", "continue", "codecrafters".
+description: 'Local CodeCrafters challenge runner at ~/src/codecrafters/. Tracks stage progress in SQLite, gives AI hints when stuck, browses solutions after passing, and shows a dashboard across multiple challenges. Supports Rust, Go, Python, and more. Use when: working on a coding challenge, "what''s my next stage", "I''m stuck on stage X", "hint please", "show solutions for Y", "my progress", "start redis/git/sqlite/interpreter/http-server", "test stage X", "how am I doing", "continue", "codecrafters".'
 ---
 
 # CodeCrafters Local Platform
@@ -12,7 +12,7 @@ description: Local CodeCrafters challenge runner at ~/src/codecrafters/. Tracks 
 | Path | Purpose |
 |---|---|
 | `~/src/codecrafters/cc` | The test runner (official CodeCrafters tester binaries) |
-| `~/src/codecrafters/challenges/<name>/src/main.rs` | Your Rust code |
+| `~/src/codecrafters/challenges/<name>/` | Your solution directory |
 | `~/src/codecrafters/challenges/<name>/your_program.sh` | Entry point the tester calls |
 | `~/src/codecrafters/descriptions/<name>/` | Stage description `.md` files (one per stage) |
 | `~/src/codecrafters/stages/<name>.json` | Ordered stage list with slug, group, title |
@@ -79,12 +79,11 @@ Summarize the stage goal for the user in 2-3 sentences.
 
 ### Step 3 — Let the user code
 
-Tell them the file to edit:
-```
-~/src/codecrafters/challenges/<challenge>/src/main.rs
-```
+Identify the language used in `~/src/codecrafters/challenges/<challenge>/`.
+Tell them the main file to edit (e.g. `src/main.rs`, `app/main.go`, `app/main.py`).
 
 Wait for them to implement, or help them think through the design if asked.
+Use language-appropriate idioms and libraries.
 
 ### Step 4 — Run the test
 
@@ -134,9 +133,9 @@ Use when stuck. **Never give a direct solution** — give the minimal concept nu
 3. **Compare**: what does the stage require vs what the code does or is missing?
 
 4. **Identify the gap** — usually one of:
-   - Wrong Rust abstraction (e.g. using sync instead of async)
+   - Wrong language abstraction (e.g. sync vs async, goroutines, threading)
    - Missing protocol detail (e.g. RESP framing, HTTP line endings)
-   - Ownership/lifetime pattern they haven't seen yet
+   - Language-specific pitfalls (ownership, slices, garbage collection)
    - Algorithm or data structure choice
 
 5. **Write the hint**: name the concept, point at the right part of the docs, explain the *why*. No code.

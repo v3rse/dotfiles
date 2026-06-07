@@ -1,11 +1,11 @@
 ---
 name: codebase-onboarding
-description: Generate a personalized, richly visual HTML onboarding guide for contributing to a codebase. Use when the user asks to onboard to a repo, understand architecture, identify gaps/inadequacies, visualize internals, create a contributor guide, or model a codebase wiki/lore document. Produces ~/notes/<repo>-contributor-onboarding.html by default.
+description: Generate a personalized, richly visual HTML onboarding guide for contributing to a codebase. Use when the user asks to onboard to a repo, understand architecture, identify gaps/inadequacies, visualize internals, create a contributor guide, or model a codebase wiki/lore document. Produces ~/org/wiki/<repo>-contributor-onboarding.html by default.
 ---
 
 # Codebase Onboarding
 
-Generate a personalized contributor-onboarding artifact for the current repository. The output is a self-contained HTML document, saved outside the repo under `~/notes/`, with architecture diagrams, developer workflow, codebase lore, patterns, debugging notes, contribution bar, and suggested first issues.
+Generate a personalized contributor-onboarding artifact for the current repository. The output is a self-contained HTML document, saved outside the repo under `~/org/wiki/`, with architecture diagrams, developer workflow, codebase lore, patterns, debugging notes, contribution bar, and suggested first issues.
 
 This skill is inspired by codebase-wiki patterns: a useful contributor guide should not only list files; it should explain history, lore, conventions, pitfalls, debugging, and the social contribution process.
 
@@ -14,7 +14,7 @@ This skill is inspired by codebase-wiki patterns: a useful contributor guide sho
 Default output:
 
 ```text
-~/notes/<repo-slug>-contributor-onboarding.html
+~/org/wiki/<repo-slug>-contributor-onboarding.html
 ```
 
 Rules:
@@ -327,7 +327,7 @@ For sidebar key-file paths, override inline-code no-wrap rules so long paths do 
 4. Build a concise architecture model.
 5. Identify contribution bar and local dev loop.
 6. Decide whether first issues/tasks are needed for this artifact; include them only when useful.
-7. Generate the HTML artifact under `~/notes/`.
+7. Generate the HTML artifact under `~/org/wiki/`.
 8. If including first issues/tasks, provide concrete step-by-step plans. If not including issues, provide a first reading path only when useful.
 9. If browser/screenshot tooling is available, render-check the top and at least one lower section for layout issues.
 10. Return only the file link plus a short summary of what was included.
