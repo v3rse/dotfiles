@@ -838,11 +838,17 @@ ITEM is expected to be a string with the 'org-marker text property."
 	("C-c e f" . eglot-format-buffer)
 	("C-c e i" . eglot-find-implementation))
   :config
-  ;; Tell lua-language-server to recognize LÖVE globals and library
-  (setq-default eglot-workspace-configuration
-	    '((:Lua . (:runtime (:version "LuaJIT")
-			:workspace (:library ["${3rd}/love2d/library"])
-			:diagnostics (:globals ["love"]))))))
+  ;; Register lua-language-server for both lua-mode and lua-ts-mode
+  (add-to-list 'eglot-server-programs
+               '((lua-ts-mode lua-mode) . ("lua-language-server")))
+  ;; Tell lua-language-server to recognize LÖVE globals and library.
+  ;; Using the real path instead of ${3rd} (which is VS Code-specific expansion).
+  ;; Customize `custom-love-modules-path' in your personal config for local sources.
+  (let ((love-modules-path (or custom-love-modules-path '())))
+    (setq-default eglot-workspace-configuration
+		  '((:Lua . (:runtime (:version "LuaJIT")
+				:workspace (:library (append '("/usr/lib/lua-language-server/meta/3rd/love2d/library") love-modules-path))
+				:diagnostics (:globals ["love"]))))))
 (use-package eglot-booster
   :after eglot
   :vc (eglot-booster :url "https://github.com/jdtsmith/eglot-booster.git"
