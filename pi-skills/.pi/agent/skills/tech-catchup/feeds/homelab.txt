@@ -1,0 +1,25 @@
+# Homelab service releases & security advisories
+# Tracks GitHub release feeds for all services in the homelab stack.
+# New releases often carry CVE patches — pair with Trivy local scans.
+
+# DNS
+https://github.com/NLnetLabs/unbound/releases.atom
+https://github.com/pi-hole/pi-hole/releases.atom
+https://github.com/pi-hole/FTL/releases.atom
+
+# Notifications & monitoring
+https://github.com/binwiederhier/ntfy/releases.atom
+https://github.com/louislam/uptime-kuma/releases.atom
+https://github.com/healthchecks/healthchecks/releases.atom
+
+# Management UIs
+https://github.com/gethomepage/homepage/releases.atom
+https://github.com/amir20/dozzle/releases.atom
+https://github.com/louislam/dockge/releases.atom
+
+# Infrastructure
+https://github.com/containrrr/watchtower/releases.atom
+https://github.com/aquasecurity/trivy/releases.atom
+
+# GitHub Advisory Database — Docker/container ecosystem CVEs
+https://github.com/advisories.atom?query=type%3Areviewed+ecosystem%3Adocker

@@ -169,6 +169,61 @@ Don't re-implement scoring in your head. `rank.py` already applies these rules; 
 | Matches profile's `Interests:` | +1 |
 | Matches profile's `Ignore:` | dropped |
 
+#### Homelab security advisories (always-on, separate pass)
+
+Regardless of the user's domain selection or budget, **always** run a second fetch pass against `homelab.txt` and append a `🏠 Homelab` section to the digest. This feed is cheap (13 small feeds), never noise, and must not be deduped away by the main pass.
+
+```bash
+SKILL=$HOME/.pi/agent/skills/tech-catchup
+
+"$SKILL/scripts/fetch_feeds.sh" \
+  --domains homelab \
+  --since   <same-since-as-main-run> \
+  --budget  5m \
+  >> /tmp/catchup.jsonl 2>> /tmp/catchup.log
+```
+
+Filter the fresh JSONL for homelab entries directly (don't rely on rank.py buckets):
+
+```python
+python3 -c "
+import json
+homelab_feeds = [
+    'github.com/NLnetLabs', 'github.com/pi-hole', 'github.com/binwiederhier',
+    'github.com/louislam', 'github.com/healthchecks', 'github.com/gethomepage',
+    'github.com/amir20', 'github.com/containrrr', 'github.com/aquasecurity',
+    'github.com/advisories',
+]
+items = [json.loads(l) for l in open('/tmp/catchup.fresh.jsonl')]
+for i in sorted(
+    [x for x in items if any(d in x.get('feed','') for d in homelab_feeds)],
+    key=lambda x: x.get('published',''), reverse=True
+):
+    print(json.dumps(i))
+" > /tmp/catchup.homelab.jsonl
+```
+
+For each item, check the title/summary for security keywords (`CVE`, `security`, `vulnerability`, `patch`, `fix`). Flag those with 🚨. All others are plain releases (🚀).
+
+Output as a compact table — **never skip this section, even if empty** (write "No new releases or advisories" instead):
+
+```markdown
+---
+
+## 🏠 Homelab Security Advisories
+
+| | Service | Release | Notes |
+|---|---|---|---|
+| 🚨 | **Pi-hole** | [v5.18.1](url) | Security patch — update via Watchtower |
+| 🚀 | **ntfy** | [v2.11.0](url) | Feature release |
+| 🚀 | **Trivy** | [v0.52.0](url) | DB update |
+
+*No HIGH/CRITICAL CVEs in GitHub Advisory Database this period. ✅*
+```
+
+If any item contains `CVE` + severity `HIGH` or `CRITICAL`, escalate with a bold warning above the table:
+> ⚠️ **Action required**: CVE-XXXX-XXXX affects `<service>` — Watchtower will patch on next nightly run, or trigger manually: `docker exec watchtower /watchtower --run-once`
+
 **Top stories** = `bucket: "top"` (score ≥ 3). **Domain sections** = `bucket: "engineering"|"ai-deep"|…`. **On the radar** = `bucket: "radar"`.
 
 **Verification gate**: if a top-story claim originated from HN/Lobsters and asserts something concrete ("X acquired Y", "Z shipped W"), `web_fetch` the `primary` URL before stating it as fact. If you can't verify, frame as "rumor on HN".
@@ -232,6 +287,16 @@ The user finds walls of text overwhelming. **Optimize for visual breathing room.
 ## 🛠️ Devtools & Infra
 
 *(same table format)*
+
+---
+
+## 🏠 Homelab Security Advisories
+
+| | Service | Release | Notes |
+|---|---|---|---|
+| 🚀/🚨 | **<service>** | [vX.Y.Z](url) | <patch note or "feature release"> |
+
+*<CVE summary or "No HIGH/CRITICAL advisories this period. ✅">*
 
 ---
 
